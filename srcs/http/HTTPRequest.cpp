@@ -6,7 +6,7 @@
 /*   By: pforesti <pforesti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/06 12:17:19 by pforesti          #+#    #+#             */
-/*   Updated: 2023/04/06 15:34:54 by pforesti         ###   ########.fr       */
+/*   Updated: 2023/04/11 10:32:33 by pforesti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ void HTTPRequest::setMethod(HTTPMethod const method) {
 void HTTPRequest::setPath(std::string const path) {
     this->_path = path;
 }
+void HTTPRequest::setExtension(std::string const extension) {
+    this->_extension = extension;
+}
 void HTTPRequest::setHeaders(std::map<std::string, std::string> const headers) {
     this->_headers = headers;
 }
@@ -46,6 +49,9 @@ HTTPMethod HTTPRequest::getMethod() const {
 std::string HTTPRequest::getPath() const {
     return (this->_path);
 }
+std::string HTTPRequest::getExtension() const {
+    return (this->_extension);
+}
 std::map<std::string, std::string> HTTPRequest::getHeaders() const {
     return (this->_headers);
 }
@@ -58,6 +64,7 @@ HTTPRequest & HTTPRequest::operator=(HTTPRequest const &r) {
     this->_fullRequest = r.getFullRequest();
     this->_method = r.getMethod();
     this->_path = r.getPath();
+    this->_extension = r.getExtension();
     this->_headers = r.getHeaders();
     this->_body = r.getBody();
     return (*this);

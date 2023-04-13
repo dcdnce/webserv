@@ -6,7 +6,7 @@
 /*   By: pforesti <pforesti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/06 14:23:19 by pforesti          #+#    #+#             */
-/*   Updated: 2023/04/06 15:31:40 by pforesti         ###   ########.fr       */
+/*   Updated: 2023/04/11 10:38:03 by pforesti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,17 @@ void HTTPRequest::parse() {
 }
 
 static inline void parseFirstLine(HTTPRequest & hr, std::stringstream &ss) {
-    std::string method, path;
+    std::string method, path, extension;
 
-    ss >> method >> path; 
+    ss >> method; 
+    std::getline(ss, path, '.');
+    ss >> extension;
+    path += "." + extension;
     ss.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     
     hr.setMethod(strToM(method));
     hr.setPath(path);
+    hr.setExtension(extension);
 }
 
 static inline void parseHeaders(HTTPRequest & hr, std::stringstream &ss) {
