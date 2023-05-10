@@ -35,6 +35,9 @@
 *.out
 *.app
 
+# Debug files
+*.dSYM/
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json

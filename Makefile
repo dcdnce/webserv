@@ -2,12 +2,7 @@
 # SOURCES                                                                      #
 ################################################################################
 
-SRCS	:=	srcs/server.cpp	\
-			srcs/sockets/SocketServer.cpp \
-			srcs/sockets/SocketClient.cpp \
-			srcs/http/HTTPRequest.cpp \
-			srcs/http/HTTPRequest_Parsing.cpp \
-			srcs/http/HTTPTools.cpp \
+SRCS	:=	srcs/main.cpp \
 
 OBJS	:=	$(SRCS:.cpp=.o)
 
