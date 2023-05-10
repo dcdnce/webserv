@@ -4,8 +4,8 @@
 
 SRCS	:=	srcs/server.cpp	\
 			srcs/sockets/SocketServer.cpp \
-		srcs/sockets/SocketClient.cpp \
-		srcs/http/HTTPRequest.cpp \
+			srcs/sockets/SocketClient.cpp \
+			srcs/http/HTTPRequest.cpp \
 			srcs/http/HTTPRequest_Parsing.cpp \
 			srcs/http/HTTPTools.cpp \
 
@@ -76,6 +76,12 @@ ERROR	:=	$(BG_RED)$(FG_WHITE)$(BOLD) ✘
 
 all: $(NAME)
 
+run: all
+	@./$(NAME)
+
+debug: CXXFLAGS += -g -fsanitize=address -DDEBUG
+debug: re
+
 # $^ = all dependencies
 # $@ = target
 $(NAME): $(OBJS)
@@ -92,4 +98,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all run debug clean fclean re
