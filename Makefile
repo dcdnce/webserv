@@ -3,6 +3,9 @@
 ################################################################################
 
 SRCS	:=	srcs/main.cpp \
+			srcs/config/Config.cpp \
+			srcs/config/Config_ParseServerBlock.cpp \
+			srcs/config/ServerBlock.cpp \
 
 OBJS	:=	$(SRCS:.cpp=.o)
 

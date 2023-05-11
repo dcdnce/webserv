@@ -9,6 +9,9 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+#include "Config.hpp"
+#include "ServerBlock.hpp"
+
 #define MAX_CLIENTS	10
 #define BUFFER_SIZE	1 << 8
 
@@ -366,8 +369,13 @@ namespace http
 
 }
 
-int	main(void)
+int	main(int ac, char **av)
 {
+	if (ac != 2)	
+		return (1);
+
+	Config config(av[1]);
+
 	http::WebServer	server(NULL, 8080);
 
 	server.listen();
