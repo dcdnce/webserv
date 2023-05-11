@@ -35,3 +35,8 @@ std::string Config::_getWord() {
 
     return (word);
 }
+
+void    Config::_skipToSemicolon() {
+    for (; _ifs.peek() != ';' ; _ifs.get());
+    _ifs.get();
+}

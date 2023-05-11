@@ -15,9 +15,11 @@ class Config {
         void    _parseServerBlockHeader(ServerBlock & currServer);
         void    _parseServerBlockBody(ServerBlock & currServer);
 
+        void    _parseDirectiveParameters();
+
         std::string    _getWord();
 
-        void    _ws();
+        void    _skipToSemicolon();
 
     public:
         Config(std::string const path);

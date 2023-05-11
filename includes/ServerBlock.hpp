@@ -7,11 +7,13 @@ class ServerBlock {
     private:
         std::string _host;
         int _port;
-        //std::map<std::string, std::string>  _directives;
+        std::map<std::string, std::string>  _directives;
 
     public:
         ServerBlock();
         ~ServerBlock();
 
-        void    setPortHost(std::string const word);
+        void    setPortHost(std::string const str);
+
+        bool    isDirective(std::string const str);
 };
