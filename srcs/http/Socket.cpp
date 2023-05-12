@@ -3,7 +3,9 @@
 
 namespace http
 {
-
+	// ---------------------------------------------------------------------- //
+	//  Constructors & Destructors                                            //
+	// ---------------------------------------------------------------------- //
 	Socket::Socket(
 		const int domain,
 		const int type,
@@ -56,6 +58,14 @@ namespace http
 			close(_socket);
 	}
 
+	// ---------------------------------------------------------------------- //
+	//  Getters & Setters                                                     //
+	// ---------------------------------------------------------------------- //
+	int	Socket::getSocket(void) const { return (_socket); }
+
+	// ---------------------------------------------------------------------- //
+	//  Public Methods                                                        //
+	// ---------------------------------------------------------------------- //
 	void	Socket::listen(void) const
 	{
 		if (::listen(_socket, _maxClients) == -1)
@@ -67,11 +77,6 @@ namespace http
 		#ifdef DEBUG
 			Logger::debug(true) << "Listening on port " << _port << std::endl;
 		#endif
-	}
-
-	int	Socket::getSocket(void) const
-	{
-		return (_socket);
 	}
 
 }

@@ -7,8 +7,10 @@ namespace http
 
 	class Socket
 	{
-
 		protected:
+			// -------------------------------------------------------------- //
+			//  Attributes                                                    //
+			// -------------------------------------------------------------- //
 			const char*	_host;
 			int			_port;
 			int			_socket;
@@ -18,7 +20,9 @@ namespace http
 			const int	_maxClients;
 
 		public:
-			// Constructors / Destructor
+			// -------------------------------------------------------------- //
+			//  Constructors & Destructors                                    //
+			// -------------------------------------------------------------- //
 			Socket(
 				const int domain,
 				const int type,
@@ -29,11 +33,15 @@ namespace http
 			);
 			~Socket(void);
 
-			// Methods
-			void	listen(void) const;
-
-			// Getters
+			// -------------------------------------------------------------- //
+			//  Getters & Setters                                             //
+			// -------------------------------------------------------------- //
 			int	getSocket(void) const;
+
+			// -------------------------------------------------------------- //
+			//  Public Methods                                                //
+			// -------------------------------------------------------------- //
+			void	listen(void) const;
 	};
 
 }

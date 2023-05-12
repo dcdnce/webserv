@@ -2,7 +2,9 @@
 
 namespace http
 {
-
+	// ---------------------------------------------------------------------- //
+	//  Constructors & Destructors                                            //
+	// ---------------------------------------------------------------------- //
 	Server::Server(const char *host, const int port):
 		Socket(AF_INET, SOCK_STREAM, 0, host, port, MAX_CLIENTS),
 		_clientManager(MAX_CLIENTS),
@@ -14,6 +16,9 @@ namespace http
 	Server::~Server()
 	{}
 
+	// ---------------------------------------------------------------------- //
+	//  Private Methods                                                       //
+	// ---------------------------------------------------------------------- //
 	void	Server::_reset(void)
 	{
 		FD_ZERO(&_readfds);
@@ -37,6 +42,9 @@ namespace http
 		}
 	}
 
+	// ---------------------------------------------------------------------- //
+	//  Public Methods                                                        //
+	// ---------------------------------------------------------------------- //
 	void	Server::listen(void)
 	{
 		int	connections = 0;

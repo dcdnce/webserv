@@ -2,7 +2,9 @@
 
 namespace http
 {
-
+	// ---------------------------------------------------------------------- //
+	//  Constructors & Destructors                                            //
+	// ---------------------------------------------------------------------- //
 	Client::Client(void):
 		_socket_fd(-1),
 		_addr_len(sizeof(_addr))
@@ -14,6 +16,16 @@ namespace http
 			::close(_socket_fd);
 	}
 
+	// ---------------------------------------------------------------------- //
+	//  Getters & Setters                                                     //
+	// ---------------------------------------------------------------------- //
+	const int&			Client::getSocket(void) const { return (_socket_fd); }
+	const sockaddr_in&	Client::getAddr(void) { return (_addr); }
+	const socklen_t&	Client::getAddrLen(void) { return (_addr_len); }
+
+	// ---------------------------------------------------------------------- //
+	//  Public Methods                                                        //
+	// ---------------------------------------------------------------------- //
 	void	Client::accept(const int serverSocket)
 	{
 		if ((_socket_fd = ::accept(serverSocket, (struct sockaddr*)&_addr, &_addr_len)) == -1)
@@ -32,21 +44,9 @@ namespace http
 		return (_socket_fd != -1);
 	}
 
-	int		Client::getSocket(void) const
-	{
-		return (_socket_fd);
-	}
-
-	sockaddr_in&	Client::getAddr(void)
-	{
-		return (_addr);
-	}
-
-	socklen_t&	Client::getAddrLen(void)
-	{
-		return (_addr_len);
-	}
-
+	// ---------------------------------------------------------------------- //
+	//  Operators                                                             //
+	// ---------------------------------------------------------------------- //
 	std::ostream&	operator<<(std::ostream& os, const Client& client)
 	{
 		os << inet_ntoa(client._addr.sin_addr) << ":" << ntohs(client._addr.sin_port);

@@ -12,19 +12,28 @@ namespace http
 	class Server: public Socket
 	{
 		private:
+			// -------------------------------------------------------------- //
+			//  Attributes                                                    //
+			// -------------------------------------------------------------- //
 			ClientManager	_clientManager;
 			fd_set			_readfds;
 			int				_maxfd;
 
-			// Private methods
+			// -------------------------------------------------------------- //
+			//  Private Methods                                               //
+			// -------------------------------------------------------------- //
 			void	_reset(void);
 
 		public:
-			// Constructors / Destructor
+			// -------------------------------------------------------------- //
+			//  Constructors & Destructors                                    //
+			// -------------------------------------------------------------- //
 			Server(const char *host, const int port);
 			~Server(void);
 
-			// Methods
+			// -------------------------------------------------------------- //
+			//  Public Methods                                                //
+			// -------------------------------------------------------------- //
 			void	listen(void);
 	};
 
