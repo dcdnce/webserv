@@ -1,5 +1,5 @@
-  server    ede:8080		 { 
-
-            wrongdirective
-  }
+server  ede:8080  {
+  server_name grosse_ambiance.server
+  error_page 501 502 503 504 test
+} 
 		

@@ -7,6 +7,9 @@ SRCS	:=	srcs/main.cpp \
 			srcs/http/ClientManager.cpp \
 			srcs/http/Socket.cpp \
 			srcs/http/Server.cpp \
+			srcs/config/Config.cpp \
+			srcs/config/Config_ParseServerBlock.cpp \
+			srcs/config/ServerBlock.cpp \
 
 OBJS	:=	$(SRCS:.cpp=.o)
 

@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include "config/Config.hpp"
 #include <iostream>
 
 Config::Config(std::string const path) {
@@ -16,13 +16,6 @@ Config::~Config() {
 }
 
 void Config::_parsing() {
-    // static bool  alreadyParsed = 0;
-    // if (alreadyParsed) {
-    //     throw std::runtime_error("Config::parse: warning: alreadyParsed");
-    // }
-    // alreadyParsed = true;
-
-    //while (!_ifs.eof())
     _parseServerBlock();
 }
 
@@ -31,7 +24,6 @@ std::string Config::_getWord() {
 
     for (; std::isspace(_ifs.peek()) ; _ifs.get());
     for (; !std::isspace(_ifs.peek()) && !_ifs.eof() ; word += _ifs.get());
-    for (; std::isspace(_ifs.peek()) ; _ifs.get());
 
     return (word);
 }

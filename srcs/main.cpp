@@ -18,10 +18,15 @@
 #include "http/Socket.hpp"
 #include "http/Server.hpp"
 
-int	main(void)
+int	main(int ac, char **av)
 {
-	http::Server	server(NULL, 8080);
+	if (ac != 2)
+		return (EXIT_FAILURE);
 
-	server.listen();
+	Config	config(av[1]);
+
+	// http::Server	server(NULL, 8080);
+
+	// server.listen();
 	return (EXIT_SUCCESS);
 }

@@ -1,4 +1,8 @@
-#include "Config.hpp"
+#include "config/Config.hpp"
+
+#include "utils/Logger.hpp"
+
+#include <iostream>
 
 void Config::_parseServerBlock() {
     ServerBlock    currServer;
@@ -19,7 +23,7 @@ void Config::_parseServerBlockHeader(ServerBlock & currServer) {
         throw std::runtime_error("Config::_parseServerBlockHeader: abort: \"server\" block opening bracket error");
 
     #ifdef DEBUG
-    	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: " << "server " << std::endl;
+    	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: " << "server " << currServer.getPortHost() << std::endl;
 	#endif
 }
 
@@ -27,8 +31,11 @@ void Config::_parseServerBlockBody(ServerBlock & currServer) {
     std::string currWord = " ";
     std::string currLine;
 
-    while (currWord != "}") {
+    while (true) {
         currWord = _getWord();
+
+        if (currWord == "}")
+            return ;
 
         if (_ifs.eof())
             throw std::runtime_error("Config::_parseServerBlockBody: abort: \"server\" block ending bracket error");
@@ -40,7 +47,6 @@ void Config::_parseServerBlockBody(ServerBlock & currServer) {
             _skipToNewline();
             continue ;
         }
-
         std::getline(_ifs, currLine, '\n');
         (currServer.*currDirective)(currLine);
 
