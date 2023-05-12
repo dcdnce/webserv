@@ -22,20 +22,14 @@
 
 namespace http
 {
-	// HTTP Version constant
-	static const std::string	HTTP_VERSION = "HTTP/1.1";
-
+	// ---------------------------------------------------------------------- //
+	//  Enums                                                                 //
+	// ---------------------------------------------------------------------- //
 	enum Method
 	{
 		GET,
 		POST,
 		DELETE
-	};
-
-	static const std::map<std::string, Method>	methodsMap = {
-		{"GET", GET},
-		{"POST", POST},
-		{"DELETE", DELETE}
 	};
 
 	enum Status
@@ -112,5 +106,15 @@ namespace http
 		NOT_EXTENDED = 510,
 		NETWORK_AUTHENTICATION_REQUIRED = 511
 	};
+	
+	// ---------------------------------------------------------------------- //
+	//  Constants                                                             //
+	// ---------------------------------------------------------------------- //
+	static const std::string	HTTP_VERSION = "HTTP/1.1";
+	static std::map<std::string, http::Method>	methodsMap;
 
+	// ---------------------------------------------------------------------- //
+	//  Prototypes                                                            //
+	// ---------------------------------------------------------------------- //
+	void	initiateConstants(void);
 }
