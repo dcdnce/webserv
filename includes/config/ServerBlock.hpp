@@ -1,16 +1,16 @@
 #pragma once
 
 #include <map>
+#include <vector>
 #include <string>
 
 class ServerBlock {
     private:
         std::string _host;
         int _port;
-        std::string _serverName;
-        std::map<std::string, std::string>  _errorPages;
-
-        std::string _getWord(std::string line, size_t from);
+        std::vector<std::string> _serverName;
+        std::map<int, std::string>  _errorPages;
+        int _clientMaxBodySize;
 
     public:
         ServerBlock();

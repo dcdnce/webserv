@@ -1,6 +1,9 @@
 #include "config/Config.hpp"
 #include <iostream>
 
+// TODO 
+//  - ParseServerBlock
+
 Config::Config(std::string const path) {
     _ifs.open(path);
     if (!_ifs.is_open()) {
@@ -16,6 +19,7 @@ Config::~Config() {
 }
 
 void Config::_parsing() {
+    //while !_ifs.eof()
     _parseServerBlock();
 }
 

@@ -1,3 +1,4 @@
+#include "config/Config.hpp"
 #include "http/Server.hpp"
 
 int	main(int ac, char **av)

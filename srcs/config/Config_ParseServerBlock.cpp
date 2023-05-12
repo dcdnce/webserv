@@ -4,13 +4,14 @@
 
 #include <iostream>
 
+// TODO 
+//  - Parse Locations
+
 void Config::_parseServerBlock() {
     ServerBlock    currServer;
 
     _parseServerBlockHeader(currServer);
     _parseServerBlockBody(currServer);
-
-    //check if mandatory directives are here
 }
 
 void Config::_parseServerBlockHeader(ServerBlock & currServer) {
