@@ -3,9 +3,10 @@
 ################################################################################
 
 SRCS	:=	srcs/main.cpp \
-			srcs/config/Config.cpp \
-			srcs/config/Config_ParseServerBlock.cpp \
-			srcs/config/ServerBlock.cpp \
+			srcs/http/Client.cpp \
+			srcs/http/ClientManager.cpp \
+			srcs/http/Socket.cpp \
+			srcs/http/Server.cpp \
 
 OBJS	:=	$(SRCS:.cpp=.o)
 
