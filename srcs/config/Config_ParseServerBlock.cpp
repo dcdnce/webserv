@@ -5,6 +5,7 @@ void Config::_parseServerBlock() {
 
     _parseServerBlockHeader(currServer);
     _parseServerBlockBody(currServer);
+
     //check if mandatory directives are here
 }
 
@@ -16,22 +17,32 @@ void Config::_parseServerBlockHeader(ServerBlock & currServer) {
 
     if (_getWord() != "{")
         throw std::runtime_error("Config::_parseServerBlockHeader: abort: \"server\" block opening bracket error");
+
+    #ifdef DEBUG
+    	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: " << "server " << std::endl;
+	#endif
 }
 
 void Config::_parseServerBlockBody(ServerBlock & currServer) {
-    std::string currWord;
+    std::string currWord = " ";
+    std::string currLine;
 
-     for (; currWord != "}" ; currWord = _getWord()) {
+    while (currWord != "}") {
+        currWord = _getWord();
+
         if (_ifs.eof())
             throw std::runtime_error("Config::_parseServerBlockBody: abort: \"server\" block ending bracket error");
         
         //if == location
 
-        if (!currServer.isDirective(currWord)) {
-            std::string error = "ServerBlock::isDirective: warning: " + currWord + " is not an accepted directive for a server block: skipping";
-            perror(error.c_str());
-            _skipToSemicolon();
+        ServerBlock::directiveFuncPtr currDirective = currServer.whichDirective(currWord);
+        if (currDirective == NULL) {
+            _skipToNewline();
             continue ;
         }
+
+        std::getline(_ifs, currLine, '\n');
+        (currServer.*currDirective)(currLine);
+
     }
 }

@@ -1,0 +1,5 @@
+  server    ede:8080		 { 
+
+            wrongdirective
+  }
+		

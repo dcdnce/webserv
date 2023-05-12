@@ -16,11 +16,11 @@ Config::~Config() {
 }
 
 void Config::_parsing() {
-    static bool  alreadyParsed = 0;
-    if (alreadyParsed) {
-        throw std::runtime_error("Config::parse: warning: alreadyParsed");
-    }
-    alreadyParsed = true;
+    // static bool  alreadyParsed = 0;
+    // if (alreadyParsed) {
+    //     throw std::runtime_error("Config::parse: warning: alreadyParsed");
+    // }
+    // alreadyParsed = true;
 
     //while (!_ifs.eof())
     _parseServerBlock();
@@ -36,7 +36,7 @@ std::string Config::_getWord() {
     return (word);
 }
 
-void    Config::_skipToSemicolon() {
-    for (; _ifs.peek() != ';' ; _ifs.get());
+void    Config::_skipToNewline() {
+    for (; _ifs.peek() != '\n' ; _ifs.get());
     _ifs.get();
 }

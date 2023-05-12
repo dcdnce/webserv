@@ -19,7 +19,7 @@ class Config {
 
         std::string    _getWord();
 
-        void    _skipToSemicolon();
+        void    _skipToNewline();
 
     public:
         Config(std::string const path);
