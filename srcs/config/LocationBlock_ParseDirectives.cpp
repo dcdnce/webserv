@@ -25,7 +25,16 @@ LocationBlock::directiveFuncPtr    LocationBlock::whichDirective(std::string con
 }
 
 void    LocationBlock::parseDirective_root(std::string line) {
-   	Logger::debug(true) << "ServerBlock::parseDirective_root: received line:" << line << std::endl;
+    std::vector<std::string> params = _extractParams(line);
+
+    if (params.size() != 1)
+        throw std::runtime_error("LocationBlock::parseDirective_root: abort: wrong number of arguments for directive");
+
+    _root = params[0];
+
+    #ifdef DEBUG
+   	    Logger::debug(true) << "ServerBlock::parseDirective_root: received line:" << line << std::endl;
+    #endif
 }
 
 void    LocationBlock::parseDirective_acceptedMethods(std::string line) {

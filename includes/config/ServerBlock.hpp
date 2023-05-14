@@ -13,7 +13,9 @@ class ServerBlock {
         std::vector<std::string> _serverName;
         std::map<int, std::string>  _errorPages;
         int _clientMaxBodySize;
-        std::vector<LocationBlock>  _locationBlocks;
+        std::map<std::string, LocationBlock>  _locationBlocks;
+
+        std::vector<std::string> _extractParams(std::string const & line);
 
     public:
         ServerBlock();
@@ -27,4 +29,6 @@ class ServerBlock {
 
         void    setPortHost(std::string const str);
         std::string getPortHost();
+
+        void    addLocationBlock(LocationBlock newLocationBlock);        
 };

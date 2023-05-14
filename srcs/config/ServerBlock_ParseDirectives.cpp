@@ -21,14 +21,7 @@ ServerBlock::directiveFuncPtr ServerBlock::whichDirective(std::string const str)
 }
 
 void    ServerBlock::parseDirective_serverName(std::string line) {
-    for (size_t i = 0 ; i < line.size() ;) {
-        std::string currWord = "";
-        for (; std::isspace(line[i]) && i < line.size() ; i++);
-        for (; !std::isspace(line[i]) && i < line.size() ; i++)
-            currWord += line[i];
-        if (currWord.size())
-            _serverName.push_back(currWord);
-    }
+    _serverName = _extractParams(line);
     
     if (_serverName.size() == 0)
         throw std::runtime_error("ServerBlock::parseDirective_serverName: abort: missing arguments for directive");
@@ -46,22 +39,15 @@ void    ServerBlock::parseDirective_errorPage(std::string line) {
     	Logger::debug(true) << "ServerBlock::parseDirective_errorPage: received line:" << line << std::endl;
 	#endif
 
-    std::vector<std::string>    words;
-    for (size_t i = 0 ; i < line.size() ;) {
-        std::string currWord = "";
-        for (; std::isspace(line[i]) && i < line.size() ; i++);
-        for (; !std::isspace(line[i]) && i < line.size() ; i++)
-            currWord += line[i];
-        words.push_back(currWord);
-    }
+    std::vector<std::string>    params = _extractParams(line);
 
-    if (words.size() < 2)
+    if (params.size() < 2)
         throw std::runtime_error("ServerBlock::parseDirective_errorPage: abort: missing arguments for directive");
 
-    for (size_t i = 0 ; i < words.size() - 1 ; i++) {
+    for (size_t i = 0 ; i < params.size() - 1 ; i++) {
         int httpcode;
         try {
-            httpcode = std::stoi(words[i]);
+            httpcode = std::stoi(params[i]);
         } catch (std::exception &e) {
             Logger::warn(true) << "ServerBlock::parseDirective_errorPage: error code not a number: skipping" << std::endl;
             continue ;
@@ -72,7 +58,7 @@ void    ServerBlock::parseDirective_errorPage(std::string line) {
             continue ;
         }
 
-       _errorPages[httpcode] = words[words.size()-1]; 
+       _errorPages[httpcode] = params[params.size()-1]; 
     }
 }
 
@@ -81,18 +67,11 @@ void    ServerBlock::parseDirective_clientMaxBodySize(std::string line) {
     	Logger::debug(true) << "ServerBlock::parseDirective_clientMaxBodySize: received line:" << line << std::endl;
 	#endif
 
-    std::vector<std::string>    words;
-    for (size_t i = 0 ; i < line.size() ;) {
-        std::string currWord = "";
-        for (; std::isspace(line[i]) && i < line.size() ; i++);
-        for (; !std::isspace(line[i]) && i < line.size() ; i++)
-            currWord += line[i];
-        words.push_back(currWord);
-    }
+    std::vector<std::string>    params = _extractParams(line);
 
-    if (words.size() != 1)
+    if (params.size() != 1)
         throw std::runtime_error("ServerBlock::parseDirective_clientMaxBodySize: abort: wrong number of arguments for directive");
 
-    if (std::toupper(words[0][words[0].size()-1]) != 'M')
+    if (std::toupper(params[0][params[0].size()-1]) != 'M')
         throw std::runtime_error("ServerBlock::parseDirective_clientMaxBodySize: abort: argument not recognized for directive");
 }

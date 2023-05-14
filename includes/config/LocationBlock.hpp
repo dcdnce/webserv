@@ -1,8 +1,14 @@
+#pragma once
+
 #include <string>
+#include <vector>
 
 class LocationBlock {
     private:
         std::string _path;
+        std::string _root;
+
+        std::vector<std::string> _extractParams(std::string const & line);
 
     public:
         LocationBlock();
@@ -17,7 +23,7 @@ class LocationBlock {
         void    parseDirective_index(std::string line);
         void    parseDirective_uploadedFilesPath(std::string line);
         void    parseDirective_cgi(std::string line);
-
+        
         void    setPath(std::string const path);
         std::string    getPath(void);
 };

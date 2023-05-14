@@ -6,7 +6,8 @@ void Config::_parseLocationBlock(ServerBlock & currServer) {
 
     _parseLocationBlockHeader(currLocation);
     _parseLocationBlockBody(currLocation);
-    //add new location to server object vector
+
+    currServer.addLocationBlock(currLocation);
 }
 
 void Config::_parseLocationBlockHeader(LocationBlock & currLocation) {
