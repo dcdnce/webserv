@@ -27,7 +27,7 @@ namespace http
 		if (_socket == -1)
 			throw std::runtime_error("Socket constructor: abort: socket()");
 
-		// Set socket option to allow to rebind to an already used port
+		// Set socket option to allow to rebind to an already used address
 		// https://learn.microsoft.com/en-us/windows/win32/winsock/using-so-reuseaddr-and-so-exclusiveaddruse#using-so_reuseaddr
 		if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1)
 		{

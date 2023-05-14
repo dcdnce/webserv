@@ -86,10 +86,11 @@ namespace http
 				if (!client.isOccupied() || !FD_ISSET(client.getSocket(), &_readfds))
 					continue;
 
-				// TODO: handle client request
 				#ifdef DEBUG
 					Logger::debug(true) << "Client " << i << " [" << client << "] is ready" << std::endl;
 				#endif
+
+				// TODO: handle client request
 
 				client.close();
 			}

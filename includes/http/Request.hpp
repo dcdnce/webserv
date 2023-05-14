@@ -1,6 +1,6 @@
 #pragma once
 
-#include "http.hpp"
+#include "http/http.hpp"
 
 namespace http
 {
@@ -48,5 +48,4 @@ namespace http
 			void	removeHeader(const std::string& header);
 			bool	hasHeader(const std::string& header) const;
 	};
-
 }
