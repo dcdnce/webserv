@@ -1,12 +1,16 @@
 #pragma once
 
+#include "http/http.hpp"
+
 #include <string>
 #include <vector>
+#include <set>
 
 class LocationBlock {
     private:
         std::string _path;
         std::string _root;
+        std::set<http::Method>   _acceptedMethods;
 
         std::vector<std::string> _extractParams(std::string const & line);
 

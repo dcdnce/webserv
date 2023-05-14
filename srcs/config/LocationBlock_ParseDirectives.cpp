@@ -38,7 +38,21 @@ void    LocationBlock::parseDirective_root(std::string line) {
 }
 
 void    LocationBlock::parseDirective_acceptedMethods(std::string line) {
-   	Logger::debug(true) << "ServerBlock::parseDirective_acceptedMethods: received line:" << line << std::endl;
+    std::vector<std::string>    params = _extractParams(line);
+
+    if (params.size() == 0)
+        throw std::runtime_error("LocationBlock::parseDirective_acceptedMethods: abort: missing arguments for directive");
+
+    for (size_t i = 0 ; i < params.size() ; i++) {
+        if (http::methodsMap.find(params[i]) == http::methodsMap.end())
+            Logger::warn(true) << "ServerBlock::parseDirective_acceptedMethods: warning: parameter is not an HTTP Method: skipping" << std::endl;
+        else
+            _acceptedMethods.insert(http::methodsMap[params[i]]);
+    }
+
+    #ifdef DEBUG
+   	    Logger::debug(true) << "ServerBlock::parseDirective_acceptedMethods: received line:" << line << std::endl; 
+    #endif
 }
 
 void    LocationBlock::parseDirective_return(std::string line) {
