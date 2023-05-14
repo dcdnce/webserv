@@ -2,6 +2,10 @@ server  ede:8080  {
   server_name  name
   error_page lesgo 402 503 504 test
   client_max_body_size 10m
-  ok
+  wrong_directive params 
+  location / { 
+    autoindex on
+    wrong_directive params 
+  }
 } 
 		

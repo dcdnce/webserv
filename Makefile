@@ -9,7 +9,12 @@ SRCS	:=	srcs/main.cpp \
 			srcs/http/Server.cpp \
 			srcs/config/Config.cpp \
 			srcs/config/Config_ParseServerBlock.cpp \
+			srcs/config/Config_ParseLocationBlock.cpp \
 			srcs/config/ServerBlock.cpp \
+			srcs/config/ServerBlock_ParseDirectives.cpp \
+			srcs/config/LocationBlock.cpp \
+			srcs/config/LocationBlock_ParseDirectives.cpp \
+
 
 OBJS	:=	$(SRCS:.cpp=.o)
 
