@@ -56,21 +56,73 @@ void    LocationBlock::parseDirective_acceptedMethods(std::string line) {
 }
 
 void    LocationBlock::parseDirective_return(std::string line) {
-   	Logger::debug(true) << "LocationBlock::parseDirective_return: received line:" << line << std::endl;
+    std::vector<std::string>    params = _extractParams(line);
+
+    if (params.size() != 2)
+        throw std::runtime_error("LocationBlock::parseDirective_return: abort: wrong number of arguments for directive");
+
+    int httpcode;
+    try {
+        httpcode = std::stoi(params[0]);
+    } catch (std::exception &e) {
+        Logger::warn(true) << "LocationBlock::parseDirective_return: error code not a number: skipping" << std::endl;
+        return ;
+    }
+
+    if (!_isHttpRedirectionCode(httpcode)) {
+        Logger::warn(true) << "LocationBlock::parseDirective_return: error code not recognized: skipping" << std::endl;;
+        return ;
+    }
+
+    _redirections[httpcode] = params[params.size()-1]; 
+
+    #ifdef DEBUG
+   	    Logger::debug(true) << "LocationBlock::parseDirective_return: received line:" << line << std::endl;
+    #endif
 }
 
 void    LocationBlock::parseDirective_autoindex(std::string line) {
-    Logger::debug(true) << "ServerBlock::parseDirective_autoindex: received line:" << line << std::endl;
+    std::vector<std::string>    params = _extractParams(line);
+
+    if (params.size() != 1)
+        throw std::runtime_error("LocationBlock::parseDirective_autoindex: abort: wrong number of arguments for directive");
+
+    if (params[0] != "on" && params[0] != "off") {
+        Logger::warn(true) << "LocationBlock::parseDirective_autoindex: argument not recognized: skipping" << std::endl;;
+        return ;
+    }
+
+   _autoindex = (params[0] == "on");
+ 
+    #ifdef DEBUG
+        Logger::debug(true) << "LocationBlock::parseDirective_autoindex: received line:" << line << std::endl;
+    #endif
 }
 
 void    LocationBlock::parseDirective_index(std::string line) {
-    Logger::debug(true) << "ServerBlock::parseDirective_index: received line:" << line << std::endl;
+    _indexes = _extractParams(line);
+
+    if (!_indexes.size())
+        throw std::runtime_error("LocationBlock::parseDirective_index: abort: missing arguments for directive");
+
+    #ifdef DEBUG
+        Logger::debug(true) << "ServerBlock::parseDirective_index: received line:" << line << std::endl;
+    #endif
 }
 
 void    LocationBlock::parseDirective_uploadedFilesPath(std::string line) {
-    Logger::debug(true) << "ServerBlock::parseDirective_uploadedFilesPath: received line:" << line << std::endl;
+    std::vector<std::string>    params = _extractParams(line);
+
+    if (params.size() != 1)
+        throw std::runtime_error("LocationBlock::parseDirective_uploadedFilesPath: abort: wrong number of arguments for directive");
+
+    _uploadPath = params[0];
+
+    #ifdef DEBUG
+        Logger::debug(true) << "ServerBlock::parseDirective_uploadedFilesPath: received line:" << line << std::endl;
+    #endif
 }
 
 void    LocationBlock::parseDirective_cgi(std::string line) {
-    Logger::debug(true) << "ServerBlock::parseDirective_uploadedFilescgi: received line:" << line << std::endl;
+    Logger::debug(true) << "ServerBlock::parseDirective_cgi: received line:" << line << std::endl;
 }

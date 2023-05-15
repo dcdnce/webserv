@@ -7,9 +7,6 @@
 #include <vector>
 #include <map>
 
-//TODO 
-//  - defaults options in constructor
-
 ServerBlock::ServerBlock() {
 }
 

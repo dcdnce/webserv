@@ -11,8 +11,13 @@ class LocationBlock {
         std::string _path;
         std::string _root;
         std::set<http::Method>   _acceptedMethods;
+        std::map<int, std::string>  _redirections;
+        bool    _autoindex;
+        std::vector<std::string>    _indexes;
+        std::string _uploadPath;
 
         std::vector<std::string> _extractParams(std::string const & line);
+        bool    _isHttpRedirectionCode(int const code);
 
     public:
         LocationBlock();
