@@ -53,7 +53,7 @@ void    ServerBlock::parseDirective_errorPage(std::string line) {
             continue ;
         };
 
-        if ((httpcode > 511 || httpcode < 500)) {
+        if (!(http::isErrorClient(httpcode)) && !(http::isErrorServer(httpcode))) {
             Logger::warn(true) << "ServerBlock::parseDirective_errorPage: error code not recognized: skipping" << std::endl;;
             continue ;
         }

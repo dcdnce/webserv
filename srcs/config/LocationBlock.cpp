@@ -32,8 +32,3 @@ std::vector<std::string> LocationBlock::_extractParams(std::string const & line)
 
     return (params);
 }
-
-//301, 308, 302, 303, 307
-bool    LocationBlock::_isHttpRedirectionCode(int const code) {
-    return (code == 301 || code == 302 || code == 303 || code == 307 || code == 308);
-}

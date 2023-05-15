@@ -117,4 +117,7 @@ namespace http
 	//  Prototypes                                                            //
 	// ---------------------------------------------------------------------- //
 	void	initiateConstants(void);
+	bool	isRedirection(int const code);
+	bool	isErrorClient(int const code);
+	bool	isErrorServer(int const code);
 }

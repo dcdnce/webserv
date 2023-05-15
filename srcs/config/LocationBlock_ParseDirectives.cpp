@@ -69,7 +69,7 @@ void    LocationBlock::parseDirective_return(std::string line) {
         return ;
     }
 
-    if (!_isHttpRedirectionCode(httpcode)) {
+    if (!http::isRedirection(httpcode)) {
         Logger::warn(true) << "LocationBlock::parseDirective_return: error code not recognized: skipping" << std::endl;;
         return ;
     }

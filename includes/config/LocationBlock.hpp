@@ -17,7 +17,6 @@ class LocationBlock {
         std::string _uploadPath;
 
         std::vector<std::string> _extractParams(std::string const & line);
-        bool    _isHttpRedirectionCode(int const code);
 
     public:
         LocationBlock();

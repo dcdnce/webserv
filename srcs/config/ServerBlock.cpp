@@ -48,4 +48,4 @@ std::vector<std::string> ServerBlock::_extractParams(std::string const & line) {
     }
 
     return (params);
-}   
+}
