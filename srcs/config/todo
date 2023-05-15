@@ -1,0 +1,17 @@
+ServerBlock
+- defaults options in constructor
+- directives: 
+    - error_pages:
+        - implement all http codes
+    - client_max_body_size:
+        - authorized suffixes
+
+LocationBlock
+- defaults options in constructor
+- directives: 
+    - cgi
+
+~misc and tools
+- valid path helper function (for all directives)
+- rewrite of warnings messages
+
