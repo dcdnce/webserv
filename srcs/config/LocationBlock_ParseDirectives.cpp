@@ -33,7 +33,7 @@ void    LocationBlock::parseDirective_root(std::string line) {
     _root = params[0];
 
     #ifdef DEBUG
-   	    Logger::debug(true) << "ServerBlock::parseDirective_root: received line:" << line << std::endl;
+   	    Logger::debug(true) << "LocationBlock::parseDirective_root: received line:" << line << std::endl;
     #endif
 }
 
@@ -45,18 +45,18 @@ void    LocationBlock::parseDirective_acceptedMethods(std::string line) {
 
     for (size_t i = 0 ; i < params.size() ; i++) {
         if (http::methodsMap.find(params[i]) == http::methodsMap.end())
-            Logger::warn(true) << "ServerBlock::parseDirective_acceptedMethods: warning: parameter is not an HTTP Method: skipping" << std::endl;
+            Logger::warn(true) << "LocationBlock::parseDirective_acceptedMethods: warning: \"" << params[i] << "\" is not an HTTP Method: skipping" << std::endl;
         else
             _acceptedMethods.insert(http::methodsMap[params[i]]);
     }
 
     #ifdef DEBUG
-   	    Logger::debug(true) << "ServerBlock::parseDirective_acceptedMethods: received line:" << line << std::endl; 
+   	    Logger::debug(true) << "LocationBlock::parseDirective_acceptedMethods: received line:" << line << std::endl; 
     #endif
 }
 
 void    LocationBlock::parseDirective_return(std::string line) {
-   	Logger::debug(true) << "ServerBlock::parseDirective_return: received line:" << line << std::endl;
+   	Logger::debug(true) << "LocationBlock::parseDirective_return: received line:" << line << std::endl;
 }
 
 void    LocationBlock::parseDirective_autoindex(std::string line) {

@@ -6,6 +6,8 @@ int	main(int ac, char **av)
 	if (ac != 2)
 		return (EXIT_FAILURE);
 
+	http::initiateConstants();
+
 	try {
 		Config	config(av[1]);
 	} catch (std::exception &e) {

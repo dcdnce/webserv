@@ -111,7 +111,7 @@ namespace http
 	//  Constants                                                             //
 	// ---------------------------------------------------------------------- //
 	static const std::string	HTTP_VERSION = "HTTP/1.1";
-	static std::map<std::string, http::Method>	methodsMap;
+	extern std::map<std::string, http::Method>	methodsMap;
 
 	// ---------------------------------------------------------------------- //
 	//  Prototypes                                                            //

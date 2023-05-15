@@ -6,6 +6,7 @@ server  ede:8080  {
   location / { 
     autoindex on
     wrong_directive params 
+    accepted_methods GET POST OK
   }
 } 
 		

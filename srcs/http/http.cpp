@@ -2,6 +2,7 @@
 
 namespace http
 {
+	std::map<std::string, http::Method>	methodsMap;
 
 	void	initiateConstants(void)
 	{
