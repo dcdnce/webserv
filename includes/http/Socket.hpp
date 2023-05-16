@@ -11,13 +11,13 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			const char*	_host;
-			int			_port;
-			int			_socket;
-			int			_domain;
-			int			_type;
-			int			_protocol;
-			const int	_maxClients;
+			const char *_host;
+			int _port;
+			int _socket;
+			int _domain;
+			int _type;
+			int _protocol;
+			const int _maxClients;
 
 		public:
 			// -------------------------------------------------------------- //
@@ -27,21 +27,20 @@ namespace http
 				const int domain,
 				const int type,
 				const int protocol,
-				const char* host,
+				const char *host,
 				const int port,
-				const int maxClients = MAX_CLIENTS
-			);
+				const int maxClients = MAX_CLIENTS);
 			~Socket(void);
 
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
-			int	getSocket(void) const;
+			int getSocket(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void	listen(void) const;
+			void listen(void) const;
 	};
 
 }

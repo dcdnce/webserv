@@ -12,8 +12,8 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			std::vector<Client>	_clients;
-			int					_maxClients;
+			std::vector<Client> _clients;
+			int _maxClients;
 
 		public:
 			// -------------------------------------------------------------- //
@@ -25,15 +25,15 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
-			Client&	getClient(const int i);
-			int		getMaxClients(void) const;
+			Client &getClient(const int i);
+			int getMaxClients(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void	acceptConnection(const int serverSocket);
-			void	closeConnection(const int i);
-			void	closeAllConnections(void);
+			void acceptConnection(const int serverSocket);
+			void closeConnection(const int i);
+			void closeAllConnections(void);
 	};
 
 }

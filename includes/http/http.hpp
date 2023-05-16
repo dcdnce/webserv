@@ -13,11 +13,11 @@
 #include "utils/Logger.hpp"
 
 #ifndef MAX_CLIENTS
-# define MAX_CLIENTS	10
+#define MAX_CLIENTS 10
 #endif
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE	128
+#define BUFFER_SIZE 128
 #endif
 
 namespace http
@@ -106,18 +106,18 @@ namespace http
 		NOT_EXTENDED = 510,
 		NETWORK_AUTHENTICATION_REQUIRED = 511
 	};
-	
+
 	// ---------------------------------------------------------------------- //
 	//  Constants                                                             //
 	// ---------------------------------------------------------------------- //
-	static const std::string	HTTP_VERSION = "HTTP/1.1";
-	extern std::map<std::string, http::Method>	methodsMap;
+	static const std::string HTTP_VERSION = "HTTP/1.1";
+	extern std::map<std::string, http::Method> methodsMap;
 
 	// ---------------------------------------------------------------------- //
 	//  Prototypes                                                            //
 	// ---------------------------------------------------------------------- //
-	void	initiateConstants(void);
-	bool	isRedirection(int const code);
-	bool	isErrorClient(int const code);
-	bool	isErrorServer(int const code);
+	void initiateConstants(void);
+	bool isRedirection(int const code);
+	bool isErrorClient(int const code);
+	bool isErrorServer(int const code);
 }

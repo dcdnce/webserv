@@ -10,7 +10,7 @@ namespace http
 		const int domain,
 		const int type,
 		const int protocol,
-		const char* host,
+		const char *host,
 		const int port,
 		const int maxClients
 	):
@@ -22,7 +22,7 @@ namespace http
 		_protocol(protocol),
 		_maxClients(maxClients)
 	{
-		const int	enable = 1;
+		const int enable = 1;
 
 		if (_socket == -1)
 			throw std::runtime_error("Socket constructor: abort: socket()");
@@ -36,15 +36,15 @@ namespace http
 			throw std::runtime_error("Socket constructor: abort: setsockopt()");
 		}
 
-		sockaddr_in	addr;
+		sockaddr_in addr;
 
 		memset(&addr, 0, sizeof(addr));
-		addr.sin_family = domain;			// Internet protocol
-		addr.sin_port = htons(port);		// Port to listen to
-		addr.sin_addr.s_addr = INADDR_ANY;	// Listen to any address
+		addr.sin_family = domain;		   // Internet protocol
+		addr.sin_port = htons(port);	   // Port to listen to
+		addr.sin_addr.s_addr = INADDR_ANY; // Listen to any address
 
 		// Bind socket to address
-		if (bind(_socket, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+		if (bind(_socket, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		{
 			close(_socket);
 			perror("Socket constructor: abort: bind()");
@@ -61,12 +61,12 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
-	int	Socket::getSocket(void) const { return (_socket); }
+	int Socket::getSocket(void) const { return (_socket); }
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void	Socket::listen(void) const
+	void Socket::listen(void) const
 	{
 		if (::listen(_socket, _maxClients) == -1)
 		{
@@ -74,9 +74,9 @@ namespace http
 			throw std::runtime_error("Socket::listen: abort: listen()");
 		}
 
-		#ifdef DEBUG
-			Logger::debug(true) << "Listening on port " << _port << std::endl;
-		#endif
+#ifdef DEBUG
+		Logger::debug(true) << "Listening on port " << _port << std::endl;
+#endif
 	}
 
 }

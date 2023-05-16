@@ -14,12 +14,13 @@ namespace http
 	}
 
 	Server::~Server()
-	{}
+	{
+	}
 
 	// ---------------------------------------------------------------------- //
 	//  Private Methods                                                       //
 	// ---------------------------------------------------------------------- //
-	void	Server::_reset(void)
+	void Server::_reset(void)
 	{
 		FD_ZERO(&_readfds);
 
@@ -30,7 +31,7 @@ namespace http
 		// Add child sockets to the set
 		for (int i = 0; i < this->_maxClients; i++)
 		{
-			Client&	client = _clientManager.getClient(i);
+			Client &client = _clientManager.getClient(i);
 
 			// If client's socket descriptor is valid, add it to the set
 			if (client.isOccupied())
@@ -45,16 +46,16 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void	Server::listen(void)
+	void Server::listen(void)
 	{
-		int	connections = 0;
+		int connections = 0;
 
 		// Start listening for incoming connections
 		Socket::listen();
 
-		#ifdef DEBUG
-			Logger::debug(true) << "Waiting for incoming connections" << std::endl;
-		#endif
+#ifdef DEBUG
+		Logger::debug(true) << "Waiting for incoming connections" << std::endl;
+#endif
 
 		// Handle incoming connections in a loop
 		while (true)
@@ -80,15 +81,15 @@ namespace http
 			// Else, it's some IO operation on some other socket
 			for (int i = 0; i < _clientManager.getMaxClients(); i++)
 			{
-				Client&	client = _clientManager.getClient(i);
+				Client &client = _clientManager.getClient(i);
 
 				// Check if it's a client socket that's ready
 				if (!client.isOccupied() || !FD_ISSET(client.getSocket(), &_readfds))
 					continue;
 
-				#ifdef DEBUG
-					Logger::debug(true) << "Client " << i << " [" << client << "] is ready" << std::endl;
-				#endif
+#ifdef DEBUG
+				Logger::debug(true) << "Client " << i << " [" << client << "] is ready" << std::endl;
+#endif
 
 				// TODO: handle client request
 

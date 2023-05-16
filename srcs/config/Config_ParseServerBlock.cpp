@@ -4,58 +4,66 @@
 
 #include <iostream>
 
-void Config::_parseServerBlock() {
-    ServerBlock    currServer;
+void Config::_parseServerBlock()
+{
+	ServerBlock currServer;
 
-    _parseServerBlockHeader(currServer);
-    _parseServerBlockBody(currServer);
-    
-    _addServerBlock(currServer);
+	_parseServerBlockHeader(currServer);
+	_parseServerBlockBody(currServer);
+
+	_addServerBlock(currServer);
 }
 
-void Config::_parseServerBlockHeader(ServerBlock & currServer) {
-    (void)currServer;
+void Config::_parseServerBlockHeader(ServerBlock &currServer)
+{
+	(void)currServer;
 
-    if (_getWord() != "server") {
-        throw std::runtime_error("Config::_parseServerBlockHeader: abort: unknown block found");
-    }
-    
-    if (_getWord() != "{")
-        throw std::runtime_error("Config::_parseServerBlockHeader: abort: block opening bracket error");
+	if (_getWord() != "server")
+	{
+		throw std::runtime_error("Config::_parseServerBlockHeader: abort: unknown block found");
+	}
 
-    #ifdef DEBUG
-    	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: " << "server " << currServer.getPortHost() << std::endl;
-	#endif
+	if (_getWord() != "{")
+		throw std::runtime_error("Config::_parseServerBlockHeader: abort: block opening bracket error");
+
+#ifdef DEBUG
+	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: "
+						<< "server " << currServer.getPortHost() << std::endl;
+#endif
 }
 
-void Config::_parseServerBlockBody(ServerBlock & currServer) {
-    std::string currWord = " ";
-    std::string currLine;
+void Config::_parseServerBlockBody(ServerBlock &currServer)
+{
+	std::string currWord = " ";
+	std::string currLine;
 
-    while (true) {
-        currWord = _getWord();
+	while (true)
+	{
+		currWord = _getWord();
 
-        // End of server block
-        if (currWord == "}")
-            return ;
+		// End of server block
+		if (currWord == "}")
+			return;
 
-        // No ending bracket
-        if (_ifs.eof())
-            throw std::runtime_error("Config::_parseServerBlockBody: abort: \"server\" block ending bracket error");
-        
-        // Found location block
-        if (currWord == "location") {
-            _parseLocationBlock(currServer);
-            continue ;
-        }
+		// No ending bracket
+		if (_ifs.eof())
+			throw std::runtime_error("Config::_parseServerBlockBody: abort: \"server\" block ending bracket error");
 
-        // Found directive
-        ServerBlock::directiveFuncPtr currDirective = currServer.whichDirective(currWord);
-        if (currDirective == NULL) {
-            _skipToNewline();
-            continue ;
-        }
-        std::getline(_ifs, currLine, '\n');
-        (currServer.*currDirective)(currLine);
-    }
+		// Found location block
+		if (currWord == "location")
+		{
+			_parseLocationBlock(currServer);
+			continue;
+		}
+
+		// Found directive
+		ServerBlock::directiveFuncPtr currDirective = currServer.whichDirective(currWord);
+		if (currDirective == NULL)
+		{
+			_skipToNewline();
+			continue;
+		}
+		std::getline(_ifs, currLine, '\n');
+		(currServer.*currDirective)(currLine);
+	}
 }

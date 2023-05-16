@@ -11,9 +11,9 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			int			_socket_fd;
-			sockaddr_in	_addr;
-			socklen_t	_addr_len;
+			int _socket_fd;
+			sockaddr_in _addr;
+			socklen_t _addr_len;
 
 		public:
 			// -------------------------------------------------------------- //
@@ -25,21 +25,21 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
-			const int&				getSocket(void) const;
-			const sockaddr_in&		getAddr(void);
-			const socklen_t&		getAddrLen(void);
+			const int &getSocket(void) const;
+			const sockaddr_in &getAddr(void);
+			const socklen_t &getAddrLen(void);
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void	accept(const int serverSocket);
-			void	close(void);
-			bool	isOccupied(void) const;
+			void accept(const int serverSocket);
+			void close(void);
+			bool isOccupied(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Operators                                                     //
 			// -------------------------------------------------------------- //
-			friend std::ostream&	operator<<(std::ostream& os, const Client& client);
+			friend std::ostream &operator<<(std::ostream &os, const Client &client);
 	};
 
 }

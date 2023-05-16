@@ -6,11 +6,11 @@
 class Logger
 {
 	private:
-		static std::string	_getTime(void)
+		static std::string _getTime(void)
 		{
-			time_t		now = time(0);
-			struct tm	tstruct;
-			char		buf[80];
+			time_t now = time(0);
+			struct tm tstruct;
+			char buf[80];
 
 			tstruct = *localtime(&now);
 			strftime(buf, sizeof(buf), "%X", &tstruct);
@@ -18,7 +18,7 @@ class Logger
 		}
 
 	public:
-		static std::ostream&	info(const bool time = false)
+		static std::ostream &info(const bool time = false)
 		{
 			if (time)
 				std::cout << "\e[1;37;40m " << _getTime() << " \e[0m";
@@ -26,7 +26,7 @@ class Logger
 			return (std::cout);
 		}
 
-		static std::ostream&	warn(const bool time = false)
+		static std::ostream &warn(const bool time = false)
 		{
 			if (time)
 				std::cout << "\e[1;37;40m " << _getTime() << " \e[0m";
@@ -34,7 +34,7 @@ class Logger
 			return (std::cout);
 		}
 
-		static std::ostream&	error(const bool time = false)
+		static std::ostream &error(const bool time = false)
 		{
 			if (time)
 				std::cout << "\e[1;37;40m " << _getTime() << " \e[0m";
@@ -42,7 +42,7 @@ class Logger
 			return (std::cout);
 		}
 
-		static std::ostream&	debug(const bool time = false)
+		static std::ostream &debug(const bool time = false)
 		{
 			if (time)
 				std::cout << "\e[1;37;40m " << _getTime() << " \e[0m";

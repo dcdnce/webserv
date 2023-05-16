@@ -11,6 +11,8 @@
 	},
 	"files.associations": {
 		"*.h": "c",
-		"list": "cpp"
-	}
+		"list": "cpp",
+		"exception": "cpp"
+	},
+	"editor.insertSpaces": false,
 }

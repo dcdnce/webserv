@@ -9,20 +9,20 @@
 namespace http
 {
 
-	class Server: public Socket
+	class Server : public Socket
 	{
 		private:
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			ClientManager	_clientManager;
-			fd_set			_readfds;
-			int				_maxfd;
+			ClientManager _clientManager;
+			fd_set _readfds;
+			int _maxfd;
 
 			// -------------------------------------------------------------- //
 			//  Private Methods                                               //
 			// -------------------------------------------------------------- //
-			void	_reset(void);
+			void _reset(void);
 
 		public:
 			// -------------------------------------------------------------- //
@@ -34,7 +34,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void	listen(void);
+			void listen(void);
 	};
 
 }
