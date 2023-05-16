@@ -9,7 +9,7 @@
 class ServerBlock
 {
 	private:
-		std::vector<std::pair<std::string, int>> _listens;
+		std::vector<std::pair<std::string, int> > _listens;
 		std::vector<std::string> _serverName;
 		std::map<int, std::string> _errorPages;
 		int _clientMaxBodySize;

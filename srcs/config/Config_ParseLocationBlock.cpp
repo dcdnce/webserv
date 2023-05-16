@@ -16,7 +16,7 @@ void Config::_parseLocationBlockHeader(LocationBlock &currLocation)
 	currLocation.setPath(_getWord());
 
 	if (_getWord() != "{")
-		throw std::runtime_error("Config::_parseLocationBlockHeader: abort: block opening bracket error");
+		throw std::runtime_error("section \"location\" open bracket not found");
 
 #ifdef DEBUG
 	Logger::debug(true) << "Config::_parseLocationBlockHeader: header read: "
@@ -39,7 +39,7 @@ void Config::_parseLocationBlockBody(LocationBlock &currLocation)
 
 		// No ending bracket
 		if (_ifs.eof())
-			throw std::runtime_error("Config::_parseLocationBlockBody: abort: \"server\" block ending bracket error");
+			throw std::runtime_error("section \"location\" does not contain an ending bracket");
 
 		// Found directive
 		LocationBlock::directiveFuncPtr currDirective = currLocation.whichDirective(currWord);

@@ -1,15 +1,13 @@
 ServerBlock
 - defaults options in constructor
 - directives: 
-    - listen:
-        - host and port helper functions
 
 LocationBlock
 - defaults options in constructor
 - directives: 
     - cgi
 
-~misc and tools
-- rewrite of warnings messages
+~ else
 - recheck everything with true nginx behavior
-
+- priorities and incompatibilities
+- cgi

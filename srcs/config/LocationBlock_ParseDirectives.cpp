@@ -20,7 +20,7 @@ LocationBlock::directiveFuncPtr LocationBlock::whichDirective(std::string const 
 	if (str == "cgi")
 		return (&LocationBlock::parseDirective_cgi);
 
-	Logger::warn(true) << "LocationBlock::isDirective: \"" + str + "\" is not an accepted directive for a location block: skipping" << std::endl;
+	Logger::warn(true) << "section \"location\": directive \"" + str + "\" not recognized: skipping" << std::endl;
 
 	return (NULL);
 }
@@ -30,7 +30,7 @@ void LocationBlock::parseDirective_root(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
-		throw std::runtime_error("LocationBlock::parseDirective_root: abort: wrong number of arguments for directive");
+		throw std::runtime_error("directive \"root\" has wrong number of arguments");
 
 	_root = params[0];
 
@@ -44,12 +44,12 @@ void LocationBlock::parseDirective_acceptedMethods(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() == 0)
-		throw std::runtime_error("LocationBlock::parseDirective_acceptedMethods: abort: missing arguments for directive");
+		throw std::runtime_error("directive \"accepted_methods\" is missing arguments");
 
 	for (size_t i = 0; i < params.size(); i++)
 	{
 		if (http::methodsMap.find(params[i]) == http::methodsMap.end())
-			Logger::warn(true) << "LocationBlock::parseDirective_acceptedMethods: warning: \"" << params[i] << "\" is not an HTTP Method: skipping" << std::endl;
+			Logger::warn(true) << "directive \"accepted_methods\": \"" << params[i] << "\" is not an HTTP Method: skipping" << std::endl;
 		else
 			_acceptedMethods.insert(http::methodsMap[params[i]]);
 	}
@@ -64,7 +64,7 @@ void LocationBlock::parseDirective_return(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 2)
-		throw std::runtime_error("LocationBlock::parseDirective_return: abort: wrong number of arguments for directive");
+		throw std::runtime_error("directive \"return\" has wrong number of arguments");
 
 	int httpcode;
 	try
@@ -73,15 +73,12 @@ void LocationBlock::parseDirective_return(std::string line)
 	}
 	catch (std::exception &e)
 	{
-		Logger::warn(true) << "LocationBlock::parseDirective_return: error code not a number: skipping" << std::endl;
-		return;
+		throw std::runtime_error("directive \"return\" error code not a number");
 	}
 
 	if (!http::isRedirection(httpcode))
 	{
-		Logger::warn(true) << "LocationBlock::parseDirective_return: error code not recognized: skipping" << std::endl;
-		;
-		return;
+		throw std::runtime_error("directive \"return\" error code not recognized");
 	}
 
 	_redirections[httpcode] = params[params.size() - 1];
@@ -96,13 +93,11 @@ void LocationBlock::parseDirective_autoindex(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
-		throw std::runtime_error("LocationBlock::parseDirective_autoindex: abort: wrong number of arguments for directive");
+		throw std::runtime_error("directive \"autoindex\" has wrong number of arguments");
 
 	if (params[0] != "on" && params[0] != "off")
 	{
-		Logger::warn(true) << "LocationBlock::parseDirective_autoindex: argument not recognized: skipping" << std::endl;
-		;
-		return;
+		throw std::runtime_error("directive \"autoindex\" argument not recognized");
 	}
 
 	_autoindex = (params[0] == "on");
@@ -117,7 +112,7 @@ void LocationBlock::parseDirective_index(std::string line)
 	_indexes = _extractParams(line);
 
 	if (!_indexes.size())
-		throw std::runtime_error("LocationBlock::parseDirective_index: abort: missing arguments for directive");
+		throw std::runtime_error("directive \"index\" is missing arguments");
 
 #ifdef DEBUG
 	Logger::debug(true) << "ServerBlock::parseDirective_index: received line:" << line << std::endl;
@@ -129,7 +124,7 @@ void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
-		throw std::runtime_error("LocationBlock::parseDirective_uploadedFilesPath: abort: wrong number of arguments for directive");
+		throw std::runtime_error("directive \"uploaded_files_path\" has wrong number of arguments");
 
 	_uploadPath = params[0];
 

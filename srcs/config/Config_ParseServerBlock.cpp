@@ -20,11 +20,11 @@ void Config::_parseServerBlockHeader(ServerBlock &currServer)
 
 	if (_getWord() != "server")
 	{
-		throw std::runtime_error("Config::_parseServerBlockHeader: abort: unknown block found");
+		throw std::runtime_error("expected section \"server\" but could not be found");
 	}
 
 	if (_getWord() != "{")
-		throw std::runtime_error("Config::_parseServerBlockHeader: abort: block opening bracket error");
+		throw std::runtime_error("section \"server\" isn't followed by an opening bracket");
 
 #ifdef DEBUG
 	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: "
@@ -47,7 +47,7 @@ void Config::_parseServerBlockBody(ServerBlock &currServer)
 
 		// No ending bracket
 		if (_ifs.eof())
-			throw std::runtime_error("Config::_parseServerBlockBody: abort: \"server\" block ending bracket error");
+			throw std::runtime_error("section \"server\" does not contain an ending bracket");
 
 		// Found location block
 		if (currWord == "location")

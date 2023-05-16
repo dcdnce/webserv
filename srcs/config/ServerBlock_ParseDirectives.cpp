@@ -18,7 +18,7 @@ ServerBlock::directiveFuncPtr ServerBlock::whichDirective(std::string const str)
 	if (str == "listen")
 		return (&ServerBlock::parseDirective_listen);
 
-	Logger::warn(true) << "ServerBlock::isDirective: \"" + str + "\" is not an accepted directive for a server block: skipping" << std::endl;
+	Logger::warn(true) << "section \"server\": directive \"" + str + "\" not recognized: skipping" << std::endl;
 
 	return (NULL);
 }
@@ -28,7 +28,7 @@ void ServerBlock::parseDirective_listen(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
-		throw std::runtime_error("ServerBlock::parseDirective_listen: abort: wrong number of arguments for directive");
+		throw std::runtime_error("directive \"listen\" has wrong number of arguments");
 
 	size_t i;
 	std::string host = "";
@@ -38,7 +38,7 @@ void ServerBlock::parseDirective_listen(std::string line)
 		host += line[i];
 
 	if (i == line.size())
-		throw std::runtime_error("ServerBlock::parseDirective_listen: abort: missing \':\' in argument");
+		throw std::runtime_error("directive \"listen\" is missing \':\' in argument");
 
 	for (i += 1; i < line.size(); i++)
 		port += line[i];
@@ -49,7 +49,7 @@ void ServerBlock::parseDirective_listen(std::string line)
 	}
 	catch (std::exception &e)
 	{
-		throw std::runtime_error("ServerBlock::parseDirective_listen: abort: port not a number");
+		throw std::runtime_error("directive \"listen\" port is not a number");
 	};
 
 	_listens.push_back(std::make_pair(host, iport));
@@ -64,7 +64,7 @@ void ServerBlock::parseDirective_serverName(std::string line)
 	_serverName = _extractParams(line);
 
 	if (_serverName.size() == 0)
-		throw std::runtime_error("ServerBlock::parseDirective_serverName: abort: missing arguments for directive");
+		throw std::runtime_error("directive \"server_name\" is missing arguments");
 
 #ifdef DEBUG
 	Logger::debug();
@@ -83,7 +83,7 @@ void ServerBlock::parseDirective_errorPage(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() < 2)
-		throw std::runtime_error("ServerBlock::parseDirective_errorPage: abort: missing arguments for directive");
+		throw std::runtime_error("directive \"error_page\" is missing arguments");
 
 	for (size_t i = 0; i < params.size() - 1; i++)
 	{
@@ -94,13 +94,13 @@ void ServerBlock::parseDirective_errorPage(std::string line)
 		}
 		catch (std::exception &e)
 		{
-			Logger::warn(true) << "ServerBlock::parseDirective_errorPage: error code not a number: skipping" << std::endl;
+			Logger::warn(true) << "directive \"error_page\" error code is not a number: skipping" << std::endl;
 			continue;
 		};
 
 		if (!(http::isErrorClient(httpcode)) && !(http::isErrorServer(httpcode)))
 		{
-			Logger::warn(true) << "ServerBlock::parseDirective_errorPage: error code not recognized: skipping" << std::endl;
+			Logger::warn(true) << "directive \"error_page\" error code is not recognized: skipping" << std::endl;
 			;
 			continue;
 		}
@@ -118,8 +118,8 @@ void ServerBlock::parseDirective_clientMaxBodySize(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
-		throw std::runtime_error("ServerBlock::parseDirective_clientMaxBodySize: abort: wrong number of arguments for directive");
+		throw std::runtime_error("directive client_max_body_size has wrong number of arguments");
 
 	if (std::toupper(params[0][params[0].size() - 1]) != 'M')
-		throw std::runtime_error("ServerBlock::parseDirective_clientMaxBodySize: abort: argument not recognized for directive");
+		throw std::runtime_error("directive client_max_body_size argument is not recognized");
 }

@@ -5,7 +5,7 @@ Config::Config(std::string const path)
 {
 	_ifs.open(path);
 	if (!_ifs.is_open())
-		throw std::runtime_error("Config::Config: abort: !_ifs.is_open()");
+		throw std::runtime_error("the configuration file \"" + path + "\" cannot be read");
 
 	while (!_isEOF())
 		_parseServerBlock();
