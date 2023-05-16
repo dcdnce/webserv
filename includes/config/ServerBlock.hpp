@@ -28,7 +28,7 @@ class ServerBlock {
         void    parseDirective_clientMaxBodySize(std::string line);
 
         void    setPortHost(std::string const str);
-        std::string getPortHost();
+        std::string getPortHost() const;
 
         void    addLocationBlock(LocationBlock newLocationBlock);        
 };

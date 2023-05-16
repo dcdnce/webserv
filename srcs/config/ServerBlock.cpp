@@ -26,7 +26,7 @@ void ServerBlock::setPortHost(std::string const str) {
     } catch (std::exception &e) {throw std::runtime_error("ServerBlock::setPortHost: abort: \"host\" not in the right format");};
 }
 
-std::string ServerBlock::getPortHost() {
+std::string ServerBlock::getPortHost() const {
     return (_host + ":" + std::to_string(_port));
 }
 

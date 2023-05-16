@@ -1,12 +1,20 @@
 server  ede:8080  {
   server_name  name
-  error_page lesgo 402 503 504 test
+  error_page lesgo 402 503 504 509 /path/
   client_max_body_size 10m
   wrong_directive params 
   location / { 
     autoindex on
     wrong_directive params 
-    accepted_methods GET POST OK
+    accepted_methods GET POST POST KILL
+    return 301 dtc.net
+    return 299 google.org
+    index index.html
+    uploaded_files_path /uploads/
   }
 } 
-		
+
+server localhost:443 {
+  ok
+}
+  

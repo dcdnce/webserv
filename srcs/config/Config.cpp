@@ -1,9 +1,6 @@
 #include "config/Config.hpp"
 #include <iostream>
 
-// TODO 
-//  - ParseServerBlock
-
 Config::Config(std::string const path) {
     _ifs.open(path);
     if (!_ifs.is_open()) {
@@ -19,8 +16,8 @@ Config::~Config() {
 }
 
 void Config::_parsing() {
-    //while !_ifs.eof()
-    _parseServerBlock();
+    while (_ifs.tellg() == _ifs.end)
+        _parseServerBlock();
 }
 
 std::string Config::_getWord() {
@@ -29,10 +26,18 @@ std::string Config::_getWord() {
     for (; std::isspace(_ifs.peek()) ; _ifs.get());
     for (; !std::isspace(_ifs.peek()) && !_ifs.eof() ; word += _ifs.get());
 
+    if (_ifs.eof())
+        std::cout << "found eof in _getWord()" << std::endl;
+
     return (word);
 }
 
 void    Config::_skipToNewline() {
     for (; _ifs.peek() != '\n' ; _ifs.get());
     _ifs.get();
+}
+
+void    Config::_addServerBlock(ServerBlock const & newServerBlock) {
+    // replaced server block is now in the infinitesimal void of memory lost forever
+    _serverBlocks[newServerBlock.getPortHost()] = newServerBlock;
 }

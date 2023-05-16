@@ -3,11 +3,12 @@
 #include "ServerBlock.hpp"
 #include <fstream>
 #include <vector>
+#include <map>
 
 class Config {
     private:
         std::ifstream _ifs;
-        std::vector<ServerBlock>  _servers;
+        std::map<std::string, ServerBlock>  _serverBlocks;
 
         void    _parsing();
         void    _parseServerBlock();
@@ -17,12 +18,16 @@ class Config {
         void    _parseLocationBlockHeader(LocationBlock & currLocation);
         void    _parseLocationBlockBody(LocationBlock & currLocation);
 
+        void    _addServerBlock(ServerBlock const & newServerBlock);
+
         std::string    _getWord();
 
         void    _skipToNewline();
 
+
     public:
         Config(std::string const path);
         ~Config();
+
 
 }; 

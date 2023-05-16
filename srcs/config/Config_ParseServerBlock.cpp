@@ -4,19 +4,19 @@
 
 #include <iostream>
 
-// TODO 
-//  - Parse Locations
-
 void Config::_parseServerBlock() {
     ServerBlock    currServer;
 
     _parseServerBlockHeader(currServer);
     _parseServerBlockBody(currServer);
+    
+    _addServerBlock(currServer);
 }
 
 void Config::_parseServerBlockHeader(ServerBlock & currServer) {
-    if (_getWord() != "server")
+    if (_getWord() != "server") {
         throw std::runtime_error("Config::_parseServerBlockHeader: abort: unknown block found");
+    }
     
     currServer.setPortHost(_getWord());
 

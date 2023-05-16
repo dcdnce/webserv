@@ -1,8 +1,6 @@
 ServerBlock
 - defaults options in constructor
 - directives: 
-    - client_max_body_size:
-        - authorized suffixes
 
 LocationBlock
 - defaults options in constructor
@@ -12,4 +10,5 @@ LocationBlock
 ~misc and tools
 - valid path helper function (for all directives)
 - rewrite of warnings messages
+- recheck everything with true nginx behavior
 
