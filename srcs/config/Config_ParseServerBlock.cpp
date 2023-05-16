@@ -25,11 +25,6 @@ void Config::_parseServerBlockHeader(ServerBlock &currServer)
 
 	if (_getWord() != "{")
 		throw std::runtime_error("section \"server\" isn't followed by an opening bracket");
-
-#ifdef DEBUG
-	Logger::debug(true) << "Config::_parseServerBlockHeader: header read: "
-						<< "server " << currServer.getPortHost() << std::endl;
-#endif
 }
 
 void Config::_parseServerBlockBody(ServerBlock &currServer)

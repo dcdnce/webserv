@@ -67,7 +67,7 @@ void ServerBlock::parseDirective_serverName(std::string line)
 		throw std::runtime_error("directive \"server_name\" is missing arguments");
 
 #ifdef DEBUG
-	Logger::debug();
+	Logger::debug(true);
 	for (size_t i = 0; i < _serverName.size(); i++)
 		std::cout << _serverName[i] << " ";
 	std::cout << std::endl;

@@ -29,4 +29,7 @@ class ServerBlock
 		void parseDirective_clientMaxBodySize(std::string line);
 
 		void addLocationBlock(LocationBlock newLocationBlock);
+
+		// Getters
+		const std::vector<std::pair<std::string, int> > &getListen(void) const;
 };

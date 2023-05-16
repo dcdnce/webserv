@@ -11,10 +11,6 @@ Config::Config(std::string const path)
 		_parseServerBlock();
 
 	_ifs.close();
-
-#ifdef DEBUG
-	// ostream overload
-#endif
 }
 
 Config::~Config()
@@ -54,4 +50,9 @@ bool Config::_isEOF()
 		return (true);
 
 	return (false);
+}
+
+const std::vector<ServerBlock>& Config::getServerBlocks() const
+{
+	return (_serverBlocks);
 }

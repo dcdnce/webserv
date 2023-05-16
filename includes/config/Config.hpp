@@ -28,4 +28,6 @@ class Config
 	public:
 		Config(std::string const path);
 		~Config();
+
+		const std::vector<ServerBlock>& getServerBlocks(void) const;
 };

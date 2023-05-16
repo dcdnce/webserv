@@ -26,9 +26,9 @@ OBJS	:=	$(SRCS:.cpp=.o)
 NAME		:=	webserv
 
 CXX			:=	c++
-CXXFLAGS	:= -Wall -Wextra -Werror -std=c++98
+CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98
 
-INCLUDES	:= -Iincludes
+INCLUDES	:=	-Iincludes
 LIBS		:=
 
 SHELL		:=	/bin/zsh
