@@ -14,10 +14,42 @@ ServerBlock::directiveFuncPtr ServerBlock::whichDirective(std::string const str)
         return (&ServerBlock::parseDirective_errorPage);
     if (str == "client_max_body_size")
         return (&ServerBlock::parseDirective_clientMaxBodySize);
+    if (str == "listen")
+        return (&ServerBlock::parseDirective_listen);
 
     Logger::warn(true) << "ServerBlock::isDirective: \"" + str + "\" is not an accepted directive for a server block: skipping" << std::endl;
 
     return (NULL);
+}
+
+void    ServerBlock::parseDirective_listen(std::string line) {
+    std::vector<std::string> params = _extractParams(line);
+
+    if (params.size() != 1)
+        throw std::runtime_error("ServerBlock::parseDirective_listen: abort: wrong number of arguments for directive");
+
+    size_t  i;
+    std::string host = "";
+    std::string port = "";
+    int iport = 0;
+    for (i = 0 ; i < line.size() && line[i] != ':' ; i++)
+        host += line[i];
+
+    if (i == line.size())
+        throw std::runtime_error("ServerBlock::parseDirective_listen: abort: missing \':\' in argument");
+    
+    for (i += 1 ; i < line.size(); i++)
+        port += line[i];
+
+    try {
+        iport = std::stoi(port);
+    } catch (std::exception &e) {throw std::runtime_error("ServerBlock::parseDirective_listen: abort: port not a number");};
+
+    _listens.push_back(std::make_pair(host, iport));
+
+    #ifdef DEBUG
+    	Logger::debug(true) << "ServerBlock::parseDirective_host: received line:" << line << std::endl;
+	#endif
 }
 
 void    ServerBlock::parseDirective_serverName(std::string line) {

@@ -34,7 +34,7 @@ void    Config::_skipToNewline() {
 }
 
 void    Config::_addServerBlock(ServerBlock const & newServerBlock) {
-    _serverBlocks[newServerBlock.getPortHost()] = newServerBlock;
+    _serverBlocks.push_back(newServerBlock);
 }
 
 bool    Config::_isEOF() {

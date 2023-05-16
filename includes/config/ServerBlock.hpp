@@ -8,8 +8,7 @@
 
 class ServerBlock {
     private:
-        std::string _host;
-        int _port;
+        std::vector<std::pair<std::string, int> >  _listens;
         std::vector<std::string> _serverName;
         std::map<int, std::string>  _errorPages;
         int _clientMaxBodySize;
@@ -23,12 +22,10 @@ class ServerBlock {
 
         typedef void (ServerBlock::*directiveFuncPtr)(std::string line);
         directiveFuncPtr    whichDirective(std::string const str);
+        void    parseDirective_listen(std::string line);
         void    parseDirective_serverName(std::string line);
         void    parseDirective_errorPage(std::string line);
         void    parseDirective_clientMaxBodySize(std::string line);
-
-        void    setPortHost(std::string const str);
-        std::string getPortHost() const;
 
         void    addLocationBlock(LocationBlock newLocationBlock);        
 };

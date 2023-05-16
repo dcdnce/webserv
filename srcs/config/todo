@@ -1,6 +1,8 @@
 ServerBlock
 - defaults options in constructor
 - directives: 
+    - listen:
+        - host and port helper functions
 
 LocationBlock
 - defaults options in constructor
@@ -8,7 +10,6 @@ LocationBlock
     - cgi
 
 ~misc and tools
-- valid path helper function (for all directives)
 - rewrite of warnings messages
 - recheck everything with true nginx behavior
 

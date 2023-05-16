@@ -14,14 +14,12 @@ void Config::_parseServerBlock() {
 }
 
 void Config::_parseServerBlockHeader(ServerBlock & currServer) {
-    std::string currWord = _getWord();
+    (void)currServer;
 
-    if (currWord != "server") {
+    if (_getWord() != "server") {
         throw std::runtime_error("Config::_parseServerBlockHeader: abort: unknown block found");
     }
     
-    currServer.setPortHost(_getWord());
-
     if (_getWord() != "{")
         throw std::runtime_error("Config::_parseServerBlockHeader: abort: block opening bracket error");
 

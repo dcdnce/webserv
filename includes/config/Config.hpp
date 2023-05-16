@@ -9,7 +9,7 @@ class Config {
     private:
         std::ifstream _ifs;
         size_t  _ifsSize;
-        std::map<std::string, ServerBlock>  _serverBlocks;
+        std::vector<ServerBlock>  _serverBlocks;
 
         void    _parseServerBlock();
         void    _parseServerBlockHeader(ServerBlock & currServer);
