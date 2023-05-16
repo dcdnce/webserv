@@ -8,9 +8,9 @@
 class Config {
     private:
         std::ifstream _ifs;
+        size_t  _ifsSize;
         std::map<std::string, ServerBlock>  _serverBlocks;
 
-        void    _parsing();
         void    _parseServerBlock();
         void    _parseServerBlockHeader(ServerBlock & currServer);
         void    _parseServerBlockBody(ServerBlock & currServer);
@@ -24,6 +24,7 @@ class Config {
 
         void    _skipToNewline();
 
+        bool    _isEOF();
 
     public:
         Config(std::string const path);

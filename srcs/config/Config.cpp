@@ -3,21 +3,20 @@
 
 Config::Config(std::string const path) {
     _ifs.open(path);
-    if (!_ifs.is_open()) {
-        perror("Config::Config: abort: !_ifs.is_open()");
+    if (!_ifs.is_open())
         throw std::runtime_error("Config::Config: abort: !_ifs.is_open()");
-    }
 
-    this->_parsing();
+    while (!_isEOF())
+        _parseServerBlock();
+
+    _ifs.close();
+
+    #ifdef DEBUG
+        // ostream overload
+    #endif
 }
 
 Config::~Config() {
-    _ifs.close();
-}
-
-void Config::_parsing() {
-    while (_ifs.tellg() == _ifs.end)
-        _parseServerBlock();
 }
 
 std::string Config::_getWord() {
@@ -25,9 +24,6 @@ std::string Config::_getWord() {
 
     for (; std::isspace(_ifs.peek()) ; _ifs.get());
     for (; !std::isspace(_ifs.peek()) && !_ifs.eof() ; word += _ifs.get());
-
-    if (_ifs.eof())
-        std::cout << "found eof in _getWord()" << std::endl;
 
     return (word);
 }
@@ -38,6 +34,14 @@ void    Config::_skipToNewline() {
 }
 
 void    Config::_addServerBlock(ServerBlock const & newServerBlock) {
-    // replaced server block is now in the infinitesimal void of memory lost forever
     _serverBlocks[newServerBlock.getPortHost()] = newServerBlock;
+}
+
+bool    Config::_isEOF() {
+    for (; std::isspace(_ifs.peek()) ; _ifs.get());
+
+    if (_ifs.peek() == std::char_traits<char>::eof())
+        return (true);
+
+    return (false);
 }

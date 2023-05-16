@@ -14,7 +14,9 @@ void Config::_parseServerBlock() {
 }
 
 void Config::_parseServerBlockHeader(ServerBlock & currServer) {
-    if (_getWord() != "server") {
+    std::string currWord = _getWord();
+
+    if (currWord != "server") {
         throw std::runtime_error("Config::_parseServerBlockHeader: abort: unknown block found");
     }
     
