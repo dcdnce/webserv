@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 
+#include "http/http.hpp"
+
 namespace http
 {
 
@@ -21,6 +23,7 @@ namespace http
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
 		Message(void);
+		Message(const Message &copy);
 		virtual ~Message(void);
 
 		// ------------------------------------------------------------------ //

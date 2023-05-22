@@ -1,14 +1,24 @@
-#include "Message.hpp"
+#include "http/Message.hpp"
 
 namespace http
 {
 	// ---------------------------------------------------------------------- //
 	//  Constructors & Destructors                                            //
 	// ---------------------------------------------------------------------- //
-	Message::Message()
-	{
+	Message::Message():
+		_httpVersion(HTTP_VERSION),
+		_headers(),
+		_body()
+	{}
 
-	}
+	Message::Message(const Message& copy):
+		_httpVersion(copy._httpVersion),
+		_headers(copy._headers),
+		_body(copy._body)
+	{}
+
+	Message::~Message(void)
+	{}
 
 	// ---------------------------------------------------------------------- //
 	//  Getters & Setters                                                     //
