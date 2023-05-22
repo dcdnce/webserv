@@ -19,14 +19,12 @@ namespace http
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
 		Request(void);
-		Request(const std::string &rawRequest);
-		Request(const Request &copy);
 		virtual ~Request(void);
 
 		// ------------------------------------------------------------------ //
 		//  Getters & Setters                                                 //
 		// ------------------------------------------------------------------ //
-		Method getMethod(void) const;
+		const http::Method &getMethod(void) const;
 		const std::string &getUri(void) const;
 
 		void setMethod(const Method &method);
