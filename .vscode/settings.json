@@ -14,7 +14,8 @@
 		"list": "cpp",
 		"exception": "cpp",
 		"iosfwd": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"vector": "cpp"
 	},
 	"editor.insertSpaces": false,
 }

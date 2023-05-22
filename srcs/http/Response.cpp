@@ -6,7 +6,7 @@ namespace http
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
 	Response::Response(void):
-		_status(Status::OK)
+		_status(OK)
 	{}
 
 	Response::Response(const Response &copy):
@@ -30,6 +30,7 @@ namespace http
 	std::string Response::toString(void) const
 	{
 		// TODO: implement a function that converts a Response object to a raw HTTP response
+		return NULL;
 	}
 
 }

@@ -1,40 +1,26 @@
 #pragma once
 
-#include <sstream>
-
-#include "http.hpp"
-#include "Socket.hpp"
-#include "ClientManager.hpp"
+#include "config/ServerBlock.hpp"
 
 namespace http
 {
 
-	class Server : public Socket
+	class Server
 	{
+
 		private:
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			ClientManager _clientManager;
-			fd_set _readfds;
-			int _maxfd;
-
-			// -------------------------------------------------------------- //
-			//  Private Methods                                               //
-			// -------------------------------------------------------------- //
-			void _reset(void);
+			ServerBlock	_config;
 
 		public:
 			// -------------------------------------------------------------- //
 			//  Constructors & Destructors                                    //
 			// -------------------------------------------------------------- //
-			Server(const char *host, const int port);
+			Server(const ServerBlock &config);
 			~Server(void);
 
-			// -------------------------------------------------------------- //
-			//  Public Methods                                                //
-			// -------------------------------------------------------------- //
-			void listen(void);
 	};
 
 }
