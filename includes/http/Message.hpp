@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <set>
+#include <map>
 
 namespace http
 {
@@ -13,7 +13,7 @@ namespace http
 		//  Attributes                                                        //
 		// ------------------------------------------------------------------ //
 		std::string _httpVersion;
-		std::set<std::string, std::string> _headers;
+		std::map<std::string, std::string> _headers;
 		std::string _body;
 
 	public:
@@ -21,14 +21,13 @@ namespace http
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
 		Message(void);
-		Message(const Message &copy);
 		virtual ~Message(void);
 
 		// ------------------------------------------------------------------ //
 		//  Getters & Setters                                                 //
 		// ------------------------------------------------------------------ //
 		const std::string &getHttpVersion(void) const;
-		const std::set<std::string, std::string> &getHeaders(void) const;
+		const std::map<std::string, std::string> &getHeaders(void) const;
 		const std::string &getBody(void) const;
 
 		void setHttpVersion(const std::string &httpVersion);
