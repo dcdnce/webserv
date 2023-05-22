@@ -17,7 +17,7 @@
 #endif
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 64
 #endif
 
 namespace http

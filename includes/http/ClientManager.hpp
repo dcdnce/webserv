@@ -25,7 +25,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
-			Client &getClient(const int i);
+			Client& getClient(const int i);
 			int getMaxClients(void) const;
 
 			// -------------------------------------------------------------- //

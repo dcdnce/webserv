@@ -132,15 +132,12 @@ namespace test
 				for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)
 					(*it)->listen();
 
+				Logger::info(true) << "Listening for connections..." << std::endl;
+
 				while (true)
 				{
 					// Reset all
 					reset();
-
-					#ifdef DEBUG
-					Logger::debug(true) << "Maxfd: " << _maxfd << std::endl;
-					Logger::debug(true) << "Waiting for connections..." << std::endl;
-					#endif
 
 					// Wait for an event
 					if ((ret = select(_maxfd + 1, &_readfds, &_writefds, NULL, NULL)) == -1)
@@ -154,8 +151,9 @@ namespace test
 						if (FD_ISSET((*it)->getSocket(), &_readfds))
 						{
 							_clientManager.acceptConnection((*it)->getSocket());
+
 							#ifdef DEBUG
-							Logger::debug(true) << "New connection on socket [" << (*it)->getSocket() << "]" << std::endl;
+							Logger::debug(true) << "Connection accepted on Socket [" << (*it)->getSocket() << "] " << std::endl;
 							#endif
 						}
 
@@ -169,29 +167,63 @@ namespace test
 
 						if (FD_ISSET(client.getSocket(), &_readfds))
 						{
-							char	buffer[1024];
-							int		bytesRead = 0;
+							/**
+							 * TODO:
+							 * [ ] handle receiving the request from client
+							 *   [x] Read the request until '\r\n\r\n' is found
+							 *   [ ] Parse the headers of the request
+							 *   [ ] Read the body and store it if Content-Length is set
+							 */
 
-							#ifdef DEBUG
-							Logger::debug(true) << "New request on socket [" << client.getSocket() << "]" << std::endl;
-							#endif
+							try
+							{
+								client.receive();
 
-							if ((bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0)) <= 0)
+								if (client.getRawRequest().find("\r\n\r\n") == std::string::npos)
+									continue;
+
+								#ifdef DEBUG
+								Logger::debug(true) << "Received request from client [" << client << "]" << std::endl;
+								Logger::debug(true) << "Request: " << client.getRawRequest() << std::endl;
+								#endif
+
+								FD_SET(client.getSocket(), &_writefds);
+							}
+							catch (const http::Client::ClientDisconnectedException& e)
 							{
 								#ifdef DEBUG
-								Logger::debug(true) << "Client [" << client.getSocket() << "] disconnected" << std::endl;
+								Logger::debug(true) << "recv(): client [" << client << "] disconnected" << std::endl;
 								#endif
 								client.close();
 								continue;
 							}
+							catch (const std::exception& e)
+							{
+								Logger::error(true) << "recv(): error: " << e.what() << std::endl;
+								client.close();
+								continue;
+							}
+						}
 
-							buffer[bytesRead] = '\0';
-							Logger::info(true) << "Received " << bytesRead << " bytes from client [" << client << "]" << std::endl;
-							Logger::info(true) << "Request: " << std::endl << buffer << std::endl;
+						if (FD_ISSET(client.getSocket(), &_writefds))
+						{
+							/*
+							 * TODO:
+							 * [ ] Send the appropriate response depending on the request
+							 * [ ] Close the connection if the request was not keep-alive
+							 */
 
-							// TODO: Parse the request
+							client.send("HTTP/1.1 200 OK\r\nContent-Length: 21\r\n\r\n<h1>Hello world!</h1>");
+
+							// Close the connection if the request was not keep-alive
+							FD_CLR(client.getSocket(), &_writefds);
+							client.close();
 						}
 					}
+
+					#ifdef DEBUG
+					Logger::debug(true) << "End of loop" << std::endl;
+					#endif
 
 				}
 			}

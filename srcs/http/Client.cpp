@@ -21,8 +21,10 @@ namespace http
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
 	const int &Client::getSocket(void) const { return (_socket_fd); }
-	const sockaddr_in &Client::getAddr(void) { return (_addr); }
-	const socklen_t &Client::getAddrLen(void) { return (_addr_len); }
+	const sockaddr_in &Client::getAddr(void) const { return (_addr); }
+	const socklen_t &Client::getAddrLen(void) const { return (_addr_len); }
+	const std::string &Client::getRawRequest(void) const { return (_rawRequest); }
+	// const Request &Client::getRequest(void) const { return (_request); }
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
@@ -35,10 +37,43 @@ namespace http
 
 	void Client::close(void)
 	{
+		// Close socket
 		if (_socket_fd != -1)
 			::close(_socket_fd);
 		_socket_fd = -1;
+
+		// Reset attributes
+		_addr_len = sizeof(_addr);
+		_rawRequest.clear();
+
 	}
+
+	void Client::receive(void)
+	{
+		char	buffer[BUFFER_SIZE];
+		int		bytes = 0;
+
+		if ((bytes = ::recv(_socket_fd, buffer, BUFFER_SIZE, MSG_DONTWAIT)) == -1 && errno != EAGAIN)
+			throw std::runtime_error("Client::receive: abort: recv()");
+		else if (bytes == 0)
+			throw ClientDisconnectedException();
+
+		_rawRequest.append(buffer, bytes);
+	}
+
+	void Client::send(const std::string& rawResponse) const
+	{
+		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), MSG_DONTWAIT) == -1)
+			throw std::runtime_error("Client::send: abort: send()");
+	}
+
+	// void Client::send(const Response &response)
+	// {
+	// 	std::string rawResponse = response.toString();
+
+	// 	if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), MSG_DONTWAIT) == -1)
+	// 		throw std::runtime_error("Client::send: abort: send()");
+	// }
 
 	bool Client::isOccupied(void) const
 	{
