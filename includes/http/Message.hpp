@@ -1,41 +1,46 @@
 #pragma once
 
-#include "http/http.hpp"
-#include "http/Message.hpp"
+#include <string>
+#include <set>
+
 namespace http
 {
 
-	class Request : public Message
+	class Message
 	{
 	protected:
 		// ------------------------------------------------------------------ //
 		//  Attributes                                                        //
 		// ------------------------------------------------------------------ //
-		Method _method;
-		std::string _uri;
+		std::string _httpVersion;
+		std::set<std::string, std::string> _headers;
+		std::string _body;
 
 	public:
 		// ------------------------------------------------------------------ //
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
-		Request(void);
-		Request(const std::string &rawRequest);
-		Request(const Request &copy);
-		virtual ~Request(void);
+		Message(void);
+		Message(const Message &copy);
+		virtual ~Message(void);
 
 		// ------------------------------------------------------------------ //
 		//  Getters & Setters                                                 //
 		// ------------------------------------------------------------------ //
-		Method getMethod(void) const;
-		const std::string &getUri(void) const;
+		const std::string &getHttpVersion(void) const;
+		const std::set<std::string, std::string> &getHeaders(void) const;
+		const std::string &getBody(void) const;
 
-		void setMethod(const Method &method);
-		void setUri(const std::string &uri);
+		void setHttpVersion(const std::string &httpVersion);
+		void setBody(const std::string &body);
 
 		// ------------------------------------------------------------------ //
 		//  Public Methods                                                    //
 		// ------------------------------------------------------------------ //
-		void parse(const std::string &rawRequest);
-		std::string toString(void) const;
+		void setHeader(const std::string &header, const std::string &value);
+		void removeHeader(const std::string &header);
+		bool hasHeader(const std::string &header) const;
+		virtual std::string	toString(void) const;
 	};
+
 }

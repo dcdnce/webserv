@@ -2,40 +2,37 @@
 
 #include "http/http.hpp"
 #include "http/Message.hpp"
+
 namespace http
 {
 
-	class Request : public Message
+	class Response : public Message
 	{
 	protected:
 		// ------------------------------------------------------------------ //
 		//  Attributes                                                        //
 		// ------------------------------------------------------------------ //
-		Method _method;
-		std::string _uri;
+		Status _status;
 
 	public:
 		// ------------------------------------------------------------------ //
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
-		Request(void);
-		Request(const std::string &rawRequest);
-		Request(const Request &copy);
-		virtual ~Request(void);
+		Response(void);
+		Response(const Response &copy);
+		virtual ~Response(void);
 
 		// ------------------------------------------------------------------ //
 		//  Getters & Setters                                                 //
 		// ------------------------------------------------------------------ //
-		Method getMethod(void) const;
-		const std::string &getUri(void) const;
+		Status getStatus(void) const;
 
-		void setMethod(const Method &method);
-		void setUri(const std::string &uri);
+		void setStatus(const Status &status);
 
 		// ------------------------------------------------------------------ //
 		//  Public Methods                                                    //
 		// ------------------------------------------------------------------ //
-		void parse(const std::string &rawRequest);
 		std::string toString(void) const;
 	};
+
 }
