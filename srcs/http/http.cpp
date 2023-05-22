@@ -11,6 +11,15 @@ namespace http
 		http::methodsMap["DELETE"] = DELETE;
 	}
 
+	std::string	methodToStr(http::Method const & method)
+	{
+		if (method == GET) return ("GET");
+		if (method == POST) return ("POST");
+		if (method == DELETE) return ("DELETE");
+
+		return ("");
+	}
+
 	bool isRedirection(int const code)
 	{
 		return (code == 301 || code == 302 || code == 303 || code == 307 || code == 308);

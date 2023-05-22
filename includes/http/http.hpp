@@ -117,6 +117,7 @@ namespace http
 	//  Prototypes                                                            //
 	// ---------------------------------------------------------------------- //
 	void initiateConstants(void);
+	std::string	methodToStr(http::Method const & method);
 	bool isRedirection(int const code);
 	bool isErrorClient(int const code);
 	bool isErrorServer(int const code);
