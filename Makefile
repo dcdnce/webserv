@@ -8,6 +8,8 @@ SRCS	:=	srcs/main.cpp \
 			srcs/http/Socket.cpp \
 			srcs/http/Server.cpp \
 			srcs/http/http.cpp \
+			srcs/http/Message.cpp \
+			srcs/http/Request.cpp \
 			srcs/config/Config.cpp \
 			srcs/config/Config_ParseServerBlock.cpp \
 			srcs/config/Config_ParseLocationBlock.cpp \

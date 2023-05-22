@@ -1,7 +1,9 @@
 #pragma once
 
+#include <sstream>
 #include "http/http.hpp"
 #include "http/Message.hpp"
+
 namespace http
 {
 
@@ -28,12 +30,16 @@ namespace http
 		const std::string &getUri(void) const;
 
 		void setMethod(const Method &method);
+		void setMethod(std::string const &method);
 		void setUri(const std::string &uri);
 
 		// ------------------------------------------------------------------ //
 		//  Public Methods                                                    //
 		// ------------------------------------------------------------------ //
-		void parse(const std::string &rawRequest);
+		void parse(std::string const &rr);
 		std::string toString(void) const;
 	};
+
 }
+
+std::ostream & operator<<(std::ostream & o, http::Request const & r);

@@ -42,7 +42,7 @@ namespace http
 		void setHeader(const std::string &header, const std::string &value);
 		void removeHeader(const std::string &header);
 		bool hasHeader(const std::string &header) const;
-		virtual std::string	toString(void) const;
+		//virtual std::string	toString(void) const = 0;
 	};
 
 }
