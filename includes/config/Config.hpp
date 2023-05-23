@@ -13,7 +13,7 @@ class Config
 		std::vector<ServerBlock> _serverBlocks;
 
 		void _parseServerBlock();
-		void _parseServerBlockHeader(ServerBlock &currServer);
+		void _parseServerBlockHeader();
 		void _parseServerBlockBody(ServerBlock &currServer);
 		void _parseLocationBlock(ServerBlock &currServer);
 		void _parseLocationBlockHeader(LocationBlock &currLocation);
@@ -24,6 +24,7 @@ class Config
 		std::string _getWord();
 		void _skipToNewline();
 		bool _isEOF();
+		void _skipComment();
 
 	public:
 		Config(std::string const path);

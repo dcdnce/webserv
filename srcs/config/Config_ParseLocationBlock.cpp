@@ -13,6 +13,8 @@ void Config::_parseLocationBlock(ServerBlock &currServer)
 
 void Config::_parseLocationBlockHeader(LocationBlock &currLocation)
 {
+	_skipComment();
+
 	currLocation.setPath(_getWord());
 
 	if (_getWord() != "{")
@@ -31,6 +33,8 @@ void Config::_parseLocationBlockBody(LocationBlock &currLocation)
 
 	while (true)
 	{
+		_skipComment();
+
 		currWord = _getWord();
 
 		// End of location block

@@ -56,3 +56,15 @@ const std::vector<ServerBlock>& Config::getServerBlocks() const
 {
 	return (_serverBlocks);
 }
+
+
+void Config::_skipComment()
+{	
+	for (; std::isspace(_ifs.peek()); _ifs.get())
+		;
+
+	if (_ifs.peek() == '#') {
+		_skipToNewline();
+		_skipComment();
+	}
+}

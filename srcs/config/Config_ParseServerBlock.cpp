@@ -8,15 +8,15 @@ void Config::_parseServerBlock()
 {
 	ServerBlock currServer;
 
-	_parseServerBlockHeader(currServer);
+	_parseServerBlockHeader();
 	_parseServerBlockBody(currServer);
 
 	_addServerBlock(currServer);
 }
 
-void Config::_parseServerBlockHeader(ServerBlock &currServer)
+void Config::_parseServerBlockHeader() 
 {
-	(void)currServer;
+	_skipComment();
 
 	if (_getWord() != "server")
 	{
@@ -34,6 +34,8 @@ void Config::_parseServerBlockBody(ServerBlock &currServer)
 
 	while (true)
 	{
+		_skipComment();
+
 		currWord = _getWord();
 
 		// End of server block

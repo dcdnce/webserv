@@ -8,6 +8,5 @@ LocationBlock
     - cgi
 
 ~ else
-- recheck everything with true nginx behavior
 - priorities and incompatibilities
 - cgi
