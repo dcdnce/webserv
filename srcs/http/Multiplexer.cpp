@@ -115,64 +115,125 @@ namespace http
 
 				if (FD_ISSET(client.getSocket(), &_readfds))
 				{
-					/**
-						* TODO:
-						* [ ] handle receiving the request from client
-						*   [x] Read the request until '\r\n\r\n' is found
-						*   [ ] Parse the headers of the request
-						*   [ ] Read the body and store it if Content-Length is set
-						*/
-
-					try
+					// Receive request headers
+					if (!client.headerReceived)
 					{
-						client.receive();
+						#ifdef DEBUG
+						Logger::debug(true) << "Client [" << client << "] receiving HEADERS" << std::endl;
+						#endif
+						try
+						{
+							client.receive();
+						}
+						catch(const http::Client::ClientDisconnectedException& e)
+						{
+							#ifdef DEBUG
+							Logger::debug(true) << "Client [" << client << "] disconnected" << std::endl;
+							#endif
+
+							client.close();
+							continue;
+						}
+						catch(const std::exception& e)
+						{
+							#ifdef DEBUG
+							Logger::debug(true) << "Client [" << client << "] error" << std::endl;
+							#endif
+
+							client.close();
+							continue;
+						}
 
 						if (client.getRawRequest().find("\r\n\r\n") == std::string::npos)
 							continue;
 
+						client.parseRequest();
+						client.headerReceived = true;
+					}
+
+					// Receive request body
+					if (client.headerReceived)
+					{
+						if (client.getRequest().hasHeader("Content-Length"))
+						{
+							int contentLength = std::stoi(client.getRequest().getHeaders().at("Content-Length"));
+
+							if (contentLength > 0)
+							{
+								try
+								{
+									Logger::info(true) << "Client [" << client << "] receiving BODY" << std::endl;
+									client.receive();
+								}
+								catch(const http::Client::ClientDisconnectedException& e)
+								{
+									#ifdef DEBUG
+									Logger::debug(true) << "Client [" << client << "] disconnected" << std::endl;
+									#endif
+
+									client.close();
+									continue;
+								}
+								catch(const std::exception& e)
+								{
+									#ifdef DEBUG
+									Logger::debug(true) << "Client [" << client << "] error: " << strerror(errno) << std::endl;
+									#endif
+
+									client.close();
+									continue;
+								}
+
+								#ifdef DEBUG
+								Logger::debug(true) << "Client [" << client << "]: "
+									<< client.getRawRequest().size() - client.getRawRequest().find("\r\n\r\n") - 4
+									<< " bytes received of " << contentLength << std::endl;
+								#endif
+								if (((int)client.getRawRequest().size() - (int)client.getRawRequest().find("\r\n\r\n") - 4) < contentLength)
+									continue;
+							}
+						}
+
+						client.parseRequest();
+
 						#ifdef DEBUG
-						Logger::debug(true) << "Received request from client [" << client << "]" << std::endl;
-						Logger::debug(true) << "Request: " << client.getRawRequest() << std::endl;
+						Logger::debug(true) << "Request received from client [" << client << "] " << std::endl;
+						Logger::debug(true) << client.getRequest() << std::endl;
 						#endif
 
+						// Client is ready to be processed
 						FD_SET(client.getSocket(), &_writefds);
-					}
-					catch (const http::Client::ClientDisconnectedException& e)
-					{
-						#ifdef DEBUG
-						Logger::debug(true) << "recv(): client [" << client << "] disconnected" << std::endl;
-						#endif
-						client.close();
-						continue;
-					}
-					catch (const std::exception& e)
-					{
-						Logger::error(true) << "recv(): error: " << e.what() << std::endl;
-						client.close();
-						continue;
 					}
 				}
 
 				if (FD_ISSET(client.getSocket(), &_writefds))
 				{
-					/*
-						* TODO:
-						* [ ] Send the appropriate response depending on the request
-						* [ ] Close the connection if the request was not keep-alive
-						*/
+					/**
+					 * TODO:
+					 * [ ] Send the appropriate response depending on the request
+					 * [ ] Close the connection if the request was not keep-alive
+					 */
 
-					client.send("HTTP/1.1 200 OK\r\nContent-Length: 21\r\n\r\n<h1>Hello world!</h1>");
+					http::Response	response;
 
-					// Close the connection if the request was not keep-alive
+					response.setStatus(OK);
+					response.setHeader("Content-Type", "text/html");
+					response.setHeader("Server", "webserv");
+					response.setHeader("Connection", "Closed");
+					response.setBody("<h1>Hello world!</h1>\n<p>This is a testing response</p>\n");
+
+					client.send(response.toString());
+
+					#ifdef DEBUG
+					Logger::debug(true) << "Response sent to client [" << client << "] " << std::endl;
+					Logger::debug(true) << "Closing connection..." << std::endl;
+					#endif
+
+					// REVIEW: Should we handle keep-alive connections ?
 					FD_CLR(client.getSocket(), &_writefds);
 					client.close();
 				}
 			}
-
-			#ifdef DEBUG
-			Logger::debug(true) << "End of loop" << std::endl;
-			#endif
-
 		}
 	}
 

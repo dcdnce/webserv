@@ -3,8 +3,8 @@
 #include <exception>
 
 #include "http.hpp"
-// #include "http/Request.hpp"
-// #include "http/Response.hpp"
+#include "http/Request.hpp"
+#include "http/Response.hpp"
 
 namespace http
 {
@@ -18,8 +18,12 @@ namespace http
 			int _socket_fd;
 			sockaddr_in _addr;
 			socklen_t _addr_len;
+
 			std::string _rawRequest;
-			// Request _request;
+			Request _request;
+
+		public:
+			bool headerReceived;
 
 		public:
 			// -------------------------------------------------------------- //
@@ -35,7 +39,7 @@ namespace http
 			const sockaddr_in &getAddr(void) const;
 			const socklen_t &getAddrLen(void) const;
 			const std::string &getRawRequest(void) const;
-			// const Request &getRequest(void) const;
+			const Request &getRequest(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
@@ -44,8 +48,9 @@ namespace http
 			void close(void);
 			void receive(void);
 			void send(const std::string &rawResponse) const;
-			// void send(const Response &response) const;
+			void send(const Response &response) const;
 			bool isOccupied(void) const;
+			void parseRequest(void);
 
 			// -------------------------------------------------------------- //
 			//  Operators                                                     //

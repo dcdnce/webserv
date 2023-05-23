@@ -21,6 +21,7 @@ namespace http
 		//  Constructors & Destructors                                        //
 		// ------------------------------------------------------------------ //
 		Request(void);
+		Request(const std::string& rawRequest);
 		virtual ~Request(void);
 
 		// ------------------------------------------------------------------ //
@@ -39,7 +40,8 @@ namespace http
 		void parse(std::string const &rr);
 		std::string toString(void) const;
 	};
+	
+	std::ostream &operator<<(std::ostream &os, const http::Request &request);
 
 }
 
-std::ostream & operator<<(std::ostream & o, http::Request const & r);

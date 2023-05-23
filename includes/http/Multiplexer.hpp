@@ -6,6 +6,8 @@
 #include "http/Server.hpp"
 #include "http/Socket.hpp"
 #include "http/ClientManager.hpp"
+#include "http/Response.hpp"
+#include "http/Request.hpp"
 
 namespace http
 {

@@ -7,7 +7,10 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	Client::Client(void):
 		_socket_fd(-1),
-		_addr_len(sizeof(_addr))
+		_addr_len(sizeof(_addr)),
+		_rawRequest(),
+		_request(),
+		headerReceived(false)
 	{
 	}
 
@@ -24,7 +27,8 @@ namespace http
 	const sockaddr_in &Client::getAddr(void) const { return (_addr); }
 	const socklen_t &Client::getAddrLen(void) const { return (_addr_len); }
 	const std::string &Client::getRawRequest(void) const { return (_rawRequest); }
-	// const Request &Client::getRequest(void) const { return (_request); }
+	const Request &Client::getRequest(void) const { return (_request); }
+
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
@@ -45,7 +49,8 @@ namespace http
 		// Reset attributes
 		_addr_len = sizeof(_addr);
 		_rawRequest.clear();
-
+		_request = Request();
+		headerReceived = false;
 	}
 
 	void Client::receive(void)
@@ -53,8 +58,8 @@ namespace http
 		char	buffer[BUFFER_SIZE];
 		int		bytes = 0;
 
-		if ((bytes = ::recv(_socket_fd, buffer, BUFFER_SIZE, MSG_DONTWAIT)) == -1 && errno != EAGAIN)
-			throw std::runtime_error("Client::receive: abort: recv()");
+		if ((bytes = ::recv(_socket_fd, buffer, BUFFER_SIZE, 0)) == -1 && errno != EAGAIN)
+			throw std::runtime_error("Client::receive: abort: recv(): " + std::string(strerror(errno)));
 		else if (bytes == 0)
 			throw ClientDisconnectedException();
 
@@ -63,21 +68,26 @@ namespace http
 
 	void Client::send(const std::string& rawResponse) const
 	{
-		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), MSG_DONTWAIT) == -1)
+		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0) == -1)
 			throw std::runtime_error("Client::send: abort: send()");
 	}
 
-	// void Client::send(const Response &response)
-	// {
-	// 	std::string rawResponse = response.toString();
+	void Client::send(const Response &response) const
+	{
+		std::string rawResponse = response.toString();
 
-	// 	if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), MSG_DONTWAIT) == -1)
-	// 		throw std::runtime_error("Client::send: abort: send()");
-	// }
+		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0) == -1)
+			throw std::runtime_error("Client::send: abort: send()");
+	}
 
 	bool Client::isOccupied(void) const
 	{
 		return (_socket_fd != -1);
+	}
+
+	void Client::parseRequest(void)
+	{
+		_request = Request(_rawRequest);
 	}
 
 	// ---------------------------------------------------------------------- //
