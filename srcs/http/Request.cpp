@@ -26,7 +26,7 @@ namespace http
 		std::stringstream	rawRequest(rr);
 
 		std::string method, uri, httpVersion;
-		rawRequest >> method >> uri >> httpVersion; 
+		rawRequest >> method >> uri >> httpVersion;
 		this->setMethod(method);
 		this->setUri(uri);
 		this->setHttpVersion(httpVersion);
@@ -48,18 +48,22 @@ namespace http
 			_body += line;
 		} while (std::getline(rawRequest, line));
 	}
+
+	std::string Request::toString(void) const
+	{
+		std::stringstream ss;
+
+		ss << http::methodToStr(this->getMethod()) << " " << this->getUri() << " " << this->getHttpVersion() << std::endl;
+		for (std::map<std::string, std::string>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); it++)
+			ss << it->first << ":" << it->second << std::endl;
+		ss << this->getBody();
+
+		return (ss.str());
+	}
 }
 
 std::ostream & operator<<(std::ostream & o, http::Request const & r)
 {
-    std::map<std::string, std::string> headers = r.getHeaders();
-    
-	// no get method
-    o << http::methodToStr(r.getMethod()) << " " << r.getUri() << " " << r.getHttpVersion() << std::endl;
-    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
-        o << it->first << ":"<< it->second << std::endl; 
-    o << r.getBody();
-
-    return (o);
-
+	o << r.toString();
+	return (o);
 }
