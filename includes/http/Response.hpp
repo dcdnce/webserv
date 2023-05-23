@@ -1,5 +1,9 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+#include <sstream>
+
 #include "http/http.hpp"
 #include "http/Message.hpp"
 
@@ -34,5 +38,7 @@ namespace http
 		// ------------------------------------------------------------------ //
 		std::string toString(void) const;
 	};
+
+	std::ostream &operator<<(std::ostream &os, const Response &response);
 
 }
