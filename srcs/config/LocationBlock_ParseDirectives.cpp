@@ -135,5 +135,14 @@ void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
 
 void LocationBlock::parseDirective_cgi(std::string line)
 {
-	Logger::debug(true) << "ServerBlock::parseDirective_cgi: received line:" << line << std::endl;
+	std::vector<std::string> params = _extractParams(line);
+
+	if (params.size() != 2)
+		throw std::runtime_error("directive \"cgi\" has wrong number of arguments");
+
+	_cgis[params[0]] = params[1];
+
+	#ifdef DEBUG
+		Logger::debug(true) << "ServerBlock::parseDirective_cgi: received line:" << line << std::endl;
+	#endif
 }

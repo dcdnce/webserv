@@ -16,6 +16,7 @@ class LocationBlock
 		bool _autoindex;
 		std::vector<std::string> _indexes;
 		std::string _uploadPath;
+		std::map<std::string, std::string>	_cgis;
 
 		std::vector<std::string> _extractParams(std::string const &line);
 
