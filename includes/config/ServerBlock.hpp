@@ -9,11 +9,22 @@
 class ServerBlock
 {
 	public:
-		std::vector<std::pair<std::string, int> > listens;
-		std::vector<std::string> serverNames;
+		// ------------------------------------------------------------------ //
+		//  Member Types                                                      //
+		// ------------------------------------------------------------------ //
+		typedef std::vector<std::pair<std::string, int> > listensVector;
+		typedef std::vector<std::string> serverNamesVector;
+		typedef std::map<int, std::string> errorPagesMap;
+		typedef std::map<std::string, LocationBlock> locationsMap;
+
+		// ------------------------------------------------------------------ //
+		//  Attributes                                                        //
+		// ------------------------------------------------------------------ //
+		listensVector listens;
+		serverNamesVector serverNames;
 		int maxBodySize;
-		std::map<int, std::string> errorPages;
-		std::map<std::string, LocationBlock> locations;
+		errorPagesMap errorPages;
+		locationsMap locations;
 
 	private:
 

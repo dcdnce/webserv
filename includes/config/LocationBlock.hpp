@@ -9,14 +9,25 @@
 class LocationBlock
 {
 	public:
+		// ------------------------------------------------------------------ //
+		//  Member Types                                                      //
+		// ------------------------------------------------------------------ //
+		typedef std::set<http::Method> methodsSet;
+		typedef std::vector<std::string> indexesVector;
+		typedef std::map<int, std::string> redirectionsMap;
+		typedef std::map<std::string, std::string> cgiMap;
+
+		// ------------------------------------------------------------------ //
+		//  Attributes                                                        //
+		// ------------------------------------------------------------------ //
 		std::string uri;
 		std::string root;
 		std::string uploadPath;
 		bool autoindex;
-		std::set<http::Method> acceptedMethods;
-		std::vector<std::string> indexes;
-		std::map<int, std::string> redirections;
-		std::map<std::string, std::string> cgis;
+		methodsSet acceptedMethods;
+		indexesVector indexes;
+		redirectionsMap redirections;
+		cgiMap cgis;
 
 	private:
 		std::vector<std::string> _extractParams(std::string const &line);
