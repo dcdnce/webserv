@@ -1,12 +1,8 @@
 ServerBlock
 - defaults options in constructor
-- directives: 
 
 LocationBlock
 - defaults options in constructor
-- directives: 
-    - cgi
 
-~ else
+~ general
 - priorities and incompatibilities
-- cgi
