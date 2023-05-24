@@ -17,7 +17,7 @@ ServerBlock::~ServerBlock()
 
 void ServerBlock::addLocationBlock(LocationBlock newLocationBlock)
 {
-	_locationBlocks[newLocationBlock.getPath()] = newLocationBlock;
+	locations[newLocationBlock.uri] = newLocationBlock;
 }
 
 std::vector<std::string> ServerBlock::_extractParams(std::string const &line)
@@ -36,10 +36,4 @@ std::vector<std::string> ServerBlock::_extractParams(std::string const &line)
 	}
 
 	return (params);
-}
-
-// Getters
-const std::vector<std::pair<std::string, int> > &ServerBlock::getListen(void) const
-{
-	return (_listens);
 }

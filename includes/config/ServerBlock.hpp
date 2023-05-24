@@ -8,12 +8,14 @@
 
 class ServerBlock
 {
+	public:
+		std::vector<std::pair<std::string, int> > listens;
+		std::vector<std::string> serverNames;
+		int maxBodySize;
+		std::map<int, std::string> errorPages;
+		std::map<std::string, LocationBlock> locations;
+
 	private:
-		std::vector<std::pair<std::string, int> > _listens;
-		std::vector<std::string> _serverName;
-		std::map<int, std::string> _errorPages;
-		int _clientMaxBodySize;
-		std::map<std::string, LocationBlock> _locationBlocks;
 
 		std::vector<std::string> _extractParams(std::string const &line);
 
@@ -29,7 +31,4 @@ class ServerBlock
 		void parseDirective_clientMaxBodySize(std::string line);
 
 		void addLocationBlock(LocationBlock newLocationBlock);
-
-		// Getters
-		const std::vector<std::pair<std::string, int> > &getListen(void) const;
 };

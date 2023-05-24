@@ -8,16 +8,17 @@
 
 class LocationBlock
 {
-	private:
-		std::string _path;
-		std::string _root;
-		std::set<http::Method> _acceptedMethods;
-		std::map<int, std::string> _redirections;
-		bool _autoindex;
-		std::vector<std::string> _indexes;
-		std::string _uploadPath;
-		std::map<std::string, std::string>	_cgis;
+	public:
+		std::string uri;
+		std::string root;
+		std::string uploadPath;
+		bool autoindex;
+		std::set<http::Method> acceptedMethods;
+		std::vector<std::string> indexes;
+		std::map<int, std::string> redirections;
+		std::map<std::string, std::string> cgis;
 
+	private:
 		std::vector<std::string> _extractParams(std::string const &line);
 
 	public:
@@ -34,6 +35,4 @@ class LocationBlock
 		void parseDirective_uploadedFilesPath(std::string line);
 		void parseDirective_cgi(std::string line);
 
-		void setPath(std::string const path);
-		std::string getPath(void);
 };

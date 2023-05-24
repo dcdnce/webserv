@@ -32,7 +32,7 @@ void LocationBlock::parseDirective_root(std::string line)
 	if (params.size() != 1)
 		throw std::runtime_error("directive \"root\" has wrong number of arguments");
 
-	_root = params[0];
+	root = params[0];
 
 #ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_root: received line:" << line << std::endl;
@@ -51,7 +51,7 @@ void LocationBlock::parseDirective_acceptedMethods(std::string line)
 		if (http::methodsMap.find(params[i]) == http::methodsMap.end())
 			Logger::warn(true) << "directive \"accepted_methods\": \"" << params[i] << "\" is not an HTTP Method: skipping" << std::endl;
 		else
-			_acceptedMethods.insert(http::methodsMap[params[i]]);
+			acceptedMethods.insert(http::methodsMap[params[i]]);
 	}
 
 #ifdef DEBUG
@@ -81,7 +81,7 @@ void LocationBlock::parseDirective_return(std::string line)
 		throw std::runtime_error("directive \"return\" error code not recognized");
 	}
 
-	_redirections[httpcode] = params[params.size() - 1];
+	redirections[httpcode] = params[params.size() - 1];
 
 #ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_return: received line:" << line << std::endl;
@@ -100,7 +100,7 @@ void LocationBlock::parseDirective_autoindex(std::string line)
 		throw std::runtime_error("directive \"autoindex\" argument not recognized");
 	}
 
-	_autoindex = (params[0] == "on");
+	autoindex = (params[0] == "on");
 
 #ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_autoindex: received line:" << line << std::endl;
@@ -109,9 +109,9 @@ void LocationBlock::parseDirective_autoindex(std::string line)
 
 void LocationBlock::parseDirective_index(std::string line)
 {
-	_indexes = _extractParams(line);
+	indexes = _extractParams(line);
 
-	if (!_indexes.size())
+	if (!indexes.size())
 		throw std::runtime_error("directive \"index\" is missing arguments");
 
 #ifdef DEBUG
@@ -126,7 +126,7 @@ void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
 	if (params.size() != 1)
 		throw std::runtime_error("directive \"uploaded_files_path\" has wrong number of arguments");
 
-	_uploadPath = params[0];
+	uploadPath = params[0];
 
 #ifdef DEBUG
 	Logger::debug(true) << "ServerBlock::parseDirective_uploadedFilesPath: received line:" << line << std::endl;
@@ -140,7 +140,7 @@ void LocationBlock::parseDirective_cgi(std::string line)
 	if (params.size() != 2)
 		throw std::runtime_error("directive \"cgi\" has wrong number of arguments");
 
-	_cgis[params[0]] = params[1];
+	cgis[params[0]] = params[1];
 
 	#ifdef DEBUG
 		Logger::debug(true) << "ServerBlock::parseDirective_cgi: received line:" << line << std::endl;

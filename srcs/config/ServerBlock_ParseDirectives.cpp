@@ -52,7 +52,7 @@ void ServerBlock::parseDirective_listen(std::string line)
 		throw std::runtime_error("directive \"listen\" port is not a number");
 	};
 
-	_listens.push_back(std::make_pair(host, iport));
+	listens.push_back(std::make_pair(host, iport));
 
 #ifdef DEBUG
 	Logger::debug(true) << "ServerBlock::parseDirective_host: received line:" << line << std::endl;
@@ -61,15 +61,15 @@ void ServerBlock::parseDirective_listen(std::string line)
 
 void ServerBlock::parseDirective_serverName(std::string line)
 {
-	_serverName = _extractParams(line);
+	serverNames = _extractParams(line);
 
-	if (_serverName.size() == 0)
+	if (serverNames.size() == 0)
 		throw std::runtime_error("directive \"server_name\" is missing arguments");
 
 #ifdef DEBUG
 	Logger::debug(true);
-	for (size_t i = 0; i < _serverName.size(); i++)
-		std::cout << _serverName[i] << " ";
+	for (size_t i = 0; i < serverNames.size(); i++)
+		std::cout << serverNames[i] << " ";
 	std::cout << std::endl;
 #endif
 }
@@ -105,7 +105,7 @@ void ServerBlock::parseDirective_errorPage(std::string line)
 			continue;
 		}
 
-		_errorPages[httpcode] = params[params.size() - 1];
+		errorPages[httpcode] = params[params.size() - 1];
 	}
 }
 

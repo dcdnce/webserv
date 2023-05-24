@@ -1,22 +1,10 @@
 #include "config/LocationBlock.hpp"
 
 LocationBlock::LocationBlock()
-{
-}
+{}
 
 LocationBlock::~LocationBlock()
-{
-}
-
-void LocationBlock::setPath(std::string const path)
-{
-	this->_path = path;
-}
-
-std::string LocationBlock::getPath(void)
-{
-	return (_path);
-}
+{}
 
 std::vector<std::string> LocationBlock::_extractParams(std::string const &line)
 {

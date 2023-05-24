@@ -15,14 +15,14 @@ void Config::_parseLocationBlockHeader(LocationBlock &currLocation)
 {
 	_skipComment();
 
-	currLocation.setPath(_getWord());
+	currLocation.uri = _getWord();
 
 	if (_getWord() != "{")
 		throw std::runtime_error("section \"location\" open bracket not found");
 
 #ifdef DEBUG
 	Logger::debug(true) << "Config::_parseLocationBlockHeader: header read: "
-						<< "location " << currLocation.getPath() << std::endl;
+						<< "location " << currLocation.uri << std::endl;
 #endif
 }
 
