@@ -6,7 +6,7 @@ std::string	Cgi::executeGet(std::string const & uri)
 	size_t	i;
 	for (i = 0 ; i < uri.size() && uri[i] != '?' ; i++)	
 		filename += uri[i];
-	for (; i < uri.size(); ++i)	
+	for (i += 1; i < uri.size(); i++)	
 		query += uri[i];
 
 	char	*av[3] = {strdup(_path.c_str()), strdup(filename.c_str()), 0};
