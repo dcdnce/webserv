@@ -59,16 +59,16 @@ REWRITE	:=	\r\033[2K
 
 # PRESETS with emojis
 INFO	:=	$(BG_BLUE)$(FG_WHITE)$(BOLD) 📢
-SUCCESS	:=	$(BG_GREEN)$(FG_WHITE)$(BOLD) ✔
-ERROR	:=	$(BG_RED)$(FG_WHITE)$(BOLD) ✘
+SUCCESS	:=	$(BG_GREEN)$(FG_WHITE)$(BOLD) ✅
+ERROR	:=	$(BG_RED)$(FG_WHITE)$(BOLD) ❌
 
 ################################################################################
 # TARGETS / RULES                                                              #
 ################################################################################
 
 %.o: %.cpp
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 	@echo -n "$(REWRITE)$(INFO) Compiling $(notdir $<) $(RESET)"
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 all: $(NAME)
 
