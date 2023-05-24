@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <iostream>
 
+#include "http/Request.hpp"
+
 class Cgi
 {
 	private:
@@ -39,5 +41,5 @@ class Cgi
 		//  Public Methods                                                        //
 		// ---------------------------------------------------------------------- //
 		std::string	executeGet(std::string const & uri);
-		std::string executePost(std::string const & uri, std::string const & body);
+		std::string executePost(http::Request const & req);
 };
