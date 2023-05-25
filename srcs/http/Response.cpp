@@ -7,7 +7,9 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	Response::Response(void):
 		_status(OK)
-	{}
+	{
+		_headers["Server"] = "webserv";
+	}
 
 	Response::Response(const Response &copy):
 		Message(copy),

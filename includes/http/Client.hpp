@@ -3,8 +3,10 @@
 #include <exception>
 
 #include "http.hpp"
+#include "http/Host.hpp"
 #include "http/Request.hpp"
 #include "http/Response.hpp"
+#include "http/Socket.hpp"
 
 namespace http
 {
@@ -16,8 +18,7 @@ namespace http
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
 			int _socket_fd;
-			sockaddr_in _addr;
-			socklen_t _addr_len;
+			Host _host;
 
 			std::string _rawRequest;
 			Request _request;
@@ -36,15 +37,14 @@ namespace http
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
 			const int &getSocket(void) const;
-			const sockaddr_in &getAddr(void) const;
-			const socklen_t &getAddrLen(void) const;
+			const Host &getHost(void) const;
 			const std::string &getRawRequest(void) const;
 			const Request &getRequest(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void accept(const int serverSocket);
+			void accept(const http::Socket& socket);
 			void close(void);
 			void receive(void);
 			void send(const std::string &rawResponse) const;

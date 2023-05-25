@@ -16,7 +16,7 @@ namespace http
 	{
 		public:
 			// -------------------------------------------------------------- //
-			//  Types                                                         //
+			//  Member Types                                                  //
 			// -------------------------------------------------------------- //
 			typedef std::vector<http::Server*>	server_list;
 			typedef std::vector<http::Socket*>	socket_list;

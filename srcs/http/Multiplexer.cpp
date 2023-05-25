@@ -19,14 +19,12 @@ namespace http
 		std::vector<ServerBlock> serverBlocks = config.getServerBlocks();
 		std::set<int> ports;
 
-		for (std::vector<ServerBlock>::iterator it = serverBlocks.begin(); it != serverBlocks.end(); it++)
+		for (std::vector<ServerBlock>::iterator sbIt = serverBlocks.begin(); sbIt != serverBlocks.end(); sbIt++)
 		{
-			_servers.push_back(new Server(*it));
+			_servers.push_back(new Server(*sbIt));
 
-			std::vector<std::pair<std::string, int> > listens = it->getListen();
-
-			for (std::vector<std::pair<std::string, int> >::iterator it = listens.begin(); it != listens.end(); it++)
-				ports.insert(it->second);
+			for (ServerBlock::listensVector::const_iterator listenIt = sbIt->listens.begin(); listenIt != sbIt->listens.end(); listenIt++)
+				ports.insert(listenIt->getPort());
 		}
 
 		// For each unique port, create a socket
@@ -98,7 +96,7 @@ namespace http
 			for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)
 				if (FD_ISSET((*it)->getSocket(), &_readfds))
 				{
-					_clientManager.acceptConnection((*it)->getSocket());
+					_clientManager.acceptConnection(**it);
 
 					#ifdef DEBUG
 					Logger::debug(true) << "Connection accepted on Socket [" << (*it)->getSocket() << "] " << std::endl;
@@ -208,26 +206,30 @@ namespace http
 
 				if (FD_ISSET(client.getSocket(), &_writefds))
 				{
-					/**
-					 * TODO:
-					 * [ ] Send the appropriate response depending on the request
-					 * [ ] Close the connection if the request was not keep-alive
-					 */
+					Server *server = NULL;
 
-					http::Response	response;
+					// Find the server to handle the request
+					for (server_list::iterator sit = _servers.begin(); sit != _servers.end(); sit++)
+						if ((*sit)->matches(client))
+						{
+							server = *sit;
+							break;
+						}
 
-					response.setStatus(OK);
-					response.setHeader("Content-Type", "text/html");
-					response.setHeader("Server", "webserv");
-					response.setHeader("Connection", "Closed");
-					response.setBody("<h1>Hello world!</h1>\n<p>This is a testing response</p>\n");
-
-					client.send(response.toString());
-
-					#ifdef DEBUG
-					Logger::debug(true) << "Response sent to client [" << client << "] " << std::endl;
-					Logger::debug(true) << "Closing connection..." << std::endl;
-					#endif
+					if (server != NULL)
+					{
+						#ifdef DEBUG
+						Logger::debug(true) << "Client " << client << " handled by server [" << server->getConfig().listens[0] << "]" << std::endl;
+						#endif
+						http::Response response = server->handleRequest(client);
+						client.send(response);
+					}
+					else
+					{
+						#ifdef DEBUG
+						Logger::debug(true) << "Client " << client << " not handled by any server" << std::endl;
+						#endif
+					}
 
 					// REVIEW: Should we handle keep-alive connections ?
 					FD_CLR(client.getSocket(), &_writefds);
