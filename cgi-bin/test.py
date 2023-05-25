@@ -1,21 +1,26 @@
 #!/usr/bin/env python
 
 import cgi
+import os
+
+contentLength = os.environ.get('CONTENT_LENGTH')
 
 params = cgi.FieldStorage()
 
-print("Content-type: text/html\r\n\r\n")
-
+print("Content-type: text/html")
+print("")
 print("<html>")
 print("<head>")
 print("<title>Python Cgi Test</title>")
 print("</head>")
 print("<body>")
-print("<h1>Query String Test</h1>")
+print("<vh1>Python Cgi Test</h1>")
 
-# Check if any query string parameters are present
+print("<p>Content-Length: {}</p>".format(contentLength))
+
+#Check if any query string parameters are present
 if params:
-    print("<p>Query string parameters:</p>")
+    print("<p>GET or POST parameters:</p>")
     print("<ul>")
     for param in params:
         print("<li><strong>{}</strong>: {}</li>".format(param, params[param].value))

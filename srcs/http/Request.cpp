@@ -60,6 +60,8 @@ namespace http
 		}
 
 		// Get entity body
+		if (rawRequest.tellg() == -1)
+			throw std::runtime_error("received request with wrong body");
 		_body = rawRequest.str().substr(rawRequest.tellg());
 	}
 
