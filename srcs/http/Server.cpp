@@ -65,13 +65,38 @@ namespace http
 		// Handle autoindex
 		if (location->autoindex && !location->root.empty())
 		{
-			std::vector<std::string> files = fs::readDir(fs::joinPaths(location->root, request.getUri()));
+			const std::string filePath = fs::joinPaths(location->root, request.getUri());
+			if (fs::isDir(filePath))
+			{
+				std::vector<std::string> files = fs::readDir(filePath);
 
+				response.setStatus(OK);
+				response.setBody("<html><body><h1>Index of " + request.getUri() + "</h1><hr><ul>");
+				for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+					response.appendToBody("<li><a href=\"" + fs::joinPaths(request.getUri(), *it) + "\">" + *it + "</a></li>");
+				response.appendToBody("</ul><hr></body></html>");
+			}
+			else if (fs::exists(filePath) && access(filePath.c_str(), R_OK) == 0)
+				response.setBody(fs::readFile(filePath));
+			return (response);
+		}
+
+		// Handle index
+		if (location->indexes.size() > 0 && !location->root.empty())
+		{
 			response.setStatus(OK);
-			response.setBody("<html><body><h1>Index of " + request.getUri() + "</h1><hr><ul>");
-			for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
-				response.appendToBody("<li><a href=\"" + fs::joinPaths(request.getUri(), *it) + "\">" + *it + "</a></li>");
-			response.appendToBody("</ul><hr></body></html>");
+
+			// Send the first index that exists
+			for (LocationBlock::indexesVector::const_iterator it = location->indexes.begin(); it != location->indexes.end(); it++)
+			{
+				const std::string filePath = fs::joinPaths(location->root, *it);
+				if (fs::exists(filePath) && access(filePath.c_str(), R_OK) == 0)
+				{
+					response.setBody(fs::readFile(filePath));
+					break;
+				}
+			}
+
 			return (response);
 		}
 
