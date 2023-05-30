@@ -14,7 +14,7 @@ print("<head>")
 print("<title>Python Cgi Test</title>")
 print("</head>")
 print("<body>")
-print("<vh1>Python Cgi Test</h1>")
+print("<h1>Python Cgi Test</h1>")
 
 print("<p>Content-Length: {}</p>".format(contentLength))
 
