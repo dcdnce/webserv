@@ -116,9 +116,6 @@ namespace http
 					// Receive request headers
 					if (!client.headerReceived)
 					{
-						#ifdef DEBUG
-						Logger::debug(true) << "Client [" << client << "] receiving HEADERS" << std::endl;
-						#endif
 						try
 						{
 							client.receive();
@@ -160,7 +157,6 @@ namespace http
 							{
 								try
 								{
-									Logger::info(true) << "Client [" << client << "] receiving BODY" << std::endl;
 									client.receive();
 								}
 								catch(const http::Client::ClientDisconnectedException& e)
@@ -182,22 +178,12 @@ namespace http
 									continue;
 								}
 
-								#ifdef DEBUG
-								Logger::debug(true) << "Client [" << client << "]: "
-									<< client.getRawRequest().size() - client.getRawRequest().find("\r\n\r\n") - 4
-									<< " bytes received of " << contentLength << std::endl;
-								#endif
 								if (((int)client.getRawRequest().size() - (int)client.getRawRequest().find("\r\n\r\n") - 4) < contentLength)
 									continue;
 							}
 						}
 
 						client.parseRequest();
-
-						#ifdef DEBUG
-						Logger::debug(true) << "Request received from client [" << client << "] " << std::endl;
-						Logger::debug(true) << client.getRequest() << std::endl;
-						#endif
 
 						// Client is ready to be processed
 						FD_SET(client.getSocket(), &_writefds);

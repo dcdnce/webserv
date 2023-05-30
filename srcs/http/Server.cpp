@@ -1,5 +1,7 @@
 #include "http/Server.hpp"
 
+#include "utils/FileSystem.hpp"
+
 namespace http
 {
 
@@ -38,35 +40,39 @@ namespace http
 	{
 		const http::Request& request = client.getRequest();
 		http::Response response;
-		LocationBlock location;
+		const LocationBlock *location = NULL;
 
-		try
+		for (ServerBlock::locationsMap::const_iterator it = _config.locations.begin(); it != _config.locations.end(); ++it)
 		{
-			location = _config.locations.at(request.getUri());
+			const std::string& uri = it->first;
+
+			Logger::info(true) << "Checking " << uri << std::endl;
+			// Check if the request uri matches the location uri as a prefix
+			if (request.getUri().compare(0, uri.size(), uri) == 0)
+				if (location == NULL || location->uri.size() < uri.size())
+				{
+					Logger::info(true) << "Switching to location " << uri << std::endl;
+					location = &(it->second);
+				}
 		}
-		catch (const std::out_of_range& e)
+
+		if (location == NULL)
 		{
 			response.setStatus(NOT_FOUND);
-			return response;
+			return (response);
 		}
 
-		#ifdef DEBUG
-		Logger::debug(true) << "Location found: " << location.uri << std::endl;
-		#endif
-
-		#ifdef DEBUG
-		Logger::debug(true) << "Accepted methods: ";
-		for (LocationBlock::methodsSet::const_iterator it = location.acceptedMethods.begin(); it != location.acceptedMethods.end(); ++it)
-			std::cout << methodToStr(*it) << " ";
-		std::cout << std::endl;
-		Logger::debug(true) << "Request method: " << methodToStr(request.getMethod()) << std::endl;
-		Logger::debug(true) << "Is accepted: " << (location.acceptedMethods.find(request.getMethod()) != location.acceptedMethods.end()) << std::endl;
-		#endif
-
-		if (location.acceptedMethods.size() > 0 && location.acceptedMethods.find(request.getMethod()) == location.acceptedMethods.end())
+		// Handle autoindex
+		if (location->autoindex && !location->root.empty())
 		{
-			response.setStatus(METHOD_NOT_ALLOWED);
-			return response;
+			std::vector<std::string> files = fs::readDir(fs::joinPaths(location->root, request.getUri()));
+
+			response.setStatus(OK);
+			response.setBody("<html><body><h1>Index of " + request.getUri() + "</h1><hr><ul>");
+			for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+				response.appendToBody("<li><a href=\"" + fs::joinPaths(request.getUri(), *it) + "\">" + *it + "</a></li>");
+			response.appendToBody("</ul><hr></body></html>");
+			return (response);
 		}
 
 		return response;

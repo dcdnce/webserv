@@ -46,6 +46,8 @@ void LocationBlock::parseDirective_acceptedMethods(std::string line)
 	if (params.size() == 0)
 		throw std::runtime_error("directive \"accepted_methods\" is missing arguments");
 
+	acceptedMethods.clear();
+
 	for (size_t i = 0; i < params.size(); i++)
 	{
 		if (http::methodsMap.find(params[i]) == http::methodsMap.end())
