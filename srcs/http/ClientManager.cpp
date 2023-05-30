@@ -24,12 +24,12 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void ClientManager::acceptConnection(const int serverSocket)
+	void ClientManager::acceptConnection(const http::Socket& socket)
 	{
 		for (int i = 0; i < this->_maxClients; i++)
 			if (!this->_clients[i].isOccupied())
 			{
-				this->_clients[i].accept(serverSocket);
+				this->_clients[i].accept(socket);
 				return;
 			}
 

@@ -7,12 +7,10 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	Client::Client(void):
 		_socket_fd(-1),
-		_addr_len(sizeof(_addr)),
 		_rawRequest(),
 		_request(),
 		headerReceived(false)
-	{
-	}
+	{}
 
 	Client::~Client(void)
 	{
@@ -24,19 +22,24 @@ namespace http
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
 	const int &Client::getSocket(void) const { return (_socket_fd); }
-	const sockaddr_in &Client::getAddr(void) const { return (_addr); }
-	const socklen_t &Client::getAddrLen(void) const { return (_addr_len); }
+	const Host &Client::getHost(void) const { return (_host); }
 	const std::string &Client::getRawRequest(void) const { return (_rawRequest); }
 	const Request &Client::getRequest(void) const { return (_request); }
-
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void Client::accept(const int serverSocket)
+	void Client::accept(const http::Socket& socket)
 	{
-		if ((_socket_fd = ::accept(serverSocket, (struct sockaddr *)&_addr, &_addr_len)) == -1)
+		sockaddr_in addr;
+		socklen_t addr_len = sizeof(addr);
+
+		if ((_socket_fd = ::accept(socket.getSocket(), (struct sockaddr *)&addr, &addr_len)) == -1)
 			throw std::runtime_error("Client::accept: abort: accept()");
+
+		_host.setAddr(addr);
+		// Set the port to the socket's port so that the server can be identified
+		_host.setPort(socket.getPort());
 	}
 
 	void Client::close(void)
@@ -47,7 +50,7 @@ namespace http
 		_socket_fd = -1;
 
 		// Reset attributes
-		_addr_len = sizeof(_addr);
+		_host = Host();
 		_rawRequest.clear();
 		_request = Request();
 		headerReceived = false;
@@ -95,7 +98,7 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	std::ostream &operator<<(std::ostream &os, const Client &client)
 	{
-		os << inet_ntoa(client._addr.sin_addr) << ":" << ntohs(client._addr.sin_port);
+		os << "[sock: " << client._socket_fd << "][addr: " << client._host << "]";
 		return (os);
 	}
 

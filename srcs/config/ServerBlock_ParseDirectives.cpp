@@ -52,11 +52,11 @@ void ServerBlock::parseDirective_listen(std::string line)
 		throw std::runtime_error("directive \"listen\" port is not a number");
 	};
 
-	listens.push_back(std::make_pair(host, iport));
+	listens.push_back(http::Host(host.c_str(), iport));
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	Logger::debug(true) << "ServerBlock::parseDirective_host: received line:" << line << std::endl;
-#endif
+	#endif
 }
 
 void ServerBlock::parseDirective_serverName(std::string line)

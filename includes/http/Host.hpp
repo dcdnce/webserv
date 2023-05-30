@@ -5,43 +5,40 @@
 namespace http
 {
 
-	class Socket
+	class Host
 	{
-		protected:
+
+		private:
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			const char *_host;
-			int _port;
-			int _socket;
-			int _domain;
-			int _type;
-			int _protocol;
-			const int _maxClients;
+			sockaddr_in _addr;
+			socklen_t _addr_len;
 
 		public:
-			// -------------------------------------------------------------- //
-			//  Constructors & Destructors                                    //
-			// -------------------------------------------------------------- //
-			Socket(
-				const int domain,
-				const int type,
-				const int protocol,
-				const char *host,
-				const int port,
-				const int maxClients = MAX_CLIENTS);
-			~Socket(void);
+			Host(void);
+			Host(const char *host, const int port);
+			~Host(void);
 
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
-			int getSocket(void) const;
+			const sockaddr_in &getAddr(void) const;
+			const socklen_t &getAddrLen(void) const;
+			const char *getAddress(void) const;
 			int getPort(void) const;
 
+			void setAddr(const sockaddr_in &addr);
+			void setAddress(const char *host);
+			void setPort(const int port);
+
 			// -------------------------------------------------------------- //
-			//  Public Methods                                                //
+			//  Operators                                                     //
 			// -------------------------------------------------------------- //
-			void listen(void) const;
+			friend std::ostream &operator<<(std::ostream &os, const Host &host);
+			friend bool operator==(const Host &lhs, const Host &rhs);
+			friend bool operator!=(const Host &lhs, const Host &rhs);
+
 	};
 
 }

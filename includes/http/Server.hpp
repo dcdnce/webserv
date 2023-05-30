@@ -3,6 +3,7 @@
 #include "config/ServerBlock.hpp"
 #include "http/Response.hpp"
 #include "http/Request.hpp"
+#include "http/Client.hpp"
 
 namespace http
 {
@@ -31,7 +32,8 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			http::Response	handleRequest(const http::Request& request) const;
+			bool matches(const http::Client& client) const;
+			http::Response handleRequest(const http::Client& client) const;
 
 	};
 

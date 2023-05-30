@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LocationBlock.hpp"
+#include "http/Host.hpp"
 
 #include <map>
 #include <vector>
@@ -12,7 +13,7 @@ class ServerBlock
 		// ------------------------------------------------------------------ //
 		//  Member Types                                                      //
 		// ------------------------------------------------------------------ //
-		typedef std::vector<std::pair<std::string, int> > listensVector;
+		typedef std::vector<http::Host> listensVector;
 		typedef std::vector<std::string> serverNamesVector;
 		typedef std::map<int, std::string> errorPagesMap;
 		typedef std::map<std::string, LocationBlock> locationsMap;

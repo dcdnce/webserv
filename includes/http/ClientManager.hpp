@@ -2,6 +2,7 @@
 
 #include "http.hpp"
 #include "Client.hpp"
+#include "Socket.hpp"
 
 namespace http
 {
@@ -31,7 +32,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void acceptConnection(const int serverSocket);
+			void acceptConnection(const http::Socket& socket);
 			void closeConnection(const int i);
 			void closeAllConnections(void);
 	};

@@ -1,7 +1,13 @@
 #include "config/LocationBlock.hpp"
 
-LocationBlock::LocationBlock()
-{}
+LocationBlock::LocationBlock():
+	uri("/"),
+	root("."),
+	uploadPath("."),
+	autoindex(false)
+{
+	acceptedMethods.insert(http::GET);
+}
 
 LocationBlock::~LocationBlock()
 {}

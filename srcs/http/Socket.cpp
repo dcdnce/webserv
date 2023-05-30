@@ -62,6 +62,7 @@ namespace http
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
 	int Socket::getSocket(void) const { return (_socket); }
+	int Socket::getPort(void) const { return (_port); }
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //

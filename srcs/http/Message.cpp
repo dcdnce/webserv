@@ -36,4 +36,5 @@ namespace http
 	void	Message::setHeader(std::string const & header, std::string const & value) {this->_headers[header] = value;}
 	void	Message::removeHeader(std::string const & header) {this->_headers.erase(header);}
 	bool	Message::hasHeader(std::string const & header) const { return (this->_headers.find(header) != this->_headers.end());}
+	void	Message::appendToBody(std::string const & body) {this->_body += body;}
 }
