@@ -17,9 +17,9 @@ class Cgi
 		// ---------------------------------------------------------------------- //
 		//  Private Methods                                                       //
 		// ---------------------------------------------------------------------- //
-		std::string		_executeCgi(char **av, char **env, std::string const & content);
-		void			_executeCgi_child(char **av, char **env, int *fd_out, int *fd_in, bool willReceiveContent);
-		std::string		_executeCgi_parent(int *fd_out, int *fd_in, std::string const & content);
+		std::string		_executeCgi(char **av, char **env, std::string const & content) const;
+		void			_executeCgi_child(char **av, char **env, int *fd_out, int *fd_in, bool willReceiveContent) const;
+		std::string		_executeCgi_parent(int *fd_out, int *fd_in, std::string const & content) const;
 
 	public:
 		// ------------------------------------------------------------------ //
@@ -40,6 +40,6 @@ class Cgi
 		// ---------------------------------------------------------------------- //
 		//  Public Methods                                                        //
 		// ---------------------------------------------------------------------- //
-		std::string	executeGet(std::string const & uri);
-		std::string executePost(http::Request const & req);
+		std::string	executeGet(std::string const & uri) const;
+		std::string executePost(http::Request const & req) const;
 };

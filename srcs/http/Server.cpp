@@ -100,7 +100,45 @@ namespace http
 			return (response);
 		}
 
-		return response;
+		// Handle CGIs
+		if (location->cgis.size() > 0 && !location->root.empty())
+		{
+			const std::string extension = fs::getExtension(request.getUri());
+
+			#ifdef DEBUG
+				Logger::info(true) << "Extension: " << extension << std::endl;
+			#endif
+
+			if (location->cgis.find(extension) == location->cgis.end())
+			{
+				response.setStatus(NOT_FOUND);
+				return (response);
+			}
+
+			#ifdef DEBUG
+				Logger::info(true) << "CGI found" << std::endl;
+			#endif
+
+			const Cgi &cgi = location->cgis.at(extension);
+			const std::string filePath = fs::joinPaths(location->root, request.getUri());
+
+			switch (request.getMethod())
+			{
+				case GET:
+					response.fromCGI(cgi.executeGet(filePath));
+					break;
+				case POST:
+					response.fromCGI(cgi.executePost(request));
+					break;
+				default:
+					response.setStatus(NOT_IMPLEMENTED);
+					return (response);
+			}
+
+			return (response);
+		}
+
+		return (response);
 	}
 
 }

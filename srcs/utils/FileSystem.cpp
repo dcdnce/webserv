@@ -70,4 +70,23 @@ namespace fs
 		return buffer.str();
 	}
 
+	std::string getExtension(const std::string& path)
+	{
+		size_t pos = path.rfind('.');
+
+		if (pos == std::string::npos)
+			return "";
+
+		// Check for `?` or `#` in the extension
+		size_t pos2 = path.find('#', pos);
+
+		if (pos2 == std::string::npos)
+			pos2 = path.find('?', pos);
+
+		if (pos2 != std::string::npos)
+			return path.substr(pos, pos2 - pos);
+
+		return path.substr(pos);
+	}
+
 }

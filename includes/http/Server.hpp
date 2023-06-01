@@ -4,6 +4,7 @@
 #include "http/Response.hpp"
 #include "http/Request.hpp"
 #include "http/Client.hpp"
+#include "cgi/Cgi.hpp"
 
 namespace http
 {

@@ -19,5 +19,6 @@ namespace fs
 
 	std::vector<std::string> readDir(const std::string& path);
 	std::string readFile(const std::string& path);
+	std::string getExtension(const std::string& path);
 
 }

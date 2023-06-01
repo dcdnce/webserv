@@ -27,8 +27,39 @@ namespace http
 	void Response::setStatus(const Status &status) { this->_status = status; }
 
 	// ---------------------------------------------------------------------- //
+	//  Private Methods                                                       //
+	// ---------------------------------------------------------------------- //
+	void Response::_reset(void)
+	{
+		this->_status = OK;
+		this->_headers.clear();
+		this->_body.clear();
+	}
+
+	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
+	void Response::fromCGI(const std::string &cgiResponse)
+	{
+		std::stringstream ss(cgiResponse);
+		std::string line;
+
+		// Reset response
+		this->_reset();
+
+		// Get headers
+		while (std::getline(ss, line) && !line.empty())
+		{
+			size_t pos = line.find(':');
+			if (pos != std::string::npos)
+				this->_headers[line.substr(0, pos)] = line.substr(pos + 1);
+		}
+
+		// Get body
+		if (ss.tellg() != -1)
+			this->_body = ss.str().substr(ss.tellg());
+	}
+
 	std::string Response::toString(void) const
 	{
 		std::stringstream ss;

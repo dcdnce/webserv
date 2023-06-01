@@ -1,6 +1,8 @@
 #pragma once
 
 #include "http/http.hpp"
+#include "cgi/Cgi.hpp"
+#include "utils/FileSystem.hpp"
 
 #include <string>
 #include <vector>
@@ -15,7 +17,7 @@ class LocationBlock
 		typedef std::set<http::Method> methodsSet;
 		typedef std::vector<std::string> indexesVector;
 		typedef std::map<int, std::string> redirectionsMap;
-		typedef std::map<std::string, std::string> cgiMap;
+		typedef std::map<std::string, Cgi> cgiMap;
 
 		// ------------------------------------------------------------------ //
 		//  Attributes                                                        //

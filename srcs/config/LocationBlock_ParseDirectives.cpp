@@ -138,11 +138,22 @@ void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
 void LocationBlock::parseDirective_cgi(std::string line)
 {
 	std::vector<std::string> params = _extractParams(line);
+	Cgi	cgi;
 
 	if (params.size() != 2)
 		throw std::runtime_error("directive \"cgi\" has wrong number of arguments");
 
-	cgis[params[0]] = params[1];
+	if (!fs::exists(params[1]))
+		throw std::runtime_error("directive \"cgi\": path \"" + params[1] + "\" does not exist");
+
+	if (access(params[1].c_str(), X_OK) != 0)
+		throw std::runtime_error("directive \"cgi\": path \"" + params[1] + "\" is not executable");
+
+	cgi.setExtension(params[0]);
+	cgi.setPath(params[1]);
+
+
+	this->cgis[params[0]] = cgi;
 
 	#ifdef DEBUG
 		Logger::debug(true) << "ServerBlock::parseDirective_cgi: received line:" << line << std::endl;
