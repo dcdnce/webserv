@@ -1,0 +1,45 @@
+.main-box {
+	margin: 22px 22px 0px 22px;
+	padding: 22px;
+	border: 2px solid var(--blue-2);
+	border-radius: 10px;
+	box-shadow: 1px 5px 5px var(--blue-1);
+}
+
+header {
+		background: var(--blue-1);
+}
+
+nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+header ul {
+	min-width: 190px;
+	text-align: right;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+header ul li {
+	list-style-type: none;
+}
+
+.blinking {
+	animation: blinking 1.1s infinite;
+}
+
+@keyframes blinking {
+	50% {
+		opacity: 0;
+	}	
+}
+
+@media (max-width: 1000px) {
+	header ul {
+		flex-direction: column;
+	}
+}
