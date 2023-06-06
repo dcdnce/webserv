@@ -4,6 +4,8 @@
 #include "http/ClientManager.hpp"
 #include "http/Multiplexer.hpp"
 #include "http/Response.hpp"
+#include "http/URL.hpp"
+#include "utils/Logger.hpp"
 
 int	main(int ac, char **av)
 {

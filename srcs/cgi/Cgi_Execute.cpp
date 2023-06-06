@@ -1,63 +1,46 @@
 #include "cgi/Cgi.hpp"
-std::string	Cgi::executeGet(std::string const & uri) const
+std::string Cgi::executeGet(const std::string &filePath, const http::Request &req) const
 {
-	std::string filename, env_query;
+	std::vector<char *> av;
+	std::vector<char *> env;
+	std::string envVariable;
 
-	size_t i;
-	for (i = 0 ; i < uri.size() && uri[i] != '?' ; i++)
-		filename += uri[i];
-	for (i += 1; i < uri.size(); i++)
-		env_query += uri[i];
+	av.push_back(strdup(_path.c_str()));
+	av.push_back(strdup(filePath.c_str()));
+	av.push_back(NULL);
 
-	std::string env_method = "REQUEST_METHOD=GET";
-	env_query = "QUERY_STRING=" + env_query;
+	env.push_back(strdup("REQUEST_METHOD=GET"));
+	envVariable = "QUERY_STRING=";
+	if (req.getUrl().query.size())
+		envVariable += req.getUrl().query.substr(1);
+	env.push_back(strdup(envVariable.c_str()));
+	env.push_back(NULL);
 
-	char *env[3] = {
-		strdup(env_query.c_str()),
-		strdup(env_method.c_str()),
-		0
-	};
-
-	char *av[3] = {
-		strdup(_path.c_str()),
-		strdup(filename.c_str()),
-		0
-	};
-
-	return (_executeCgi(av, env, ""));
+	return (_executeCgi(av.data(), env.data(), ""));
 }
 
 
-std::string	Cgi::executePost(http::Request const & req) const
+std::string Cgi::executePost(const std::string &filePath, const http::Request &req) const
 {
+	std::vector<char *> av;
+	std::vector<char *> env;
+	std::string envVariable;
 
-	std::string	filename = req.getUri();
-	std::string	body = req.getBody();
-	std::map<std::string, std::string>	headers = req.getHeaders();
+	av.push_back(strdup(_path.c_str()));
+	av.push_back(strdup(filePath.c_str()));
+	av.push_back(NULL);
 
-	std::string	env_method = "REQUEST_METHOD=POST";
-	std::string	env_contentLength = "CONTENT_LENGTH=" + headers["Content-Length"];
-	std::string	env_contentType = "CONTENT_TYPE=" + headers["Content-Type"];
-	std::string	env_uploadDir = "UPLOAD_DIRECTORY=.";
+	env.push_back(strdup("REQUEST_METHOD=POST"));
+	envVariable = "QUERY_STRING=";
+	if (req.getUrl().query.size())
+		envVariable += req.getUrl().query.substr(1);
+	env.push_back(strdup(envVariable.c_str()));
+	envVariable = "CONTENT_LENGTH=" + req.getHeaders().at("Content-Length");
+	env.push_back(strdup(envVariable.c_str()));
+	env.push_back(strdup("UPLOAD_DIRECTORY=."));
+	env.push_back(NULL);
 
-	env_contentLength.pop_back();
-	env_contentType.pop_back();
-
-	char *env[5] = {
-		strdup(env_method.c_str()),
-		strdup(env_contentLength.c_str()),
-		strdup(env_contentType.c_str()),
-		strdup(env_uploadDir.c_str()),
-		0
-	};
-
-	char *av[3] = {
-		strdup(_path.c_str()),
-		strdup(filename.c_str()),
-		0
-	};
-
-	return (_executeCgi(av, env, body));
+	return (_executeCgi(av.data(), env.data(), req.getBody()));
 }
 
 std::string	Cgi::_executeCgi(char **av, char **env, std::string const & content) const
@@ -108,7 +91,7 @@ void	Cgi::_executeCgi_child(char **av, char **env, int *fd_out, int *fd_in, bool
 	execve(av[0], av, env);
 
 	// Returning to the caller means an error occured when calling execve
-	throw std::runtime_error("couldn't execve the cgi");
+	throw std::runtime_error("couldn't execve the cgi: " + std::string(strerror(errno)) + "\n");
 }
 
 std::string	Cgi::_executeCgi_parent(int *fd_out, int *fd_in, std::string const & content) const

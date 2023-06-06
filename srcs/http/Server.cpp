@@ -1,6 +1,6 @@
 #include "http/Server.hpp"
-
 #include "utils/FileSystem.hpp"
+#include "cgi/Cgi.hpp"
 
 namespace http
 {
@@ -46,14 +46,10 @@ namespace http
 		{
 			const std::string& uri = it->first;
 
-			Logger::info(true) << "Checking " << uri << std::endl;
 			// Check if the request uri matches the location uri as a prefix
-			if (request.getUri().compare(0, uri.size(), uri) == 0)
+			if (request.getUrl().path.compare(0, uri.size(), uri) == 0)
 				if (location == NULL || location->uri.size() < uri.size())
-				{
-					Logger::info(true) << "Switching to location " << uri << std::endl;
 					location = &(it->second);
-				}
 		}
 
 		if (location == NULL)
@@ -65,18 +61,20 @@ namespace http
 		// Handle autoindex
 		if (location->autoindex && !location->root.empty())
 		{
-			const std::string filePath = fs::joinPaths(location->root, request.getUri());
+			const std::string path = request.getUrl().path;
+			const std::string filePath = fs::joinPaths(location->root, path);
+
 			if (fs::isDir(filePath))
 			{
-				std::vector<std::string> files = fs::readDir(filePath);
+				const std::vector<std::string> files = fs::readDir(filePath);
 
 				response.setStatus(OK);
-				response.setBody("<html><body><h1>Index of " + request.getUri() + "</h1><hr><ul>");
+				response.setBody("<html><body><h1>Index of " + path + "</h1><hr><ul>");
 				for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
-					response.appendToBody("<li><a href=\"" + fs::joinPaths(request.getUri(), *it) + "\">" + *it + "</a></li>");
+					response.appendToBody("<li><a href=\"" + fs::joinPaths(path, *it) + "\">" + *it + "</a></li>");
 				response.appendToBody("</ul><hr></body></html>");
 			}
-			else if (fs::exists(filePath) && access(filePath.c_str(), R_OK) == 0)
+			else if (fs::exists(filePath) && fs::hasPermission(filePath, "r"))
 				response.setBody(fs::readFile(filePath));
 			return (response);
 		}
@@ -90,6 +88,7 @@ namespace http
 			for (LocationBlock::indexesVector::const_iterator it = location->indexes.begin(); it != location->indexes.end(); it++)
 			{
 				const std::string filePath = fs::joinPaths(location->root, *it);
+
 				if (fs::exists(filePath) && access(filePath.c_str(), R_OK) == 0)
 				{
 					response.setBody(fs::readFile(filePath));
@@ -103,10 +102,10 @@ namespace http
 		// Handle CGIs
 		if (location->cgis.size() > 0 && !location->root.empty())
 		{
-			const std::string extension = fs::getExtension(request.getUri());
+			const std::string extension = fs::getExtension(request.getUrl().path);
 
 			#ifdef DEBUG
-				Logger::info(true) << "Extension: " << extension << std::endl;
+			Logger::debug(true) << "Extension: " << extension << std::endl;
 			#endif
 
 			if (location->cgis.find(extension) == location->cgis.end())
@@ -116,19 +115,27 @@ namespace http
 			}
 
 			#ifdef DEBUG
-				Logger::info(true) << "CGI found" << std::endl;
+			Logger::debug(true) << "CGI found" << std::endl;
 			#endif
 
 			const Cgi &cgi = location->cgis.at(extension);
-			const std::string filePath = fs::joinPaths(location->root, request.getUri());
+
+			// Check if the CGI exists and is executable
+			if (!fs::exists(cgi.getPath()) || !fs::hasPermission(cgi.getPath(), "x"))
+			{
+				response.setStatus(NOT_FOUND);
+				return (response);
+			}
+
+			const std::string filePath = fs::joinPaths(location->root, request.getUrl().path);
 
 			switch (request.getMethod())
 			{
 				case GET:
-					response.fromCGI(cgi.executeGet(filePath));
+					response.fromCGI(cgi.executeGet(filePath, request));
 					break;
 				case POST:
-					response.fromCGI(cgi.executePost(request));
+					response.fromCGI(cgi.executePost(filePath, request));
 					break;
 				default:
 					response.setStatus(NOT_IMPLEMENTED);

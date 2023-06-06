@@ -7,12 +7,12 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	Request::Request(void):
 		_method(GET),
-		_uri("/")
+		_url("/")
 	{}
 
 	Request::Request(const std::string& rawRequest):
 		_method(GET),
-		_uri("/")
+		_url("/")
 	{
 		this->parse(rawRequest);
 	}
@@ -24,29 +24,30 @@ namespace http
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
 	const http::Method &Request::getMethod(void) const { return (this->_method); }
-	const std::string &Request::getUri(void) const { return (this->_uri); }
+	const http::URL &Request::getUrl(void) const { return (this->_url); }
 
-	void Request::setMethod(const Method &method) { this->_method = method; }
+	void Request::setMethod(const http::Method &method) { this->_method = method; }
 	void Request::setMethod(std::string const &method) { this->_method = http::methodsMap[method]; }
-	void Request::setUri(const std::string &uri) { this->_uri = uri; }
+	void Request::setUrl(const http::URL &url) { this->_url = url; }
+	void Request::setUrl(const std::string &url) { this->_url = http::URL(url); }
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void Request::parse(std::string const &rr)
+	void Request::parse(const std::string &rawRequest)
 	{
-		std::stringstream	rawRequest(rr);
+		std::stringstream	requestStream(rawRequest);
 
 		std::string method, uri, httpVersion;
-		rawRequest >> method >> uri >> httpVersion;
+		requestStream >> method >> uri >> httpVersion;
 		this->setMethod(method);
-		this->setUri(uri);
+		this->setUrl(uri);
 		this->setHttpVersion(httpVersion);
-		rawRequest.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		requestStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Parse headers
 		std::string line, headerKey, headerValue;
-		while (std::getline(rawRequest, line, '\n'))
+		while (std::getline(requestStream, line, '\n'))
 		{
 			std::size_t colonPos = line.find(':');
 			if (colonPos != std::string::npos)
@@ -60,15 +61,15 @@ namespace http
 		}
 
 		// Get entity body
-		if (rawRequest.tellg() != -1)
-			_body = rawRequest.str().substr(rawRequest.tellg());
+		if (requestStream.tellg() != -1)
+			_body = requestStream.str().substr(requestStream.tellg());
 	}
 
 	std::string Request::toString(void) const
 	{
 		std::stringstream ss;
 
-		ss << http::methodToStr(this->getMethod()) << " " << this->getUri() << " " << this->getHttpVersion() << "\r\n";
+		ss << http::methodToStr(this->getMethod()) << " " << this->getUrl().raw << " " << this->getHttpVersion() << "\r\n";
 		for (std::map<std::string, std::string>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); it++)
 			ss << it->first << ":" << it->second << "\r\n";
 		ss << "\r\n" << this->getBody();

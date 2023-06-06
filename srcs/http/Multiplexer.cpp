@@ -97,9 +97,9 @@ namespace http
 				if (FD_ISSET((*it)->getSocket(), &_readfds))
 				{
 					_clientManager.acceptConnection(**it);
-
 					#ifdef DEBUG
-					Logger::debug(true) << "Connection accepted on Socket [" << (*it)->getSocket() << "] " << std::endl;
+					Logger::debug(true) << "================================================" << std::endl;
+					Logger::debug(true) << "New connection on port: " << (*it)->getPort() << std::endl;
 					#endif
 				}
 
@@ -185,6 +185,11 @@ namespace http
 
 						client.parseRequest();
 
+						#ifdef DEBUG
+						Logger::debug(true) << "Request received from client " << client << ": " << std::endl;
+						Logger::debug(true) << client.getRawRequest() << std::endl;
+						#endif
+
 						// Client is ready to be processed
 						FD_SET(client.getSocket(), &_writefds);
 					}
@@ -193,6 +198,10 @@ namespace http
 				if (FD_ISSET(client.getSocket(), &_writefds))
 				{
 					Server *server = NULL;
+
+					#ifdef DEBUG
+					Logger::debug(true) << client << " " << methodToStr(client.getRequest().getMethod()) << " " << client.getRequest().getUrl().raw << std::endl;
+					#endif
 
 					// Find the server to handle the request
 					for (server_list::iterator sit = _servers.begin(); sit != _servers.end(); sit++)
@@ -204,17 +213,15 @@ namespace http
 
 					if (server != NULL)
 					{
-						#ifdef DEBUG
-						Logger::debug(true) << "Client " << client << " handled by server [" << server->getConfig().listens[0] << "]" << std::endl;
-						#endif
 						http::Response response = server->handleRequest(client);
 						client.send(response);
 					}
 					else
 					{
-						#ifdef DEBUG
-						Logger::debug(true) << "Client " << client << " not handled by any server" << std::endl;
-						#endif
+						// No server found, send a 404
+						http::Response response;
+						response.setStatus(NOT_FOUND);
+						client.send(response);
 					}
 
 					// REVIEW: Should we handle keep-alive connections ?

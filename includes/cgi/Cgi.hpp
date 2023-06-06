@@ -17,9 +17,9 @@ class Cgi
 		// ---------------------------------------------------------------------- //
 		//  Private Methods                                                       //
 		// ---------------------------------------------------------------------- //
-		std::string		_executeCgi(char **av, char **env, std::string const & content) const;
-		void			_executeCgi_child(char **av, char **env, int *fd_out, int *fd_in, bool willReceiveContent) const;
-		std::string		_executeCgi_parent(int *fd_out, int *fd_in, std::string const & content) const;
+		std::string _executeCgi(char **av, char **env, std::string const & content) const;
+		std::string _executeCgi_parent(int *fd_out, int *fd_in, std::string const & content) const;
+		void _executeCgi_child(char **av, char **env, int *fd_out, int *fd_in, bool willReceiveContent) const;
 
 	public:
 		// ------------------------------------------------------------------ //
@@ -32,14 +32,14 @@ class Cgi
 		// ------------------------------------------------------------------ //
 		//  Getters & Setters                                                 //
 		// ------------------------------------------------------------------ //
-		void	setExtension(std::string const extension);
-		void	setPath(std::string const extension);
-		std::string	getExtension(void);
-		std::string	getPath(void);
+		void setExtension(std::string const extension);
+		void setPath(std::string const extension);
+		const std::string& getExtension(void) const;
+		const std::string& getPath(void) const;
 
 		// ---------------------------------------------------------------------- //
 		//  Public Methods                                                        //
 		// ---------------------------------------------------------------------- //
-		std::string	executeGet(std::string const & uri) const;
-		std::string executePost(http::Request const & req) const;
+		std::string executeGet(const std::string &filePath, const http::Request &req) const;
+		std::string executePost(const std::string &filePath, const http::Request &req) const;
 };

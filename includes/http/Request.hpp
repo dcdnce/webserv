@@ -3,6 +3,7 @@
 #include <sstream>
 #include "http/http.hpp"
 #include "http/Message.hpp"
+#include "http/URL.hpp"
 
 namespace http
 {
@@ -14,7 +15,7 @@ namespace http
 		//  Attributes                                                        //
 		// ------------------------------------------------------------------ //
 		Method _method;
-		std::string _uri;
+		URL _url;
 
 	public:
 		// ------------------------------------------------------------------ //
@@ -28,19 +29,20 @@ namespace http
 		//  Getters & Setters                                                 //
 		// ------------------------------------------------------------------ //
 		const http::Method &getMethod(void) const;
-		const std::string &getUri(void) const;
+		const http::URL &getUrl(void) const;
 
-		void setMethod(const Method &method);
+		void setMethod(const http::Method &method);
 		void setMethod(std::string const &method);
-		void setUri(const std::string &uri);
+		void setUrl(const http::URL &url);
+		void setUrl(const std::string &url);
 
 		// ------------------------------------------------------------------ //
 		//  Public Methods                                                    //
 		// ------------------------------------------------------------------ //
-		void parse(std::string const &rr);
+		void parse(std::string const &rawRequest);
 		std::string toString(void) const;
 	};
-	
+
 	std::ostream &operator<<(std::ostream &os, const http::Request &request);
 
 }

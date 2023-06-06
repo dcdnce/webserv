@@ -76,7 +76,7 @@ run: all
 	@./$(NAME)
 
 debug: CXXFLAGS += -g -fsanitize=address -DDEBUG
-debug: re
+debug: all
 
 # $^ = all dependencies
 # $@ = target

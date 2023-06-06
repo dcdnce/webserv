@@ -7,13 +7,13 @@ namespace http
 	//  Constructors & Destructors                                            //
 	// ---------------------------------------------------------------------- //
 	URL::URL(const std::string &url):
-		_rawURL(url)
+		raw(url)
 	{
 		this->_parse(url);
 	}
 
 	URL::URL(const URL &copy):
-		_rawURL(copy._rawURL),
+		raw(copy.raw),
 		protocol(copy.protocol),
 		host(copy.host),
 		port(copy.port),
@@ -32,7 +32,7 @@ namespace http
 	{
 		if (this != &rhs)
 		{
-			this->_rawURL = rhs._rawURL;
+			this->raw = rhs.raw;
 			this->protocol = rhs.protocol;
 			this->host = rhs.host;
 			this->port = rhs.port;
