@@ -4,6 +4,7 @@
 		<title>webserv/bonus</title>
 		<link rel="stylesheet" href="./css/style.css">
 		<link rel="stylesheet" href="./css/normalize.css">
+		<script src="https://unpkg.com/feather-icons"></script>
 	</head>
 	<body>
 		<header class="main-box">
@@ -18,10 +19,26 @@
 		</header>
 		<main class="main-box">
 			<h2>bonus</h2>
-			<h3>perl test</h3>
-			<h3>python test</h3>
-			<h3>python upload</h3>
-
+			<h3>dictionary.py | GET</h3>
+			<form action="/cgi/dictionary.py" method="get">
+				<button><i data-feather="send"></i>test</button>
+			</form>
+			<h3>hello.pl | GET</h3>
+			<form action="/cgi/hello.pl" method="get">
+				<input type="text" placeholder="write a word" name="word">
+				<button><i data-feather="send"></i></button>
+			</form>
+			<h3>pokemon.py | POST</h3>
+			<form action="/cgi/pokemon.py" method="POST">
+				<input type="text" placeholder="pokemon name" name="pokemon">
+				<button><i data-feather="send"></i></button>
+			</form>
+			<h3>upload.py | POST</h3>
+			<form action="/cgi/pokemon.py" method="POST" enctype="multipart/form-data">
+				<input type="file" name="filename">
+				<button><i data-feather="send"></i></button>
+			</form>
 		</main>
+		<script defer>feather.replace()</script>
 	</body>
 </html>
