@@ -71,7 +71,12 @@ namespace fs
 		struct dirent* entry;
 
 		while ((entry = readdir(dir)) != NULL)
-			files.push_back(entry->d_name);
+		{
+			if (entry->d_type == DT_DIR)
+				files.push_back(std::string(entry->d_name) + "/");
+			else
+				files.push_back(entry->d_name);
+		}
 
 		closedir(dir);
 		return files;

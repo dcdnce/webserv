@@ -25,6 +25,12 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	const http::Method &Request::getMethod(void) const { return (this->_method); }
 	const http::URL &Request::getUrl(void) const { return (this->_url); }
+	int Request::getContentLength(void) const {
+		std::map<std::string, std::string>::const_iterator it = this->_headers.find("Content-Length");
+		if (it == this->_headers.end())
+			return (-1);
+		return (std::atoi(it->second.c_str()));
+	}
 
 	void Request::setMethod(const http::Method &method) { this->_method = method; }
 	void Request::setMethod(std::string const &method) { this->_method = http::methodsMap[method]; }
@@ -50,14 +56,16 @@ namespace http
 		while (std::getline(requestStream, line, '\n'))
 		{
 			std::size_t colonPos = line.find(':');
-			if (colonPos != std::string::npos)
-			{
-				headerKey = line.substr(0, colonPos);
-				headerValue = line.substr(colonPos + 1);
-				this->setHeader(headerKey, headerValue);
-			}
-			else
+			std::size_t valuePos = colonPos + 1;
+
+			if (colonPos == std::string::npos)
 				break;
+
+			while (std::isspace(line[valuePos]))
+				valuePos++;
+			headerKey = line.substr(0, colonPos);
+			headerValue = line.substr(valuePos);
+			this->setHeader(headerKey, headerValue);
 		}
 
 		// Get entity body

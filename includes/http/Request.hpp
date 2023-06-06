@@ -30,6 +30,7 @@ namespace http
 		// ------------------------------------------------------------------ //
 		const http::Method &getMethod(void) const;
 		const http::URL &getUrl(void) const;
+		int getContentLength(void) const;
 
 		void setMethod(const http::Method &method);
 		void setMethod(std::string const &method);

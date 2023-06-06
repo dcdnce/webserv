@@ -13,11 +13,11 @@
 #include "utils/Logger.hpp"
 
 #ifndef MAX_CLIENTS
-#define MAX_CLIENTS 10
+#define MAX_CLIENTS 100
 #endif
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 64
+#define BUFFER_SIZE 1024
 #endif
 
 namespace http

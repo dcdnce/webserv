@@ -18,6 +18,11 @@ namespace http
 			// -------------------------------------------------------------- //
 			ServerBlock	_config;
 
+			// -------------------------------------------------------------- //
+			//  Private Methods                                               //
+			// -------------------------------------------------------------- //
+			const http::Response _getErrorResponse(const http::Status &status) const;
+
 		public:
 			// -------------------------------------------------------------- //
 			//  Constructors & Destructors                                    //
