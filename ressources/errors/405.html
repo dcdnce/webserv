@@ -2,13 +2,49 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<link rel="stylesheet" type="text/css" href="errors.css">
-		<title>error 405</title>
+		<title>405 - Method Not Allowed</title>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wdth,wght@25..151,100..1000&display=swap">
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+				box-sizing: border-box;
+			}
+			body {
+				background-color: #ff493c;
+				font-family: 'Roboto Flex', monospace;
+				color: #fff;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+			}
+
+			section {
+				display: flex;
+				flex-direction: column;
+				gap: 1em;
+				border-left: solid 1em #fff;
+				padding-left: 1em;
+			}
+
+			section h1 {
+				font-size: 3em;
+				font-weight: 1000;
+				font-stretch: 151%;
+			}
+
+			section p {
+				font-size: 1.5em;
+				font-weight: 100;
+				max-width: 100ch;
+			}
+		</style>
 	</head>
 	<body>
-		<div class="error-middle">
-			<h1>Error 405 - Method Not Allowed <span class="blink">_</span></h1>
-			<p>the method received in the request-line is known by the server but not supported by the target resource</p>
-		</div>
+		<section>
+			<h1>ERROR 405 - Method Not Allowed</h1>
+			<p>I do not accept this method here, sorry.</p>
+		</section>
 	</body>
 </html>
