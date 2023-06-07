@@ -95,13 +95,7 @@ namespace http
 			// Handle new connections to sockets
 			for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)
 				if (FD_ISSET((*it)->getSocket(), &_readfds))
-				{
 					_clientManager.acceptConnection(**it);
-					#ifdef DEBUG
-					Logger::debug(true) << "================================================" << std::endl;
-					Logger::debug(true) << "New connection on port: " << (*it)->getPort() << std::endl;
-					#endif
-				}
 
 			// Handle client requests
 			for (int i = 0; i < _clientManager.getMaxClients(); i++)
@@ -186,8 +180,11 @@ namespace http
 						client.parseRequest();
 
 						#ifdef DEBUG
-						Logger::debug(true) << "Request received from client " << client << ": " << std::endl;
-						Logger::debug(true) << client.getRawRequest() << std::endl;
+						Logger::debug(true) << "================================================" << std::endl;
+						Logger::debug(true) << "\e[1D\e[1;97;44m RECV \e[0m "
+							<< methodToStr(client.getRequest().getMethod()) << " "
+							<< client.getRequest().getUrl().raw << " "
+							<< client.getRequest().getHttpVersion() << std::endl;
 						#endif
 
 						// Client is ready to be processed
@@ -198,10 +195,6 @@ namespace http
 				if (FD_ISSET(client.getSocket(), &_writefds))
 				{
 					Server *server = NULL;
-
-					#ifdef DEBUG
-					Logger::debug(true) << client << " " << methodToStr(client.getRequest().getMethod()) << " " << client.getRequest().getUrl().raw << std::endl;
-					#endif
 
 					// Find the server to handle the request
 					for (server_list::iterator sit = _servers.begin(); sit != _servers.end(); sit++)
@@ -214,6 +207,26 @@ namespace http
 					if (server != NULL)
 					{
 						http::Response response = server->handleRequest(client);
+
+
+						#ifdef DEBUG
+						const double bytes = response.getBody().size();
+						std::string humanReadableBytes;
+
+						if (bytes < 1024)
+							humanReadableBytes = std::to_string(bytes) + " B";
+						else if (bytes < 1024 * 1024)
+							humanReadableBytes = std::to_string(bytes / 1024) + " KB";
+						else if (bytes < 1024 * 1024 * 1024)
+							humanReadableBytes = std::to_string(bytes / (1024 * 1024)) + " MB";
+						else
+							humanReadableBytes = std::to_string(bytes / (1024 * 1024 * 1024)) + " GB";
+
+						Logger::debug(true) << "\e[1D\e[1;97;42m SEND \e[0m "
+							<< response.getStatus() << " ("
+							<< humanReadableBytes << ")" << std::endl;
+						#endif
+
 						client.send(response);
 					}
 					else
@@ -224,7 +237,9 @@ namespace http
 						client.send(response);
 					}
 
-					// REVIEW: Should we handle keep-alive connections ?
+					#ifdef DEBUG
+					Logger::debug(true) << "\e[1D\e[1;97;41m CLSD \e[0m " << client << std::endl;
+					#endif
 					FD_CLR(client.getSocket(), &_writefds);
 					client.close();
 				}

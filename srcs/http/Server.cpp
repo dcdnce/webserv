@@ -124,7 +124,7 @@ namespace http
 						response.fromCGI(cgi.executeGet(filePath, request));
 						break;
 					case POST:
-						response.fromCGI(cgi.executePost(filePath, request));
+						response.fromCGI(cgi.executePost(filePath, request, location->uploadPath));
 						break;
 					default:
 						response.setStatus(NOT_IMPLEMENTED);

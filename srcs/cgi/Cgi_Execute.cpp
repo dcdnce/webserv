@@ -20,7 +20,7 @@ std::string Cgi::executeGet(const std::string &filePath, const http::Request &re
 }
 
 
-std::string Cgi::executePost(const std::string &filePath, const http::Request &req) const
+std::string Cgi::executePost(const std::string &filePath, const http::Request &req, const std::string &uploadPath) const
 {
 	std::vector<char *> av;
 	std::vector<char *> env;
@@ -30,14 +30,27 @@ std::string Cgi::executePost(const std::string &filePath, const http::Request &r
 	av.push_back(strdup(filePath.c_str()));
 	av.push_back(NULL);
 
+	// Request method
 	env.push_back(strdup("REQUEST_METHOD=POST"));
+
+	// Query string
 	envVariable = "QUERY_STRING=";
 	if (req.getUrl().query.size())
 		envVariable += req.getUrl().query.substr(1);
 	env.push_back(strdup(envVariable.c_str()));
+
+	// Content Length
 	envVariable = "CONTENT_LENGTH=" + req.getHeaders().at("Content-Length");
 	env.push_back(strdup(envVariable.c_str()));
-	env.push_back(strdup("UPLOAD_DIRECTORY=."));
+
+	// Content Type
+	envVariable = "CONTENT_TYPE=" + req.getHeaders().at("Content-Type");
+	env.push_back(strdup(envVariable.c_str()));
+
+	// Upload directory
+	envVariable = "UPLOAD_PATH=" + uploadPath;
+	env.push_back(strdup(envVariable.c_str()));
+
 	env.push_back(NULL);
 
 	return (_executeCgi(av.data(), env.data(), req.getBody()));

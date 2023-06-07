@@ -41,5 +41,5 @@ class Cgi
 		//  Public Methods                                                        //
 		// ---------------------------------------------------------------------- //
 		std::string executeGet(const std::string &filePath, const http::Request &req) const;
-		std::string executePost(const std::string &filePath, const http::Request &req) const;
+		std::string executePost(const std::string &filePath, const http::Request &req, const std::string &uploadPath) const;
 };

@@ -15,7 +15,7 @@ LocationBlock::directiveFuncPtr LocationBlock::whichDirective(std::string const 
 		return (&LocationBlock::parseDirective_autoindex);
 	if (str == "index")
 		return (&LocationBlock::parseDirective_index);
-	if (str == "uploaded_files_path")
+	if (str == "upload_path")
 		return (&LocationBlock::parseDirective_uploadedFilesPath);
 	if (str == "cgi")
 		return (&LocationBlock::parseDirective_cgi);
@@ -126,7 +126,7 @@ void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
-		throw std::runtime_error("directive \"uploaded_files_path\" has wrong number of arguments");
+		throw std::runtime_error("directive \"upload_path\" has wrong number of arguments");
 
 	uploadPath = params[0];
 
