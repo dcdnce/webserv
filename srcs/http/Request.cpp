@@ -40,37 +40,38 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void Request::parse(const std::string &rawRequest)
+	void Request::parse(const std::string& rawRequest)
 	{
-		std::stringstream	requestStream(rawRequest);
+		std::istringstream requestStream(rawRequest);
 
 		std::string method, uri, httpVersion;
 		requestStream >> method >> uri >> httpVersion;
-		this->setMethod(method);
-		this->setUrl(uri);
-		this->setHttpVersion(httpVersion);
+		setMethod(method);
+		setUrl(uri);
+		setHttpVersion(httpVersion);
 		requestStream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Parse headers
-		std::string line, headerKey, headerValue;
+		std::string line;
 		while (std::getline(requestStream, line, '\n'))
 		{
-			std::size_t colonPos = line.find(':');
-			std::size_t valuePos = colonPos + 1;
-
+			const std::size_t colonPos = line.find(':');
 			if (colonPos == std::string::npos)
 				break;
 
+			std::size_t valuePos = colonPos + 1;
 			while (std::isspace(line[valuePos]))
-				valuePos++;
-			headerKey = line.substr(0, colonPos);
-			headerValue = line.substr(valuePos);
-			this->setHeader(headerKey, headerValue);
+				++valuePos;
+
+			const std::string headerKey = line.substr(0, colonPos);
+			const std::string headerValue = line.substr(valuePos);
+			setHeader(headerKey, headerValue);
 		}
 
 		// Get entity body
 		if (requestStream.tellg() != -1)
 			_body = requestStream.str().substr(requestStream.tellg());
+
 	}
 
 	std::string Request::toString(void) const
