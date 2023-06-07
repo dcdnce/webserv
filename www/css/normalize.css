@@ -82,3 +82,7 @@ form button svg {
 	width: 14px;
 	height: 14px;
 }
+
+li {
+	list-style-type: none;
+}
