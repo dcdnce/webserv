@@ -4,18 +4,28 @@
 		<title>webserv/mandatoire</title>
 		<link rel="stylesheet" href="./css/style.css">
 		<link rel="stylesheet" href="./css/normalize.css">
+		<script src="./js/login.js" defer></script>
 	</head>
 	<body>
 		<header class="main-box">
 			<nav>
-				<h1>webserv<span class="blinking">_</span></h1>
-				<ul>
-					<li><a href="index.html">/mandatoire</a><li>
-					<li><a href="bonus.html">/bonus</a></li>
-				</ul>
+				<div id="header-left">
+					<h1>weeb</h1><h1>serv<span class="blinking">_</span></h1>
+					<p style="padding: 5px 0px 0px 5px;"><strong>mrattez</strong> et <strong>pforesti</strong></p>
+				</div>
+				<div id="header-right">
+					<form action="/cgi/create_cookie.py" method="get" id="cookie_form">
+						<input type="text" placeholder="username" name="username">
+						<button>login</button>
+					</form>
+					<p class="display-none">Welcome, </p>
+					<ul>
+						<li><a href="index.html">/mandatoire</a><li>
+						<li><a href="bonus.html">/bonus</a></li>
+					</ul>
+				</div>
 			</nav>
-			<p style="padding-left: 5px;"><strong>mrattez</strong> et <strong>pforesti</strong></p>
-		</header>
+					</header>
 		<main class="main-box">
 			<h2>mandatoire</h2>
 			<h3>codes erreurs</h3>

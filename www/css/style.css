@@ -7,25 +7,39 @@
 }
 
 header {
-		background: var(--blue-1);
+	background: var(--blue-1);
 }
 
 nav {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-end;
-}
-
-header ul {
-	min-width: 190px;
-	text-align: right;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 }
 
-header ul li {
-	list-style-type: none;
+#header-left {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+#header-right {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+#header-right form {
+	padding: 0;
+}
+
+#header-right ul {
+	min-width: 190px;
+	text-align: right;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 .blinking {
@@ -39,7 +53,15 @@ header ul li {
 }
 
 @media (max-width: 500px) {
-	header ul {
+	#header-right ul {
 		flex-direction: column;
 	}
+	nav {
+		flex-direction: column;
+		gap: 5px;
+	}
+}
+
+.display-none {
+	display: none;
 }
