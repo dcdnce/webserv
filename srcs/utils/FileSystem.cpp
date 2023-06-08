@@ -101,4 +101,18 @@ namespace fs
 		return path.substr(pos);
 	}
 
+	std::string replaceRoot(const std::string &path, const std::string &root, const std::string &newRoot)
+	{
+		std::string result = newRoot;
+		std::string::size_type pos = path.find(root);
+
+		if (result.back() != '/')
+			result += '/';
+
+		if (pos != std::string::npos)
+			result += path.substr(pos + root.size());
+
+		return (result);
+	}
+
 }

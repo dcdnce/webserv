@@ -93,13 +93,13 @@ namespace http
 		if (location->acceptedMethods.size() > 0 && location->acceptedMethods.find(request.getMethod()) == location->acceptedMethods.end())
 			return (_getErrorResponse(METHOD_NOT_ALLOWED));
 
-		#ifdef DEBUG
-		Logger::debug(true) << "Serving file: " << request.getUrl().path << std::endl;
-		#endif
-
 		// Handle static files
-		const std::string filePath = fs::joinPaths(location->root, request.getUrl().path);
+		const std::string filePath = fs::replaceRoot(request.getUrl().path, location->uri, location->root);
 		const std::string fileExtension = fs::getExtension(filePath);
+
+		#ifdef DEBUG
+		Logger::debug(true) << "Serving file: " << filePath << std::endl;
+		#endif
 
 		if (!fs::exists(filePath))
 			return (_getErrorResponse(NOT_FOUND));
