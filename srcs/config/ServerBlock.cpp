@@ -9,6 +9,10 @@
 
 ServerBlock::ServerBlock()
 {
+	errorPages[400] = "./ressources/errors/400.html";
+	errorPages[403] = "./ressources/errors/403.html";
+	errorPages[404] = "./ressources/errors/404.html";
+	errorPages[405] = "./ressources/errors/405.html";
 }
 
 ServerBlock::~ServerBlock()

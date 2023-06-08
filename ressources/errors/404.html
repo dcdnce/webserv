@@ -1,50 +1,28 @@
-<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>404 - Not Found</title>
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wdth,wght@25..151,100..1000&display=swap">
+		<title>404 - Page Not Found</title>
 		<style>
-			* {
-				padding: 0;
-				margin: 0;
-				box-sizing: border-box;
-			}
-			body {
-				background-color: #ff493c;
-				font-family: 'Roboto Flex', monospace;
-				color: #fff;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 100vh;
-			}
-
-			section {
+			#error {
 				display: flex;
 				flex-direction: column;
-				gap: 1em;
-				border-left: solid 1em #fff;
-				padding-left: 1em;
+				align-items: center;
+				justify-content: flex-start;
 			}
-
-			section h1 {
-				font-size: 3em;
-				font-weight: 1000;
-				font-stretch: 151%;
+			#server {
+				border-top: 2px black solid;
+				text-align: center;
 			}
-
-			section p {
-				font-size: 1.5em;
-				font-weight: 100;
-				max-width: 100ch;
+			h1 {
+				font-size: 48px;
 			}
 		</style>
 	</head>
 	<body>
-		<section>
+		<section id="error">
 			<h1>ERROR 404 - Not Found</h1>
 			<p>We couln't find the ressource you were looking for.</p>
 		</section>
+		<p id="server">weebserv v1.0</p>
 	</body>
 </html>
