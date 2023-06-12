@@ -56,12 +56,20 @@ namespace http
 		headerReceived = false;
 	}
 
+	void Client::clear(void)
+	{
+		_host = Host();
+		_rawRequest.clear();
+		_request = Request();
+		headerReceived = false;
+	}
+
 	void Client::receive(void)
 	{
-		char	buffer[BUFFER_SIZE];
+		char	buffer[BUFFER_SIZE] = {0};
 		int		bytes = 0;
 
-		if ((bytes = ::recv(_socket_fd, buffer, BUFFER_SIZE, 0)) == -1 && errno != EAGAIN)
+		if ((bytes = ::recv(_socket_fd, buffer, BUFFER_SIZE - 1, 0)) == -1 && errno != EAGAIN)
 			throw std::runtime_error("Client::receive: abort: recv(): " + std::string(strerror(errno)));
 		else if (bytes == 0)
 			throw ClientDisconnectedException();
@@ -75,12 +83,18 @@ namespace http
 			throw std::runtime_error("Client::send: abort: send()");
 	}
 
-	void Client::send(const Response &response) const
+	int Client::send(const Response &response) const
 	{
 		std::string rawResponse = response.toString();
+		int	ret;
 
-		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0) == -1)
+		ret = ::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0);
+
+		if (ret == -1) {
 			throw std::runtime_error("Client::send: abort: send()");
+		}
+
+		return (ret);
 	}
 
 	bool Client::isOccupied(void) const

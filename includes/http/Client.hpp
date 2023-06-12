@@ -46,9 +46,10 @@ namespace http
 			// -------------------------------------------------------------- //
 			void accept(const http::Socket& socket);
 			void close(void);
+			void clear(void);
 			void receive(void);
 			void send(const std::string &rawResponse) const;
-			void send(const Response &response) const;
+			int send(const Response &response) const;
 			bool isOccupied(void) const;
 			void parseRequest(void);
 

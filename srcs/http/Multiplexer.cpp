@@ -93,9 +93,11 @@ namespace http
 			}
 
 			// Handle new connections to sockets
-			for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)
-				if (FD_ISSET((*it)->getSocket(), &_readfds))
+			for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++) {
+				if (FD_ISSET((*it)->getSocket(), &_readfds)) {
 					_clientManager.acceptConnection(**it);
+				}
+			}
 
 			// Handle client requests
 			for (int i = 0; i < _clientManager.getMaxClients(); i++)
@@ -127,6 +129,7 @@ namespace http
 						{
 							#ifdef DEBUG
 							Logger::debug(true) << "Client [" << client << "] error" << std::endl;
+							std::cout << e.what() << std::endl;
 							#endif
 
 							client.close();
@@ -191,10 +194,10 @@ namespace http
 						FD_SET(client.getSocket(), &_writefds);
 					}
 				}
-
 				if (FD_ISSET(client.getSocket(), &_writefds))
 				{
 					Server *server = NULL;
+					int	send_ret = 1;
 
 					// Find the server to handle the request
 					for (server_list::iterator sit = _servers.begin(); sit != _servers.end(); sit++)
@@ -207,7 +210,6 @@ namespace http
 					if (server != NULL)
 					{
 						http::Response response = server->handleRequest(client);
-
 
 						#ifdef DEBUG
 						const double bytes = response.getBody().size();
@@ -227,21 +229,28 @@ namespace http
 							<< humanReadableBytes << ")" << std::endl;
 						#endif
 
-						client.send(response);
+						send_ret = client.send(response);
 					}
 					else
 					{
 						// No server found, send a 404
 						http::Response response;
 						response.setStatus(NOT_FOUND);
-						client.send(response);
+						send_ret = client.send(response);
 					}
 
-					#ifdef DEBUG
-					Logger::debug(true) << "\e[1D\e[1;97;41m CLSD \e[0m " << client << std::endl;
-					#endif
 					FD_CLR(client.getSocket(), &_writefds);
-					client.close();
+					if (send_ret == 0)
+					{
+						#ifdef DEBUG
+						Logger::debug(true) << "\e[1D\e[1;97;41m CLSD \e[0m " << client << std::endl;
+						#endif
+						client.close();
+					}
+					else
+					{
+						client.clear();
+					}
 				}
 			}
 		}
