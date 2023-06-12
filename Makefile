@@ -1,3 +1,5 @@
+MAKEFLAGS += -j8
+
 ################################################################################
 # SOURCES                                                                      #
 ################################################################################
@@ -14,7 +16,7 @@ OBJS	:=	$(SRCS:.cpp=.o)
 NAME		:=	webserv
 
 CXX			:=	c++
-CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98
+CXXFLAGS	:=	-Wall -Wextra -Werror -std=c++98 -ofast
 
 INCLUDES	:=	-Iincludes
 LIBS		:=
@@ -92,6 +94,8 @@ fclean: clean
 	@rm -f $(NAME)
 	@echo "$(ERROR) $(NAME) removed $(RESET)"
 
-re: fclean all
+re:
+	make fclean
+	make all
 
 .PHONY: all run debug clean fclean re
