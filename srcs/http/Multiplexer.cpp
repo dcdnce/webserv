@@ -72,7 +72,11 @@ namespace http
 
 	void	Multiplexer::listen(void)
 	{
-		int	ret = 0;
+		struct timeval tv;
+		int ret = 0;
+
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
 
 		// Setup sockets to listen
 		for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)
@@ -86,7 +90,7 @@ namespace http
 			reset();
 
 			// Wait for an event
-			if ((ret = select(_maxfd + 1, &_readfds, &_writefds, NULL, NULL)) == -1)
+			if ((ret = select(_maxfd + 1, &_readfds, &_writefds, NULL, &tv)) == -1)
 			{
 				perror("select");
 				exit(EXIT_FAILURE);
@@ -207,7 +211,6 @@ namespace http
 					if (server != NULL)
 					{
 						http::Response response = server->handleRequest(client);
-
 
 						#ifdef DEBUG
 						const double bytes = response.getBody().size();

@@ -10,6 +10,12 @@ namespace http
 		http::methodsMap["GET"] = GET;
 		http::methodsMap["POST"] = POST;
 		http::methodsMap["DELETE"] = DELETE;
+		http::methodsMap["PUT"] = PUT;
+		http::methodsMap["HEAD"] = HEAD;
+		http::methodsMap["CONNECT"] = CONNECT;
+		http::methodsMap["OPTIONS"] = OPTIONS;
+		http::methodsMap["TRACE"] = TRACE;
+		http::methodsMap["PATCH"] = PATCH;
 
 		// INFORMATIONAL
 		http::reasonsMap[CONTINUE] = "Continue";
@@ -89,6 +95,12 @@ namespace http
 		if (method == GET) return ("GET");
 		if (method == POST) return ("POST");
 		if (method == DELETE) return ("DELETE");
+		if (method == PUT) return ("PUT");
+		if (method == HEAD) return ("HEAD");
+		if (method == OPTIONS) return ("OPTIONS");
+		if (method == TRACE) return ("TRACE");
+		if (method == CONNECT) return ("CONNECT");
+		if (method == PATCH) return ("PATCH");
 
 		return ("");
 	}
@@ -107,5 +119,14 @@ namespace http
 	bool isErrorServer(int const code)
 	{
 		return (code >= 500 && code <= 511 && code != 509);
+	}
+
+	bool isMethodImplemented(http::Method const & method)
+	{
+		return (
+			method == GET ||
+			method == POST ||
+			method == DELETE
+		);
 	}
 }

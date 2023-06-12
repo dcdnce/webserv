@@ -33,7 +33,12 @@ namespace http
 	}
 
 	void Request::setMethod(const http::Method &method) { this->_method = method; }
-	void Request::setMethod(std::string const &method) { this->_method = http::methodsMap[method]; }
+	void Request::setMethod(std::string const &method)
+	{
+		if (http::methodsMap.find(method) == http::methodsMap.end())
+			this->_method = INVALID;
+		this->_method = http::methodsMap[method];
+	}
 	void Request::setUrl(const http::URL &url) { this->_url = url; }
 	void Request::setUrl(const std::string &url) { this->_url = http::URL(url); }
 
@@ -84,6 +89,17 @@ namespace http
 		ss << "\r\n" << this->getBody();
 
 		return (ss.str());
+	}
+
+	bool Request::isValid(void) const
+	{
+		if (this->getMethod() == INVALID)
+			return (false);
+		if (this->getUrl().raw.empty())
+			return (false);
+		if (this->getHttpVersion().empty() || this->getHttpVersion() != HTTP_VERSION)
+			return (false);
+		return (true);
 	}
 
 	// ---------------------------------------------------------------------- //

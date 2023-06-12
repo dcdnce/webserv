@@ -27,9 +27,16 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	enum Method
 	{
+		INVALID,
 		GET,
 		POST,
-		DELETE
+		DELETE,
+		PUT,
+		HEAD,
+		CONNECT,
+		OPTIONS,
+		TRACE,
+		PATCH
 	};
 
 	enum Status
@@ -119,7 +126,9 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	void initiateConstants(void);
 	std::string	methodToStr(http::Method const & method);
+
 	bool isRedirection(int const code);
 	bool isErrorClient(int const code);
 	bool isErrorServer(int const code);
+	bool isMethodImplemented(http::Method const & method);
 }

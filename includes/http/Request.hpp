@@ -42,6 +42,7 @@ namespace http
 		// ------------------------------------------------------------------ //
 		void parse(std::string const &rawRequest);
 		std::string toString(void) const;
+		bool isValid(void) const;
 	};
 
 	std::ostream &operator<<(std::ostream &os, const http::Request &request);

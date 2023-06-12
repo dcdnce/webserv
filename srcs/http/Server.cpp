@@ -74,6 +74,14 @@ namespace http
 		http::Response response;
 		const LocationBlock *location = NULL;
 
+		// Check if the request if valid
+		if (!request.isValid())
+			return (_getErrorResponse(BAD_REQUEST));
+
+		// Check for unimplemented methods
+		if (isMethodImplemented(request.getMethod()) == false)
+			return (_getErrorResponse(NOT_IMPLEMENTED));
+
 		// Check if the payload is too large
 		if (_config.maxBodySize > 0 && request.getContentLength() > -1 && request.getContentLength() > _config.maxBodySize)
 			return (_getErrorResponse(PAYLOAD_TOO_LARGE));
@@ -98,7 +106,7 @@ namespace http
 		const std::string fileExtension = fs::getExtension(filePath);
 
 		#ifdef DEBUG
-		Logger::debug(true) << "Serving file: " << filePath << std::endl;
+		Logger::debug(true) << "Handling file: " << filePath << std::endl;
 		#endif
 
 		if (!fs::exists(filePath))
