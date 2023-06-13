@@ -75,7 +75,7 @@ namespace http
 
 		// Get entity body
 		if (requestStream.tellg() != -1)
-			_body = requestStream.str().substr(requestStream.tellg());
+			_body = rawRequest.substr(requestStream.tellg());
 
 	}
 

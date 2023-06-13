@@ -38,7 +38,13 @@ namespace http
 	}
 
 	Multiplexer::~Multiplexer(void)
-	{}
+	{
+		for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)
+			delete *it;
+
+		for (server_list::iterator it = _servers.begin(); it != _servers.end(); it++)
+			delete *it;
+	}
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
@@ -95,6 +101,9 @@ namespace http
 				perror("select");
 				exit(EXIT_FAILURE);
 			}
+
+			if (ret == 0)
+				continue;
 
 			// Handle new connections to sockets
 			for (socket_list::iterator it = _sockets.begin(); it != _sockets.end(); it++)

@@ -10,7 +10,7 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/webserv",
 			"args": [
-				"./configs/valid/servers.conf"
+				"./configs/servers_mrattez.conf"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

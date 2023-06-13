@@ -1,6 +1,7 @@
 # Imports
 import cgi
 import requests
+import cgitb; cgitb.enable()
 
 # Get the parameters
 params = cgi.FieldStorage()

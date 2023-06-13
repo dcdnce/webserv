@@ -7,7 +7,8 @@
 #include <vector>
 #include <map>
 
-ServerBlock::ServerBlock()
+ServerBlock::ServerBlock():
+	maxBodySize(-1)
 {
 	errorPages[400] = "./ressources/errors/400.html";
 	errorPages[403] = "./ressources/errors/403.html";

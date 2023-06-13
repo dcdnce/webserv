@@ -90,7 +90,7 @@ namespace http
 
 	void Client::parseRequest(void)
 	{
-		_request = Request(_rawRequest);
+		_request.parse(_rawRequest);
 	}
 
 	// ---------------------------------------------------------------------- //
