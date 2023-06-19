@@ -98,8 +98,8 @@ namespace http
 			// Wait for an event
 			if ((ret = select(_maxfd + 1, &_readfds, &_writefds, NULL, &tv)) == -1)
 			{
-				perror("select");
-				exit(EXIT_FAILURE);
+				Logger::error(true) << "select() failed: " << strerror(errno) << std::endl;
+				break;
 			}
 
 			if (ret == 0)
@@ -118,9 +118,12 @@ namespace http
 				if (!client.isOccupied())
 					continue;
 
+				// ---------------------------------------------------------- //
+				//  Reading client's request                                  //
+				// ---------------------------------------------------------- //
 				if (FD_ISSET(client.getSocket(), &_readfds))
 				{
-					// Receive request headers
+					// --- Receive request headers --- //
 					if (!client.headerReceived)
 					{
 						try
@@ -153,7 +156,7 @@ namespace http
 						client.headerReceived = true;
 					}
 
-					// Receive request body
+					// --- Receive request body --- //
 					if (client.headerReceived)
 					{
 						if (client.getRequest().hasHeader("Content-Length"))
@@ -222,24 +225,41 @@ namespace http
 						http::Response response = server->handleRequest(client);
 
 						#ifdef DEBUG
-						const double bytes = response.getBody().size();
-						std::string humanReadableBytes;
+						double bytes = response.getBody().size();
+						std::string unit = "B";
+						const std::string units[] = {"KB", "MB", "GB", "TB", ""};
 
-						if (bytes < 1024)
-							humanReadableBytes = std::to_string(bytes) + " B";
-						else if (bytes < 1024 * 1024)
-							humanReadableBytes = std::to_string(bytes / 1024) + " KB";
-						else if (bytes < 1024 * 1024 * 1024)
-							humanReadableBytes = std::to_string(bytes / (1024 * 1024)) + " MB";
-						else
-							humanReadableBytes = std::to_string(bytes / (1024 * 1024 * 1024)) + " GB";
+						for (int i = 0; !units[i].empty() && bytes > 1024; i++)
+						{
+							bytes /= 1024;
+							unit = units[i];
+						}
 
-						Logger::debug(true) << "\e[1D\e[1;97;42m SEND \e[0m "
-							<< response.getStatus() << " ("
-							<< humanReadableBytes << ")" << std::endl;
+						// Round to 2 decimals
+						Logger::debug(true) << "\e[1D\e[1;97;42m SEND \e[0m " << response.getStatus()
+							// Only show 2 decimals if needed
+							<< " (" << std::fixed << std::setprecision(2) << bytes << unit << ")" << std::endl;
 						#endif
 
-						client.send(response);
+						try { client.send(response); }
+						catch(const http::Client::ClientDisconnectedException& e)
+						{
+							#ifdef DEBUG
+							Logger::debug(true) << "Client [" << client << "] disconnected" << std::endl;
+							#endif
+
+							client.close();
+							continue;
+						}
+						catch(const std::exception& e)
+						{
+							#ifdef DEBUG
+							Logger::debug(true) << "Client [" << client << "] error: " << strerror(errno) << std::endl;
+							#endif
+
+							client.close();
+							continue;
+						}
 					}
 					else
 					{

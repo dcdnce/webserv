@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <sstream>
 #include <fstream>
+#include <sys/stat.h>
 
 namespace fs
 {
@@ -22,5 +23,8 @@ namespace fs
 	std::string readFile(const std::string& path);
 	std::string getExtension(const std::string& path);
 	std::string replaceRoot(const std::string &path, const std::string &root, const std::string &newRoot);
+	bool deleteDirectory(const std::string &path);
+	bool deleteFile(const std::string &path);
+	bool remove(const std::string &path);
 
 }

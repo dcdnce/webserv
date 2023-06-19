@@ -37,6 +37,11 @@ namespace http
 		if ((_socket_fd = ::accept(socket.getSocket(), (struct sockaddr *)&addr, &addr_len)) == -1)
 			throw std::runtime_error("Client::accept: abort: accept()");
 
+		// TODO: Add this when the Client and the Multiplexer are ready to
+		//       handle non-blocking send
+		// if (fcntl(_socket_fd, F_SETFL, O_NONBLOCK) == -1)
+		// 	throw std::runtime_error("Client::accept: abort: fcntl()");
+
 		_host.setAddr(addr);
 		// Set the port to the socket's port so that the server can be identified
 		_host.setPort(socket.getPort());
@@ -71,8 +76,11 @@ namespace http
 
 	void Client::send(const std::string& rawResponse) const
 	{
+		// TODO: remove this
 		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0) == -1)
 			throw std::runtime_error("Client::send: abort: send()");
+
+		// TODO: Send the response in chunks
 	}
 
 	void Client::send(const Response &response) const

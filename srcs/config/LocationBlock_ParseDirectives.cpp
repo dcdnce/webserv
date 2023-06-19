@@ -83,11 +83,11 @@ void LocationBlock::parseDirective_return(std::string line)
 		throw std::runtime_error("directive \"return\" error code not recognized");
 	}
 
-	redirections[httpcode] = params[params.size() - 1];
+	redirection = std::make_pair(static_cast<http::Status>(httpcode), params[1]);
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_return: received line:" << line << std::endl;
-#endif
+	#endif
 }
 
 void LocationBlock::parseDirective_autoindex(std::string line)

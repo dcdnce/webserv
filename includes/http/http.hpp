@@ -13,7 +13,7 @@
 #include "utils/Logger.hpp"
 
 #ifndef MAX_CLIENTS
-#define MAX_CLIENTS 500
+#define MAX_CLIENTS 512
 #endif
 
 #ifndef BUFFER_SIZE
@@ -41,6 +41,9 @@ namespace http
 
 	enum Status
 	{
+		// NONE
+		NONE = -1,
+
 		// INFORMATIONAL
 		CONTINUE = 100,
 		SWITCHING_PROTOCOLS = 101,

@@ -74,15 +74,12 @@ namespace http
 		http::Response response;
 		const LocationBlock *location = NULL;
 
-		// Check if the request if valid
 		if (!request.isValid())
 			return (_getErrorResponse(BAD_REQUEST));
 
-		// Check for unimplemented methods
 		if (isMethodImplemented(request.getMethod()) == false)
 			return (_getErrorResponse(NOT_IMPLEMENTED));
 
-		// Check if the payload is too large
 		if (_config.maxBodySize > 0 && request.getContentLength() > -1 && request.getContentLength() > _config.maxBodySize)
 			return (_getErrorResponse(PAYLOAD_TOO_LARGE));
 
@@ -114,6 +111,25 @@ namespace http
 
 		if (!fs::hasPermission(filePath, "r"))
 			return (_getErrorResponse(FORBIDDEN));
+
+		if (location->redirection.first != http::NONE)
+		{
+			response.setStatus(location->redirection.first);
+			response.setHeader("Location", location->redirection.second);
+			return (response);
+		}
+
+		if (request.getMethod() == http::DELETE)
+		{
+			if (filePath == location->root || filePath == location->uploadPath)
+				return (_getErrorResponse(FORBIDDEN));
+
+			if (!fs::remove(filePath))
+				return (_getErrorResponse(FORBIDDEN));
+
+			response.setStatus(NO_CONTENT);
+			return (response);
+		}
 
 		if (!fs::isDir(filePath))
 		{

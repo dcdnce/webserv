@@ -29,13 +29,12 @@ namespace fs
 
 	bool	isDir(const std::string& path)
 	{
-		DIR* dir = opendir(path.c_str());
+		struct stat s;
 
-		if (dir == NULL)
+		if (stat(path.c_str(), &s) == -1)
 			return false;
 
-		closedir(dir);
-		return true;
+		return S_ISDIR(s.st_mode);
 	}
 
 	bool	isFile(const std::string& path)
@@ -87,6 +86,9 @@ namespace fs
 		std::ifstream file(path);
 		std::stringstream buffer;
 
+		if (!file.is_open())
+			return "";
+
 		buffer << file.rdbuf();
 		return buffer.str();
 	}
@@ -113,6 +115,44 @@ namespace fs
 			result += path.substr(pos + root.size());
 
 		return (result);
+	}
+
+	bool deleteFile(const std::string &path)
+	{
+		return (::unlink(path.c_str()) == 0);
+	}
+
+	bool deleteDirectory(const std::string &path)
+	{
+		DIR* dir = opendir(path.c_str());
+
+		if (dir == NULL)
+			return false;
+
+		for (struct dirent* entry = readdir(dir); entry != NULL; entry = readdir(dir))
+		{
+			const std::string name = entry->d_name;
+
+			if (name == "." || name == "..")
+				continue;
+
+			const std::string newPath = joinPaths(path, name);
+
+			if (entry->d_type == DT_DIR && !deleteDirectory(newPath))
+				return false;
+			else if (!deleteFile(newPath))
+				return false;
+		}
+
+		closedir(dir);
+		return (::rmdir(path.c_str()) == 0);
+	}
+
+	bool remove(const std::string &path)
+	{
+		if (isDir(path))
+			return deleteDirectory(path);
+		return deleteFile(path);
 	}
 
 }

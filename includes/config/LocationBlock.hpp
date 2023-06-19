@@ -16,7 +16,6 @@ class LocationBlock
 		// ------------------------------------------------------------------ //
 		typedef std::set<http::Method> methodsSet;
 		typedef std::vector<std::string> indexesVector;
-		typedef std::map<int, std::string> redirectionsMap;
 		typedef std::map<std::string, Cgi> cgiMap;
 
 		// ------------------------------------------------------------------ //
@@ -28,7 +27,7 @@ class LocationBlock
 		bool autoindex;
 		methodsSet acceptedMethods;
 		indexesVector indexes;
-		redirectionsMap redirections;
+		std::pair<http::Status, std::string> redirection;
 		cgiMap cgis;
 
 	private:

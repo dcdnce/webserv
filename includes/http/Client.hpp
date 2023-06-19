@@ -1,6 +1,7 @@
 #pragma once
 
 #include <exception>
+#include <fcntl.h>
 
 #include "http.hpp"
 #include "http/Host.hpp"

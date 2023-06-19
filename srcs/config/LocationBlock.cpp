@@ -4,7 +4,8 @@ LocationBlock::LocationBlock():
 	uri("/"),
 	root("."),
 	uploadPath("."),
-	autoindex(false)
+	autoindex(false),
+	redirection(std::make_pair(http::NONE, ""))
 {
 	acceptedMethods.insert(http::GET);
 }
