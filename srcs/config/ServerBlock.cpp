@@ -1,5 +1,5 @@
+#include "http/http.hpp"
 #include "config/ServerBlock.hpp"
-
 #include "utils/Logger.hpp"
 
 #include <iostream>
@@ -8,12 +8,13 @@
 #include <map>
 
 ServerBlock::ServerBlock():
-	maxBodySize(-1)
+	maxBodySize(MEGABYTE)
 {
 	errorPages[400] = "./ressources/errors/400.html";
 	errorPages[403] = "./ressources/errors/403.html";
 	errorPages[404] = "./ressources/errors/404.html";
 	errorPages[405] = "./ressources/errors/405.html";
+	errorPages[413] = "./ressources/errors/413.html";
 	errorPages[501] = "./ressources/errors/501.html";
 }
 

@@ -9,15 +9,24 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
 
 #include "utils/Logger.hpp"
 
 #ifndef MAX_CLIENTS
-#define MAX_CLIENTS 512
+# define MAX_CLIENTS 512
 #endif
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 5120
+# define BUFFER_SIZE 5120
+#endif
+
+#ifndef TIMEOUT
+# define TIMEOUT 10
+#endif
+
+#ifndef MEGABYTE
+# define MEGABYTE 1048576
 #endif
 
 namespace http

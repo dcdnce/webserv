@@ -23,6 +23,8 @@ namespace http
 		// ------------------------------------------------------------------ //
 		Request(void);
 		Request(const std::string& rawRequest);
+		Request(const Request &copy);
+		Request &operator=(const Request &rhs);
 		virtual ~Request(void);
 
 		// ------------------------------------------------------------------ //
@@ -30,7 +32,8 @@ namespace http
 		// ------------------------------------------------------------------ //
 		const http::Method &getMethod(void) const;
 		const http::URL &getUrl(void) const;
-		int getContentLength(void) const;
+		std::string getHost(void) const;
+		unsigned long long getContentLength(void) const;
 
 		void setMethod(const http::Method &method);
 		void setMethod(std::string const &method);

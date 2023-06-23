@@ -23,7 +23,7 @@ class ServerBlock
 		// ------------------------------------------------------------------ //
 		listensVector listens;
 		serverNamesVector serverNames;
-		int maxBodySize;
+		unsigned long long maxBodySize;
 		errorPagesMap errorPages;
 		locationsMap locations;
 

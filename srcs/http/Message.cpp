@@ -17,6 +17,14 @@ namespace http
 		_body(copy._body)
 	{}
 
+	Message &Message::operator=(const Message& rhs)
+	{
+		this->_httpVersion = rhs._httpVersion;
+		this->_headers = rhs._headers;
+		this->_body = rhs._body;
+		return (*this);
+	}
+
 	Message::~Message(void)
 	{}
 

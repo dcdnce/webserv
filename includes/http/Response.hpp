@@ -29,6 +29,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			Response(void);
 			Response(const Response &copy);
+			Response &operator=(const Response &rhs);
 			virtual ~Response(void);
 
 			// -------------------------------------------------------------- //

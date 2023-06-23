@@ -24,6 +24,7 @@ namespace http
 		// ------------------------------------------------------------------ //
 		Message(void);
 		Message(const Message &copy);
+		Message &operator=(const Message &rhs);
 		virtual ~Message(void);
 
 		// ------------------------------------------------------------------ //

@@ -39,7 +39,7 @@ namespace http
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
 			bool matches(const http::Client& client) const;
-			http::Response handleRequest(const http::Client& client) const;
+			void processRequest(http::Client& client) const;
 
 	};
 

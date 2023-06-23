@@ -1,104 +1,154 @@
 #include "http/Client.hpp"
+#include "utils/Logger.hpp"
 
 namespace http
 {
 	// ---------------------------------------------------------------------- //
 	//  Constructors & Destructors                                            //
 	// ---------------------------------------------------------------------- //
-	Client::Client(void):
+	Client::Client(const http::Socket &server):
 		_socket_fd(-1),
-		_rawRequest(),
-		_request(),
-		headerReceived(false)
-	{}
+		_host(),
+		_requestBuffer(),
+		_responseBuffer(),
+		_lastActivity(),
+		request(),
+		headersReceived(false),
+		requestComplete(false),
+		response(),
+		sending(false),
+		sentBytes(0)
+	{
+		struct sockaddr_in clientAddr;
+		socklen_t clientAddrLen = sizeof(clientAddr);
+
+		_socket_fd = ::accept(server.getSocket(), (struct sockaddr*)&clientAddr, &clientAddrLen);
+
+		if (_socket_fd < 0)
+			throw std::runtime_error("Failed to accept client connection");
+
+		if (fcntl(_socket_fd, F_SETFL, O_NONBLOCK) < 0)
+			throw std::runtime_error("Failed to set client socket to non-blocking");
+
+		_host.setAddr(clientAddr);
+		_host.setPort(server.getPort());
+	}
 
 	Client::~Client(void)
 	{
-		if (_socket_fd != -1)
+		if (_socket_fd >= 0)
 			::close(_socket_fd);
 	}
 
 	// ---------------------------------------------------------------------- //
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
-	const int &Client::getSocket(void) const { return (_socket_fd); }
+	const int &Client::getSocketFd(void) const { return (_socket_fd); }
 	const Host &Client::getHost(void) const { return (_host); }
-	const std::string &Client::getRawRequest(void) const { return (_rawRequest); }
-	const Request &Client::getRequest(void) const { return (_request); }
+	bool Client::responseSent(void) const { return ((std::string::size_type)sentBytes >= _responseBuffer.size()); }
+
+	bool Client::shouldClose(void) const
+	{
+		if (!request.hasHeader("Connection"))
+			return (true);
+
+		return (request.getHeaders().at("Connection") == "close");
+	}
+
+	bool Client::hasTimedOut(void) const
+	{
+		struct timeval now;
+		gettimeofday(&now, NULL);
+
+		return (now.tv_sec - _lastActivity.tv_sec > 60);
+	}
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	void Client::accept(const http::Socket& socket)
+	void Client::reset(void)
 	{
-		sockaddr_in addr;
-		socklen_t addr_len = sizeof(addr);
-
-		if ((_socket_fd = ::accept(socket.getSocket(), (struct sockaddr *)&addr, &addr_len)) == -1)
-			throw std::runtime_error("Client::accept: abort: accept()");
-
-		// TODO: Add this when the Client and the Multiplexer are ready to
-		//       handle non-blocking send
-		// if (fcntl(_socket_fd, F_SETFL, O_NONBLOCK) == -1)
-		// 	throw std::runtime_error("Client::accept: abort: fcntl()");
-
-		_host.setAddr(addr);
-		// Set the port to the socket's port so that the server can be identified
-		_host.setPort(socket.getPort());
-	}
-
-	void Client::close(void)
-	{
-		// Close socket
-		if (_socket_fd != -1)
-			::close(_socket_fd);
-		_socket_fd = -1;
-
-		// Reset attributes
-		_host = Host();
-		_rawRequest.clear();
-		_request = Request();
-		headerReceived = false;
+		_requestBuffer.clear();
+		_responseBuffer.clear();
+		request = http::Request();
+		headersReceived = false;
+		requestComplete = false;
+		response = http::Response();
+		sending = false;
+		sentBytes = 0;
 	}
 
 	void Client::receive(void)
 	{
-		char	buffer[BUFFER_SIZE];
-		int		bytes = 0;
+		char buffer[BUFFER_SIZE] = {0};
+		int bytesReceived = 0;
 
-		if ((bytes = ::recv(_socket_fd, buffer, BUFFER_SIZE, 0)) == -1 && errno != EAGAIN)
-			throw std::runtime_error("Client::receive: abort: recv(): " + std::string(strerror(errno)));
-		else if (bytes == 0)
-			throw ClientDisconnectedException();
+		if (!this->headersReceived)
+		{
+			bytesReceived = ::recv(_socket_fd, buffer, BUFFER_SIZE, 0);
 
-		_rawRequest.append(buffer, bytes);
+			if (bytesReceived < 0)
+				throw std::runtime_error("failed receiving headers: " + std::string(strerror(errno)));
+			else if (bytesReceived == 0)
+				throw http::Client::ClientDisconnectedException();
+
+			_requestBuffer.append(buffer, bytesReceived);
+
+			if (_requestBuffer.find("\r\n\r\n") != std::string::npos)
+			{
+				request.parse(_requestBuffer);
+				headersReceived = true;
+				requestComplete = !request.hasHeader("Content-Length");
+			}
+		}
+		else if (request.hasHeader("Content-Length"))
+		{
+			const int contentLength = std::stoi(request.getHeaders().at("Content-Length"));
+			const int currentBodyLength = _requestBuffer.length() - _requestBuffer.find("\r\n\r\n") - 4;
+			const int missingBodyLength = contentLength - currentBodyLength;
+
+			if (missingBodyLength > 0)
+			{
+				bytesReceived = ::recv(_socket_fd, buffer, std::min(BUFFER_SIZE, missingBodyLength), 0);
+
+				if (bytesReceived < 0)
+					throw std::runtime_error("failed receiving body: " + std::string(strerror(errno)));
+				else if (bytesReceived == 0)
+					throw http::Client::ClientDisconnectedException();
+
+				_requestBuffer.append(buffer, bytesReceived);
+			}
+
+			if (!requestComplete && (int)(_requestBuffer.length() - _requestBuffer.find("\r\n\r\n") - 4) == contentLength)
+			{
+				request.parse(_requestBuffer);
+				requestComplete = true;
+			}
+		}
+		else
+		{
+			request.parse(_requestBuffer);
+			requestComplete = true;
+		}
+
+		gettimeofday(&_lastActivity, NULL);
 	}
 
-	void Client::send(const std::string& rawResponse) const
+	void Client::send(void)
 	{
-		// TODO: remove this
-		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0) == -1)
-			throw std::runtime_error("Client::send: abort: send()");
+		if (_responseBuffer.empty())
+			_responseBuffer = response.toString();
 
-		// TODO: Send the response in chunks
-	}
+		const int bytesToSend = std::min(BUFFER_SIZE, (int)_responseBuffer.size() - sentBytes);
+		const int bytesSent = ::send(_socket_fd, _responseBuffer.c_str() + sentBytes, bytesToSend, 0);
 
-	void Client::send(const Response &response) const
-	{
-		std::string rawResponse = response.toString();
+		if (bytesSent < 0)
+			throw std::runtime_error("Failed to send response");
+		else if (bytesSent == 0)
+			throw http::Client::ClientDisconnectedException();
 
-		if (::send(_socket_fd, rawResponse.c_str(), rawResponse.length(), 0) == -1)
-			throw std::runtime_error("Client::send: abort: send()");
-	}
-
-	bool Client::isOccupied(void) const
-	{
-		return (_socket_fd != -1);
-	}
-
-	void Client::parseRequest(void)
-	{
-		_request.parse(_rawRequest);
+		sentBytes += bytesSent;
+		gettimeofday(&_lastActivity, NULL);
 	}
 
 	// ---------------------------------------------------------------------- //
@@ -106,7 +156,7 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	std::ostream &operator<<(std::ostream &os, const Client &client)
 	{
-		os << "[sock: " << client._socket_fd << "][addr: " << client._host << "]";
+		os << "(" << client._socket_fd << ")(" << client._host << ")";
 		return (os);
 	}
 

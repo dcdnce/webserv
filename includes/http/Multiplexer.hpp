@@ -5,7 +5,6 @@
 #include "config/Config.hpp"
 #include "http/Server.hpp"
 #include "http/Socket.hpp"
-#include "http/ClientManager.hpp"
 #include "http/Response.hpp"
 #include "http/Request.hpp"
 
@@ -20,6 +19,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			typedef std::vector<http::Server*>	server_list;
 			typedef std::vector<http::Socket*>	socket_list;
+			typedef std::vector<http::Client*>	client_list;
 
 		private:
 			// -------------------------------------------------------------- //
@@ -27,7 +27,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			server_list			_servers;
 			socket_list			_sockets;
-			http::ClientManager	_clientManager;
+			client_list			_clients;
 
 			fd_set	_readfds;
 			fd_set	_writefds;
@@ -43,7 +43,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void	reset(void);
+			void	initSelect(void);
 			void	listen(void);
 	};
 

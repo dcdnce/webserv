@@ -17,6 +17,19 @@ namespace http
 		this->parse(rawRequest);
 	}
 
+	Request::Request(const Request &copy):
+		_method(copy._method),
+		_url(copy._url)
+	{}
+
+	Request &Request::operator=(const Request &rhs)
+	{
+		Message::operator=(rhs);
+		this->_method = rhs._method;
+		this->_url = rhs._url;
+		return (*this);
+	}
+
 	Request::~Request(void)
 	{}
 
@@ -25,11 +38,17 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	const http::Method &Request::getMethod(void) const { return (this->_method); }
 	const http::URL &Request::getUrl(void) const { return (this->_url); }
-	int Request::getContentLength(void) const {
-		std::map<std::string, std::string>::const_iterator it = this->_headers.find("Content-Length");
-		if (it == this->_headers.end())
-			return (-1);
-		return (std::atoi(it->second.c_str()));
+	std::string Request::getHost(void) const
+	{
+		if (_headers.find("Host") == _headers.end())
+			return ("");
+		return (_headers.at("Host"));
+	}
+	unsigned long long Request::getContentLength(void) const
+	{
+		if (_headers.find("Content-Length") == _headers.end())
+			return (0);
+		return (std::stoull(_headers.at("Content-Length")));
 	}
 
 	void Request::setMethod(const http::Method &method) { this->_method = method; }

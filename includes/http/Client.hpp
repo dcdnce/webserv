@@ -20,38 +20,44 @@ namespace http
 			// -------------------------------------------------------------- //
 			int _socket_fd;
 			Host _host;
-
-			std::string _rawRequest;
-			Request _request;
+			std::string _requestBuffer;
+			std::string _responseBuffer;
+			struct timeval _lastActivity;
 
 		public:
-			bool headerReceived;
+			// --- Request --- //
+			Request request;
+			bool headersReceived;
+			bool requestComplete;
+
+			// --- Response --- //
+			Response response;
+			bool sending;
+			int sentBytes;
 
 		public:
 			// -------------------------------------------------------------- //
 			//  Constructors & Destructors                                    //
 			// -------------------------------------------------------------- //
-			Client(void);
+			Client(const http::Socket &socket);
 			~Client(void);
 
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
-			const int &getSocket(void) const;
+			const int &getSocketFd(void) const;
 			const Host &getHost(void) const;
-			const std::string &getRawRequest(void) const;
-			const Request &getRequest(void) const;
+			int getContentLength(void) const;
+			bool shouldClose(void) const;
+			bool responseSent(void) const;
+			bool hasTimedOut(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //
 			// -------------------------------------------------------------- //
-			void accept(const http::Socket& socket);
-			void close(void);
+			void reset(void);
 			void receive(void);
-			void send(const std::string &rawResponse) const;
-			void send(const Response &response) const;
-			bool isOccupied(void) const;
-			void parseRequest(void);
+			void send(void);
 
 			// -------------------------------------------------------------- //
 			//  Operators                                                     //

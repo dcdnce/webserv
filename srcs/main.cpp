@@ -1,7 +1,6 @@
 #include "config/Config.hpp"
 #include "http/http.hpp"
 #include "http/Socket.hpp"
-#include "http/ClientManager.hpp"
 #include "http/Multiplexer.hpp"
 #include "http/Response.hpp"
 #include "http/URL.hpp"

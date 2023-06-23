@@ -47,17 +47,19 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	bool Server::matches(const http::Client& client) const
 	{
-		const http::Host& host = client.getHost();
-		std::string hostname = client.getRequest().getHeaders().at("Host");
-		ServerBlock::listensVector listens = _config.listens;
+		const http::Host &host = client.getHost();
+		const ServerBlock::listensVector &listens = _config.listens;
+		std::string hostname = client.request.getHost();
 
 		if (hostname.find(':') != std::string::npos)
 			hostname = hostname.substr(0, hostname.find(':'));
 
-		for (ServerBlock::listensVector::const_iterator it = listens.begin(); it != listens.end(); ++it)
+		for (ServerBlock::listensVector::const_iterator it = listens.begin(); it != listens.end(); it++)
 		{
-			bool samePort = (it->getPort() == host.getPort());
-			bool matchingAddress = (it->getAddr().sin_addr.s_addr == INADDR_ANY || it->getAddr().sin_addr.s_addr == host.getAddr().sin_addr.s_addr);
+			const http::Host &listen = *it;
+
+			bool samePort = (listen.getPort() == host.getPort());
+			bool matchingAddress = (listen.getAddr().sin_addr.s_addr == INADDR_ANY || listen.getAddr().sin_addr.s_addr == host.getAddr().sin_addr.s_addr);
 			bool hasHosts = _config.serverNames.size() > 0;
 			bool matchingHost = std::find(_config.serverNames.begin(), _config.serverNames.end(), hostname) != _config.serverNames.end();
 
@@ -68,24 +70,33 @@ namespace http
 		return (false);
 	}
 
-	http::Response	Server::handleRequest(const http::Client& client) const
+	void	Server::processRequest(http::Client& client) const
 	{
-		const http::Request& request = client.getRequest();
-		http::Response response;
 		const LocationBlock *location = NULL;
+		const http::Request& request = client.request;
+		http::Response &response = client.response;
 
 		if (!request.isValid())
-			return (_getErrorResponse(BAD_REQUEST));
+		{
+			response = _getErrorResponse(BAD_REQUEST);
+			return ;
+		}
 
-		if (isMethodImplemented(request.getMethod()) == false)
-			return (_getErrorResponse(NOT_IMPLEMENTED));
+		if (!isMethodImplemented(request.getMethod()))
+		{
+			response = _getErrorResponse(NOT_IMPLEMENTED);
+			return ;
+		}
 
-		if (_config.maxBodySize > 0 && request.getContentLength() > -1 && request.getContentLength() > _config.maxBodySize)
-			return (_getErrorResponse(PAYLOAD_TOO_LARGE));
+		if (request.getContentLength() > _config.maxBodySize)
+		{
+			response = _getErrorResponse(PAYLOAD_TOO_LARGE);
+			return ;
+		}
 
 		for (ServerBlock::locationsMap::const_iterator it = _config.locations.begin(); it != _config.locations.end(); ++it)
 		{
-			const std::string& uri = it->first;
+			const std::string &uri = it->first;
 
 			if (request.getUrl().path.compare(0, uri.size(), uri) == 0)
 				if (location == NULL || location->uri.size() < uri.size())
@@ -93,10 +104,16 @@ namespace http
 		}
 
 		if (location == NULL)
-			return (_getErrorResponse(NOT_FOUND));
+		{
+			response = _getErrorResponse(NOT_FOUND);
+			return;
+		}
 
 		if (location->acceptedMethods.size() > 0 && location->acceptedMethods.find(request.getMethod()) == location->acceptedMethods.end())
-			return (_getErrorResponse(METHOD_NOT_ALLOWED));
+		{
+			response = _getErrorResponse(METHOD_NOT_ALLOWED);
+			return;
+		}
 
 		// Handle static files
 		const std::string filePath = fs::replaceRoot(request.getUrl().path, location->uri, location->root);
@@ -107,40 +124,47 @@ namespace http
 		#endif
 
 		if (!fs::exists(filePath))
-			return (_getErrorResponse(NOT_FOUND));
+		{
+			response = _getErrorResponse(NOT_FOUND);
+			return;
+		}
 
 		if (!fs::hasPermission(filePath, "r"))
-			return (_getErrorResponse(FORBIDDEN));
+		{
+			response = _getErrorResponse(FORBIDDEN);
+			return;
+		}
 
 		if (location->redirection.first != http::NONE)
 		{
 			response.setStatus(location->redirection.first);
 			response.setHeader("Location", location->redirection.second);
-			return (response);
+			return;
 		}
 
 		if (request.getMethod() == http::DELETE)
 		{
-			if (filePath == location->root || filePath == location->uploadPath)
-				return (_getErrorResponse(FORBIDDEN));
-
-			if (!fs::remove(filePath))
-				return (_getErrorResponse(FORBIDDEN));
+			if (filePath == location->root || filePath == location->uploadPath || !fs::remove(filePath))
+			{
+				response = _getErrorResponse(FORBIDDEN);
+				return;
+			}
 
 			response.setStatus(NO_CONTENT);
-			return (response);
+			return;
 		}
 
 		if (!fs::isDir(filePath))
 		{
-			// Check if CGI are on
 			if (location->cgis.size() > 0 && location->cgis.find(fileExtension) != location->cgis.end())
 			{
 				const Cgi &cgi = location->cgis.at(fileExtension);
 
-				// Check if the CGI exists and is executable
 				if (!fs::exists(cgi.getPath()) || !fs::hasPermission(cgi.getPath(), "x"))
-					return (_getErrorResponse(NOT_FOUND));
+				{
+					response = _getErrorResponse(NOT_FOUND);
+					return;
+				}
 
 				switch (request.getMethod())
 				{
@@ -151,19 +175,20 @@ namespace http
 						response.fromCGI(cgi.executePost(filePath, request, location->uploadPath));
 						break;
 					default:
-						response.setStatus(NOT_IMPLEMENTED);
-						return (response);
+						response = _getErrorResponse(NOT_IMPLEMENTED);
+						break;
 				}
 
-				return (response);
+				return;
 			}
+
 			response.setStatus(OK);
 			response.setBody(fs::readFile(filePath));
-			return (response);
+			return;
 		}
-		else // Directory
+		else
 		{
-			for (std::vector<std::string>::const_iterator it = location->indexes.begin(); it != location->indexes.end(); ++it)
+			for (std::vector<std::string>::const_iterator it = location->indexes.begin(); it != location->indexes.end(); it++)
 			{
 				const std::string indexPath = fs::joinPaths(filePath, *it);
 
@@ -171,7 +196,7 @@ namespace http
 				{
 					response.setStatus(OK);
 					response.setBody(fs::readFile(indexPath));
-					return (response);
+					return;
 				}
 			}
 
@@ -184,11 +209,11 @@ namespace http
 				for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
 					response.appendToBody("<li><a href=\"" + fs::joinPaths(request.getUrl().path, *it) + "\">" + *it + "</a></li>");
 				response.appendToBody("</ul><hr></body></html>");
-				return (response);
+				return;
 			}
 		}
 
-		return (_getErrorResponse(NOT_FOUND));
+		response = _getErrorResponse(NOT_FOUND);
 	}
 
 }

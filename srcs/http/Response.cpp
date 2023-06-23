@@ -14,10 +14,19 @@ namespace http
 	Response::Response(const Response &copy):
 		Message(copy),
 		_status(copy._status)
-	{}
+	{
+	}
+
+	Response &Response::operator=(const Response &rhs)
+	{
+		Message::operator=(rhs);
+		this->_status = rhs._status;
+		return (*this);
+	}
 
 	Response::~Response(void)
-	{}
+	{
+	}
 
 	// ---------------------------------------------------------------------- //
 	//  Getters & Setters                                                     //
@@ -71,7 +80,7 @@ namespace http
 		for (std::map<std::string, std::string>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); it++)
 			ss << it->first << ": " << it->second << "\r\n";
 
-		if (this->_headers.find("Content-Length") == this->_headers.end() && !this->_body.empty())
+		if (this->_headers.find("Content-Length") == this->_headers.end())
 			ss << "Content-Length: " << this->_body.length() << "\r\n";
 
 		// Add body

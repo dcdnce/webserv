@@ -111,15 +111,26 @@ void ServerBlock::parseDirective_errorPage(std::string line)
 
 void ServerBlock::parseDirective_clientMaxBodySize(std::string line)
 {
-#ifdef DEBUG
+	#ifdef DEBUG
 	Logger::debug(true) << "ServerBlock::parseDirective_clientMaxBodySize: received line:" << line << std::endl;
-#endif
+	#endif
 
 	std::vector<std::string> params = _extractParams(line);
 
 	if (params.size() != 1)
 		throw std::runtime_error("directive client_max_body_size has wrong number of arguments");
 
-	if (std::toupper(params[0][params[0].size() - 1]) != 'M')
+	if (params[0].back() != 'M')
 		throw std::runtime_error("directive client_max_body_size argument is not recognized");
+
+	params[0].pop_back();
+
+	try
+	{
+		maxBodySize = std::stoull(params[0]) * MEGABYTE;
+		#ifdef DEBUG
+		Logger::debug(true) << "ServerBlock::parseDirective_clientMaxBodySize: maxBodySize set to " << maxBodySize << std::endl;
+		#endif
+	}
+	catch (std::exception &e) { throw std::runtime_error("directive client_max_body_size argument is not a number"); }
 }
