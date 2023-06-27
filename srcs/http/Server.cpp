@@ -76,6 +76,9 @@ namespace http
 		const http::Request& request = client.request;
 		http::Response &response = client.response;
 
+		if (client.shouldClose())
+			response.setHeader("Connection", "close");
+
 		if (!request.isValid())
 		{
 			response = _getErrorResponse(BAD_REQUEST);

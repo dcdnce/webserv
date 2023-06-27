@@ -110,7 +110,7 @@ namespace http
 					if ((*it)->hasTimedOut())
 					{
 						#ifdef DEBUG
-						Logger::debug(true) << "Client " << **it << " timed out" << std::endl;
+						Logger::debug(true) << *it << " Timed out" << std::endl;
 						#endif
 						delete *it;
 						_clients.erase(it--);
@@ -129,7 +129,6 @@ namespace http
 					try { client->receive(); }
 					catch (const std::exception& e)
 					{
-						Logger::error(true) << "Failed to read from client: " << e.what() << std::endl;
 						delete client;
 						_clients.erase(it--);
 						continue;
@@ -137,10 +136,7 @@ namespace http
 
 					#ifdef DEBUG
 					if (client->requestComplete)
-					{
 						Logger::debug(true) << *client << " Request received" << std::endl;
-						Logger::block("Request", client->request.toString());
-					}
 					#endif
 				}
 
@@ -150,10 +146,6 @@ namespace http
 					if (!client->sending)
 					{
 						http::Server *server = NULL;
-
-						#ifdef DEBUG
-						Logger::debug(true) << *client << " Processing request..." << std::endl;
-						#endif
 
 						for (server_list::const_iterator it = _servers.begin(); it != _servers.end(); it++)
 							if ((*it)->matches(*client))
@@ -194,15 +186,12 @@ namespace http
 						Logger::debug(true) << *client << " Response sent (" << client->response.getBody().size() << " bytes)" << std::endl;
 						#endif
 
-						if (client->shouldClose())
-						{
-							#ifdef DEBUG
-							Logger::debug(true) << *client << " Closing connection" << std::endl;
-							#endif
-							delete client;
-							_clients.erase(it--);
-							continue;
-						}
+						// if (client->shouldClose())
+						// {
+						// 	delete client;
+						// 	_clients.erase(it--);
+						// 	continue;
+						// }
 						client->reset();
 					}
 				}
@@ -229,10 +218,10 @@ namespace http
 					http::Client *client = new http::Client(**it);
 					_clients.push_back(client);
 					#ifdef DEBUG
-					Logger::debug(true) << "Accepted client(" << _clients.back()->getSocketFd() << ")" << std::endl;
+					Logger::debug(true) << *_clients.back() << " New connection" << std::endl;
 					#endif
 				}
-				catch (const std::exception& e) { Logger::error(true) << "Failed to accept client: " << e.what() << std::endl; }
+				catch (const std::exception& e) {}
 			}
 		}
 

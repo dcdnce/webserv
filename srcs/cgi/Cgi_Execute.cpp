@@ -40,11 +40,11 @@ std::string Cgi::executePost(const std::string &filePath, const http::Request &r
 	env.push_back(strdup(envVariable.c_str()));
 
 	// Content Length
-	envVariable = "CONTENT_LENGTH=" + req.getHeaders().at("Content-Length");
+	envVariable = "CONTENT_LENGTH=" + req.getHeaders().at("content-length");
 	env.push_back(strdup(envVariable.c_str()));
 
 	// Content Type
-	envVariable = "CONTENT_TYPE=" + req.getHeaders().at("Content-Type");
+	envVariable = "CONTENT_TYPE=" + req.getHeaders().at("content-type");
 	env.push_back(strdup(envVariable.c_str()));
 
 	// Upload directory

@@ -40,15 +40,15 @@ namespace http
 	const http::URL &Request::getUrl(void) const { return (this->_url); }
 	std::string Request::getHost(void) const
 	{
-		if (_headers.find("Host") == _headers.end())
+		if (_headers.find("host") == _headers.end())
 			return ("");
-		return (_headers.at("Host"));
+		return (_headers.at("host"));
 	}
 	unsigned long long Request::getContentLength(void) const
 	{
-		if (_headers.find("Content-Length") == _headers.end())
+		if (_headers.find("content-length") == _headers.end())
 			return (0);
-		return (std::stoull(_headers.at("Content-Length")));
+		return (std::stoull(_headers.at("content-length")));
 	}
 
 	void Request::setMethod(const http::Method &method) { this->_method = method; }
@@ -87,8 +87,12 @@ namespace http
 			while (std::isspace(line[valuePos]))
 				++valuePos;
 
-			const std::string headerKey = line.substr(0, colonPos);
-			const std::string headerValue = line.substr(valuePos);
+			std::string headerKey = line.substr(0, colonPos);
+			std::string headerValue = line.substr(valuePos);
+
+			std::transform(headerKey.begin(), headerKey.end(), headerKey.begin(), ::tolower);
+			std::transform(headerValue.begin(), headerValue.end(), headerValue.begin(), ::tolower);
+
 			setHeader(headerKey, headerValue);
 		}
 

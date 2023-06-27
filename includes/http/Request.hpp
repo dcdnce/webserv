@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sstream>
+#include <ctype.h>
 #include "http/http.hpp"
 #include "http/Message.hpp"
 #include "http/URL.hpp"

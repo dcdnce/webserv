@@ -49,10 +49,10 @@ namespace http
 
 	bool Client::shouldClose(void) const
 	{
-		if (!request.hasHeader("Connection"))
+		if (!request.hasHeader("connection"))
 			return (true);
 
-		return (request.getHeaders().at("Connection") == "close");
+		return (request.getHeaders().at("connection") == "close");
 	}
 
 	bool Client::hasTimedOut(void) const
@@ -60,7 +60,7 @@ namespace http
 		struct timeval now;
 		gettimeofday(&now, NULL);
 
-		return (now.tv_sec - _lastActivity.tv_sec > 60);
+		return (now.tv_sec - _lastActivity.tv_sec > TIMEOUT);
 	}
 
 	// ---------------------------------------------------------------------- //
@@ -98,12 +98,12 @@ namespace http
 			{
 				request.parse(_requestBuffer);
 				headersReceived = true;
-				requestComplete = !request.hasHeader("Content-Length");
+				requestComplete = request.getContentLength() == 0;
 			}
 		}
-		else if (request.hasHeader("Content-Length"))
+		else if (request.hasHeader("content-length"))
 		{
-			const int contentLength = std::stoi(request.getHeaders().at("Content-Length"));
+			const int contentLength = std::stoi(request.getHeaders().at("content-length"));
 			const int currentBodyLength = _requestBuffer.length() - _requestBuffer.find("\r\n\r\n") - 4;
 			const int missingBodyLength = contentLength - currentBodyLength;
 

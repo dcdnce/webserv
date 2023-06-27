@@ -80,8 +80,8 @@ namespace http
 		for (std::map<std::string, std::string>::const_iterator it = this->_headers.begin(); it != this->_headers.end(); it++)
 			ss << it->first << ": " << it->second << "\r\n";
 
-		if (this->_headers.find("Content-Length") == this->_headers.end())
-			ss << "Content-Length: " << this->_body.length() << "\r\n";
+		if (this->_headers.find("content-length") == this->_headers.end())
+			ss << "content-length: " << this->_body.length() << "\r\n";
 
 		// Add body
 		ss << "\r\n" << this->_body;
