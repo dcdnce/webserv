@@ -1,11 +1,15 @@
 #include "config/Config.hpp"
 #include <iostream>
 
-Config::Config(std::string const path)
+Config::Config(const std::string &path)
 {
 	_ifs.open(path);
+
+	if (!fs::exists(path))
+		throw std::runtime_error("The config file '" + path + "' does not exist.");
+
 	if (!_ifs.is_open())
-		throw std::runtime_error("the configuration file \"" + path + "\" cannot be read");
+		throw std::runtime_error("The config file '" + path + "' could not be opened.");
 
 	while (!_isEOF())
 		_parseServerBlock();
@@ -59,7 +63,7 @@ const std::vector<ServerBlock>& Config::getServerBlocks() const
 
 
 void Config::_skipComment()
-{	
+{
 	for (; std::isspace(_ifs.peek()); _ifs.get())
 		;
 

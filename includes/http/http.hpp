@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
+#include <netdb.h>
 
 #include "utils/Logger.hpp"
 
@@ -134,6 +135,10 @@ namespace http
 	extern std::map<http::Status, std::string> reasonsMap;
 
 	// ---------------------------------------------------------------------- //
+	//  Structures                                                            //
+	// ---------------------------------------------------------------------- //
+
+	// ---------------------------------------------------------------------- //
 	//  Prototypes                                                            //
 	// ---------------------------------------------------------------------- //
 	void initiateConstants(void);
@@ -143,4 +148,7 @@ namespace http
 	bool isErrorClient(int const code);
 	bool isErrorServer(int const code);
 	bool isMethodImplemented(http::Method const & method);
+
+	bool isValidIP(const std::string &ip);
+	bool isValidPort(const std::string &port);
 }

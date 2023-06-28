@@ -1,4 +1,3 @@
-#include "http/http.hpp"
 #include "http/Socket.hpp"
 
 namespace http
@@ -6,20 +5,9 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	//  Constructors & Destructors                                            //
 	// ---------------------------------------------------------------------- //
-	Socket::Socket(
-		const int domain,
-		const int type,
-		const int protocol,
-		const char *host,
-		const int port,
-		const int maxClients
-	):
+	Socket::Socket(const http::Host &host, int maxClients):
 		_host(host),
-		_port(port),
-		_socket(socket(domain, type, protocol)),
-		_domain(domain),
-		_type(type),
-		_protocol(protocol),
+		_socket(socket(AF_INET, SOCK_STREAM, 0)),
 		_maxClients(maxClients)
 	{
 		const int enable = 1;
@@ -39,9 +27,9 @@ namespace http
 		sockaddr_in addr;
 
 		memset(&addr, 0, sizeof(addr));
-		addr.sin_family = domain;		   // Internet protocol
-		addr.sin_port = htons(port);	   // Port to listen to
-		addr.sin_addr.s_addr = INADDR_ANY; // Listen to any address
+		addr.sin_family = AF_INET;
+		addr.sin_port = _host.getAddr().sin_port;
+		addr.sin_addr.s_addr = _host.getAddr().sin_addr.s_addr;
 
 		// Bind socket to address
 		if (bind(_socket, (struct sockaddr *)&addr, sizeof(addr)) == -1)
@@ -62,7 +50,7 @@ namespace http
 	//  Getters & Setters                                                     //
 	// ---------------------------------------------------------------------- //
 	int Socket::getSocket(void) const { return (_socket); }
-	int Socket::getPort(void) const { return (_port); }
+	const http::Host &Socket::getHost(void) const { return (_host); }
 
 	// ---------------------------------------------------------------------- //
 	//  Public Methods                                                        //
@@ -74,10 +62,6 @@ namespace http
 			perror("Socket::listen: abort: listen()");
 			throw std::runtime_error("Socket::listen: abort: listen()");
 		}
-
-#ifdef DEBUG
-		Logger::debug(true) << "Listening on port " << _port << std::endl;
-#endif
 	}
 
 }

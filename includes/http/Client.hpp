@@ -20,6 +20,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			int _socket_fd;
 			Host _host;
+			Host _server;
 			std::string _requestBuffer;
 			std::string _responseBuffer;
 			struct timeval _lastActivity;
@@ -47,6 +48,7 @@ namespace http
 			// -------------------------------------------------------------- //
 			const int &getSocketFd(void) const;
 			const Host &getHost(void) const;
+			const Host &getServerHost(void) const;
 			int getContentLength(void) const;
 			bool shouldClose(void) const;
 			bool responseSent(void) const;

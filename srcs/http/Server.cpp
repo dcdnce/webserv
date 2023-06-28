@@ -47,7 +47,7 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	bool Server::matches(const http::Client& client) const
 	{
-		const http::Host &host = client.getHost();
+		const http::Host &clientServerHost = client.getServerHost();
 		const ServerBlock::listensVector &listens = _config.listens;
 		std::string hostname = client.request.getHost();
 
@@ -56,15 +56,16 @@ namespace http
 
 		for (ServerBlock::listensVector::const_iterator it = listens.begin(); it != listens.end(); it++)
 		{
-			const http::Host &listen = *it;
+			if (clientServerHost != *it)
+				continue ;
 
-			bool samePort = (listen.getPort() == host.getPort());
-			bool matchingAddress = (listen.getAddr().sin_addr.s_addr == INADDR_ANY || listen.getAddr().sin_addr.s_addr == host.getAddr().sin_addr.s_addr);
-			bool hasHosts = _config.serverNames.size() > 0;
-			bool matchingHost = std::find(_config.serverNames.begin(), _config.serverNames.end(), hostname) != _config.serverNames.end();
-
-			if ((hasHosts && matchingHost) || (!hasHosts && samePort && matchingAddress))
+			if (_config.serverNames.size() == 0)
 				return (true);
+
+			if (std::find(_config.serverNames.begin(), _config.serverNames.end(), hostname) == _config.serverNames.end())
+				continue ;
+
+			return (true);
 		}
 
 		return (false);

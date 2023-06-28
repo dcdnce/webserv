@@ -17,7 +17,11 @@ namespace http
 
 		public:
 			Host(void);
-			Host(const char *host, const int port);
+			Host(const std::string &host, const std::string &port = "80");
+			Host(const std::string &host, const int port = 80);
+			Host(const sockaddr_in &addr);
+			Host(const Host &other);
+			Host &operator=(const Host &other);
 			~Host(void);
 
 			// -------------------------------------------------------------- //
@@ -25,12 +29,9 @@ namespace http
 			// -------------------------------------------------------------- //
 			const sockaddr_in &getAddr(void) const;
 			const socklen_t &getAddrLen(void) const;
-			const char *getAddress(void) const;
-			int getPort(void) const;
 
-			void setAddr(const sockaddr_in &addr);
-			void setAddress(const char *host);
-			void setPort(const int port);
+			std::string getAddress(void) const;
+			int getPort(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Operators                                                     //
@@ -38,7 +39,12 @@ namespace http
 			friend std::ostream &operator<<(std::ostream &os, const Host &host);
 			friend bool operator==(const Host &lhs, const Host &rhs);
 			friend bool operator!=(const Host &lhs, const Host &rhs);
+			friend bool operator<(const Host &lhs, const Host &rhs);
 
+			// -------------------------------------------------------------- //
+			//  Public static methods                                         //
+			// -------------------------------------------------------------- //
+			static std::vector<Host> getHosts(const std::string &host, const std::string &port);
 	};
 
 }

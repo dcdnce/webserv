@@ -129,4 +129,26 @@ namespace http
 			method == DELETE
 		);
 	}
+
+	bool isValidIP(const std::string &str)
+	{
+		struct sockaddr_in sa;
+		int result = inet_pton(AF_INET, str.c_str(), &(sa.sin_addr));
+		return (result != 0);
+	}
+
+	bool isValidPort(const std::string &str)
+	{
+		if (str.empty())
+			return (false);
+
+		for (size_t i = 0; i < str.size(); i++)
+			if (!std::isdigit(str[i]))
+				return (false);
+
+		int port = std::atoi(str.c_str());
+		if (port < 0 || port > 65535)
+			return (false);
+		return (true);
+	}
 }

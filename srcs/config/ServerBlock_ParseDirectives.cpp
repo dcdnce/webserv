@@ -1,11 +1,11 @@
-#include "config/ServerBlock.hpp"
-
-#include "utils/Logger.hpp"
-
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <map>
+
+#include "config/ServerBlock.hpp"
+#include "utils/Logger.hpp"
+#include "http/http.hpp"
 
 ServerBlock::directiveFuncPtr ServerBlock::whichDirective(std::string const str)
 {
@@ -30,29 +30,41 @@ void ServerBlock::parseDirective_listen(std::string line)
 	if (params.size() != 1)
 		throw std::runtime_error("directive \"listen\" has wrong number of arguments");
 
-	size_t i;
-	std::string host = "";
-	std::string port = "";
-	int iport = 0;
-	for (i = 0; i < line.size() && line[i] != ':'; i++)
-		host += line[i];
+	std::string arg = params[0];
+	std::string host = "0.0.0.0";
+	std::string port = "80";
+	std::string::size_type colonPos = arg.find(':');
 
-	if (i == line.size())
-		throw std::runtime_error("directive \"listen\" is missing \':\' in argument");
-
-	for (i += 1; i < line.size(); i++)
-		port += line[i];
-
-	try
+	if (colonPos != std::string::npos)
 	{
-		iport = std::stoi(port);
+		host = arg.substr(0, colonPos);
+		port = arg.substr(colonPos + 1);
+
+		if (host.empty() || host.compare(0, 1, "*") == 0)
+			host = "0.0.0.0";
+
+		if (std::isdigit(host.front()) && !http::isValidIP(host))
+			throw std::runtime_error("directive \"listen\" has invalid host");
+
+		if (!http::isValidPort(port))
+			throw std::runtime_error("directive \"listen\" has invalid port");
 	}
-	catch (std::exception &e)
+	else
 	{
-		throw std::runtime_error("directive \"listen\" port is not a number");
-	};
+		if (std::isdigit(arg.front()) && http::isValidIP(arg))
+			host = arg;
+		else if (http::isValidPort(arg))
+			port = arg;
+		else
+			throw std::runtime_error("directive \"listen\" has invalid host or port");
+	}
 
-	listens.push_back(http::Host(host.c_str(), iport));
+	std::vector<http::Host> hosts = http::Host::getHosts(host, port);
+
+	if (hosts.size() == 0)
+		throw std::runtime_error("directive \"listen\" has no available interface");
+
+	listens.push_back(hosts.front());
 
 	#ifdef DEBUG
 	Logger::debug(true) << "ServerBlock::parseDirective_host: received line:" << line << std::endl;

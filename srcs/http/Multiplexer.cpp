@@ -15,25 +15,24 @@ namespace http
 		_maxfd(0)
 	{
 		std::vector<ServerBlock> serverBlocks = config.getServerBlocks();
-		std::set<int> ports;
+		std::set<http::Host> hosts;
 
 		for (std::vector<ServerBlock>::iterator sbIt = serverBlocks.begin(); sbIt != serverBlocks.end(); sbIt++)
 		{
 			_servers.push_back(new Server(*sbIt));
 
 			for (ServerBlock::listensVector::const_iterator listenIt = sbIt->listens.begin(); listenIt != sbIt->listens.end(); listenIt++)
-				ports.insert(listenIt->getPort());
+				hosts.insert(*listenIt);
 		}
 
-		// For each unique port, create a socket
-		for (std::set<int>::iterator it = ports.begin(); it != ports.end(); it++)
+		for (std::set<http::Host>::const_iterator it = hosts.begin(); it != hosts.end(); it++)
 		{
-			http::Socket	*socket = NULL;
+			http::Socket *socket = NULL;
 
-			try { socket = new http::Socket(AF_INET, SOCK_STREAM, 0, NULL, *it); }
+			try { socket = new http::Socket(*it); }
 			catch (const std::exception& e)
 			{
-				Logger::error(true) << "Failed to create socket on port " << *it << ": " << e.what() << std::endl;
+				Logger::error(true) << "Failed to create socket on " << *it << ": " << e.what() << std::endl;
 				continue;
 			}
 
@@ -42,6 +41,23 @@ namespace http
 			#endif
 			_sockets.push_back(socket);
 		}
+		// // For each unique port, create a socket
+		// for (std::set<int>::iterator it = ports.begin(); it != ports.end(); it++)
+		// {
+		// 	http::Socket	*socket = NULL;
+
+		// 	try { socket = new http::Socket(AF_INET, SOCK_STREAM, 0, NULL, *it); }
+		// 	catch (const std::exception& e)
+		// 	{
+		// 		Logger::error(true) << "Failed to create socket on port " << *it << ": " << e.what() << std::endl;
+		// 		continue;
+		// 	}
+
+		// 	#ifdef DEBUG
+		// 	Logger::debug(true) << "New socket(" << socket->getSocket() << ") listening on \e[1;32m" << *it << "\e[0m" << std::endl;
+		// 	#endif
+		// 	_sockets.push_back(socket);
+		// }
 	}
 
 	Multiplexer::~Multiplexer(void)
@@ -110,7 +126,7 @@ namespace http
 					if ((*it)->hasTimedOut())
 					{
 						#ifdef DEBUG
-						Logger::debug(true) << *it << " Timed out" << std::endl;
+						Logger::debug(true) << **it << " Timed out" << std::endl;
 						#endif
 						delete *it;
 						_clients.erase(it--);
@@ -186,12 +202,12 @@ namespace http
 						Logger::debug(true) << *client << " Response sent (" << client->response.getBody().size() << " bytes)" << std::endl;
 						#endif
 
-						// if (client->shouldClose())
-						// {
-						// 	delete client;
-						// 	_clients.erase(it--);
-						// 	continue;
-						// }
+						if (client->shouldClose())
+						{
+							delete client;
+							_clients.erase(it--);
+							continue;
+						}
 						client->reset();
 					}
 				}
@@ -215,10 +231,11 @@ namespace http
 
 				try
 				{
-					http::Client *client = new http::Client(**it);
+					http::Client *client = new http::Client(*(*it));
 					_clients.push_back(client);
+
 					#ifdef DEBUG
-					Logger::debug(true) << *_clients.back() << " New connection" << std::endl;
+					Logger::debug(true) << *client << " Connected" << std::endl;
 					#endif
 				}
 				catch (const std::exception& e) {}

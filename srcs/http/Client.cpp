@@ -9,6 +9,7 @@ namespace http
 	Client::Client(const http::Socket &server):
 		_socket_fd(-1),
 		_host(),
+		_server(server.getHost()),
 		_requestBuffer(),
 		_responseBuffer(),
 		_lastActivity(),
@@ -30,8 +31,7 @@ namespace http
 		if (fcntl(_socket_fd, F_SETFL, O_NONBLOCK) < 0)
 			throw std::runtime_error("Failed to set client socket to non-blocking");
 
-		_host.setAddr(clientAddr);
-		_host.setPort(server.getPort());
+		_host = http::Host(clientAddr);
 	}
 
 	Client::~Client(void)
@@ -45,6 +45,7 @@ namespace http
 	// ---------------------------------------------------------------------- //
 	const int &Client::getSocketFd(void) const { return (_socket_fd); }
 	const Host &Client::getHost(void) const { return (_host); }
+	const Host &Client::getServerHost(void) const { return (_server); }
 	bool Client::responseSent(void) const { return ((std::string::size_type)sentBytes >= _responseBuffer.size()); }
 
 	bool Client::shouldClose(void) const

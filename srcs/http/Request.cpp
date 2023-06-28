@@ -79,6 +79,8 @@ namespace http
 		std::string line;
 		while (std::getline(requestStream, line, '\n'))
 		{
+			line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+
 			const std::size_t colonPos = line.find(':');
 			if (colonPos == std::string::npos)
 				break;

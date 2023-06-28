@@ -1,6 +1,7 @@
 #pragma once
 
 #include "http.hpp"
+#include "http/Host.hpp"
 
 namespace http
 {
@@ -11,32 +12,22 @@ namespace http
 			// -------------------------------------------------------------- //
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
-			const char *_host;
-			int _port;
+			Host _host;
 			int _socket;
-			int _domain;
-			int _type;
-			int _protocol;
-			const int _maxClients;
+			int _maxClients;
 
 		public:
 			// -------------------------------------------------------------- //
 			//  Constructors & Destructors                                    //
 			// -------------------------------------------------------------- //
-			Socket(
-				const int domain,
-				const int type,
-				const int protocol,
-				const char *host,
-				const int port,
-				const int maxClients = MAX_CLIENTS);
+			Socket(const http::Host &host, int maxClients = MAX_CLIENTS);
 			~Socket(void);
 
 			// -------------------------------------------------------------- //
 			//  Getters & Setters                                             //
 			// -------------------------------------------------------------- //
 			int getSocket(void) const;
-			int getPort(void) const;
+			const Host &getHost(void) const;
 
 			// -------------------------------------------------------------- //
 			//  Public Methods                                                //

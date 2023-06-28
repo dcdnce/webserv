@@ -27,7 +27,7 @@ class Config
 		void _skipComment();
 
 	public:
-		Config(std::string const path);
+		Config(const std::string &path);
 		~Config();
 
 		const std::vector<ServerBlock>& getServerBlocks(void) const;
