@@ -1,28 +1,27 @@
-#!/usr/bin/env python
-
-import cgi
 import os
-import cgitb; cgitb.enable() # for troubleshooting
+import cgi
+import cgitb; cgitb.enable()  # for troubleshooting
 
+redirectTime = 5
 params = cgi.FieldStorage()
 uploadPath = os.environ.get('UPLOAD_PATH')
 uploaded = False
 uploadStatus = "File not uploaded."
 
-if 'filename' in params:
-	fileItem = params['filename']
+if 'file' in params:
+	fileitem = params['file']
 
-	if not os.path.exists(uploadPath):
-		os.makedirs(uploadPath)
+	if (uploadPath[-1] != '/'):
+		uploadPath += '/'
 
-	if (uploadPath[-1] != "/"):
-		uploadPath += "/"
+	filename = os.path.basename(fileitem.filename)
 
-	fn = os.path.basename(fileItem.filename)
-	open(uploadPath + fn, 'wb').write(fileItem.file.read())
-
-	uploadStatus = "File uploaded to: " + uploadPath
-	uploaded = True
+	if (os.path.exists(uploadPath + filename)):
+		uploadStatus = "File already exists."
+	else:
+		open(uploadPath + filename, 'wb').write(fileitem.file.read())
+		uploadStatus = "File uploaded."
+		uploaded = True
 
 
 html = f"""
@@ -38,38 +37,45 @@ body {{
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
 }}
 
 section {{
-	border: 1px solid #ccc;
-	padding: 20px 40px;
-	border-radius: 5px;
+	background-color: #fcc;
+	border: 1px solid #c00;
+	padding: 1em 2em;
+	border-radius: 8px;
 }}
 
-section h1::before {{
-	content: "❌";
-	display: inline-block;
-	margin-right: 10px;
+section.uploaded {{
+	background-color: #cfc;
+	border-color: #0c0;
 }}
 
-section.uploaded h1::before {{
-	content: "✅";
-}}
 </style>
 </head>
 <body>
 <section class="{"uploaded" if uploaded else ""}">
-<h1>Upload</h1>
-<p>{uploadStatus}</p>
+<h1>{uploadStatus}</h1>
+<p>Redirecting in <span id="seconds">{redirectTime}</span> seconds...</p>
 </section>
 <script>
-setTimeout(function() {{
-	window.location.href = "..";
-}}, 3000);
+let seconds = {redirectTime};
+
+setInterval(() => {{
+	seconds--;
+	document.getElementById('seconds').innerText = seconds;
+}}, 1000);
+
+setTimeout(() => {{
+	window.location.href = document.referrer;
+}}, {redirectTime * 1000})
+</script>
 </body>
 </html>
 """
 
 
-print ("Content-type:text/html\r\n\r\n")
+print ("Content-type:text/html")
+print ()
 print (html)
