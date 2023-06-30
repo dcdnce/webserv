@@ -93,7 +93,6 @@ namespace http
 			std::string headerValue = line.substr(valuePos);
 
 			std::transform(headerKey.begin(), headerKey.end(), headerKey.begin(), ::tolower);
-			std::transform(headerValue.begin(), headerValue.end(), headerValue.begin(), ::tolower);
 
 			setHeader(headerKey, headerValue);
 		}
