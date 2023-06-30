@@ -53,6 +53,8 @@ body {{
 	padding: 1.5rem 2rem;
 	background: rgba(0, 0, 0, 0.05);
 	border-radius: 0.5rem;
+
+	max-width: 600px;
 }}
 
 </style>
