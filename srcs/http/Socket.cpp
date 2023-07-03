@@ -20,7 +20,6 @@ namespace http
 		if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1)
 		{
 			close(_socket);
-			perror("Socket constructor: abort: setsockopt()");
 			throw std::runtime_error("Socket constructor: abort: setsockopt()");
 		}
 
@@ -35,7 +34,6 @@ namespace http
 		if (bind(_socket, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		{
 			close(_socket);
-			perror("Socket constructor: abort: bind()");
 			throw std::runtime_error("Socket constructor: abort: bind()");
 		}
 	}
@@ -58,10 +56,7 @@ namespace http
 	void Socket::listen(void) const
 	{
 		if (::listen(_socket, _maxClients) == -1)
-		{
-			perror("Socket::listen: abort: listen()");
 			throw std::runtime_error("Socket::listen: abort: listen()");
-		}
 	}
 
 }
