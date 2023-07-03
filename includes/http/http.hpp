@@ -23,7 +23,7 @@
 #endif
 
 #ifndef TIMEOUT
-# define TIMEOUT 10
+# define TIMEOUT 60
 #endif
 
 #ifndef MEGABYTE

@@ -13,7 +13,7 @@ function getCookieValueByName(cookieName)
 
 window.onload = function()
 {
-	cookieValue = getCookieValueByName("weebservUsername");
+	cookieValue = getCookieValueByName("webservUsername");
 	if (cookieValue != null) {
 		const p = document.querySelector('p.display-none');
 		p.classList.toggle("display-none")

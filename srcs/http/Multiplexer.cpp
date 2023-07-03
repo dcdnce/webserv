@@ -41,23 +41,6 @@ namespace http
 			#endif
 			_sockets.push_back(socket);
 		}
-		// // For each unique port, create a socket
-		// for (std::set<int>::iterator it = ports.begin(); it != ports.end(); it++)
-		// {
-		// 	http::Socket	*socket = NULL;
-
-		// 	try { socket = new http::Socket(AF_INET, SOCK_STREAM, 0, NULL, *it); }
-		// 	catch (const std::exception& e)
-		// 	{
-		// 		Logger::error(true) << "Failed to create socket on port " << *it << ": " << e.what() << std::endl;
-		// 		continue;
-		// 	}
-
-		// 	#ifdef DEBUG
-		// 	Logger::debug(true) << "New socket(" << socket->getSocket() << ") listening on \e[1;32m" << *it << "\e[0m" << std::endl;
-		// 	#endif
-		// 	_sockets.push_back(socket);
-		// }
 	}
 
 	Multiplexer::~Multiplexer(void)
