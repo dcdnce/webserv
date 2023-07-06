@@ -1,45 +1,70 @@
 #pragma once
 
 #include <unistd.h>
-#include <iostream>
+#include <string>
+#include <sys/time.h>
+#include <vector>
+#include <errno.h>
+#include <stdexcept>
+#include <fcntl.h>
 
-#include "http/Request.hpp"
 
-class Cgi
+namespace cgi
 {
-	private:
-		// ------------------------------------------------------------------ //
-		//  Attributes                                                        //
-		// ------------------------------------------------------------------ //
-		std::string	_extension;
-		std::string	_path;
 
-		// ---------------------------------------------------------------------- //
-		//  Private Methods                                                       //
-		// ---------------------------------------------------------------------- //
-		std::string _executeCgi(char **av, char **env, std::string const & content) const;
-		std::string _executeCgi_parent(int *fd_out, int *fd_in, std::string const & content) const;
-		void _executeCgi_child(char **av, char **env, int *fd_out, int *fd_in, bool willReceiveContent) const;
+	typedef struct s_pipe
+	{
+		union {
+			int out;
+			int read;
+		};
+		union {
+			int in;
+			int write;
+		};
+	} t_pipe;
 
-	public:
-		// ------------------------------------------------------------------ //
-		//  Constructors & Destructors                                        //
-		// ------------------------------------------------------------------ //
-	 	Cgi();
-		Cgi(std::string const extension, std::string const path);
-		~Cgi();
+	const t_pipe nullPipe = { .out = -1, .in = -1 };
 
-		// ------------------------------------------------------------------ //
-		//  Getters & Setters                                                 //
-		// ------------------------------------------------------------------ //
-		void setExtension(std::string const extension);
-		void setPath(std::string const extension);
-		const std::string& getExtension(void) const;
-		const std::string& getPath(void) const;
+	class CGI
+	{
+		private:
+			pid_t _pid;
+			t_pipe _pipe;
+			std::string _scriptPath;
+			std::string _cgiPath;
 
-		// ---------------------------------------------------------------------- //
-		//  Public Methods                                                        //
-		// ---------------------------------------------------------------------- //
-		std::string executeGet(const std::string &filePath, const http::Request &req) const;
-		std::string executePost(const std::string &filePath, const http::Request &req, const std::string &uploadPath) const;
-};
+			struct timeval _startTime;
+			bool _isRunning;
+
+			// Input
+			std::string _input;
+			std::string::size_type _sent;
+
+			// Output
+			std::string _output;
+			bool _outputReceived;
+
+			// Program
+			std::vector<std::string> _arguments;
+			std::vector<std::string> _env;
+
+		public:
+			CGI(const std::string &scriptPath, const std::string& cgiPath, const std::string &content);
+			~CGI();
+
+			void execute(void);
+			void readOutput(void);
+			void write(void);
+
+			bool hasTimedOut(void) const;
+			bool allSent(void) const;
+			bool allReceived(void) const;
+
+			const t_pipe &getPipe(void) const;
+			const std::string &getOutput(void) const;
+
+			void setEnv(const std::string &key, const std::string &value);
+	};
+
+}

@@ -26,6 +26,10 @@
 # define TIMEOUT 60
 #endif
 
+#ifndef CGI_TIMEOUT
+# define CGI_TIMEOUT 10
+#endif
+
 #ifndef MEGABYTE
 # define MEGABYTE 1048576
 #endif

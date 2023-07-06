@@ -93,6 +93,11 @@ namespace fs
 		return buffer.str();
 	}
 
+	/**
+	 * @brief Get the extension of a file (including the dot)
+	 * @param path The path to the file
+	 * @return The extension of the file
+	*/
 	std::string getExtension(const std::string& path)
 	{
 		size_t pos = path.rfind('.');

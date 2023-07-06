@@ -21,7 +21,6 @@ LocationBlock::directiveFuncPtr LocationBlock::whichDirective(std::string const 
 		return (&LocationBlock::parseDirective_cgi);
 
 	Logger::warn(true) << "section \"location\": directive \"" + str + "\" not recognized: skipping" << std::endl;
-
 	return (NULL);
 }
 
@@ -34,9 +33,9 @@ void LocationBlock::parseDirective_root(std::string line)
 
 	root = params[0];
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_root: received line:" << line << std::endl;
-#endif
+	#endif
 }
 
 void LocationBlock::parseDirective_acceptedMethods(std::string line)
@@ -56,9 +55,9 @@ void LocationBlock::parseDirective_acceptedMethods(std::string line)
 			acceptedMethods.insert(http::methodsMap[params[i]]);
 	}
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_acceptedMethods: received line:" << line << std::endl;
-#endif
+	#endif
 }
 
 void LocationBlock::parseDirective_return(std::string line)
@@ -104,9 +103,9 @@ void LocationBlock::parseDirective_autoindex(std::string line)
 
 	autoindex = (params[0] == "on");
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	Logger::debug(true) << "LocationBlock::parseDirective_autoindex: received line:" << line << std::endl;
-#endif
+	#endif
 }
 
 void LocationBlock::parseDirective_index(std::string line)
@@ -116,9 +115,9 @@ void LocationBlock::parseDirective_index(std::string line)
 	if (!indexes.size())
 		throw std::runtime_error("directive \"index\" is missing arguments");
 
-#ifdef DEBUG
-	Logger::debug(true) << "ServerBlock::parseDirective_index: received line:" << line << std::endl;
-#endif
+	#ifdef DEBUG
+	Logger::debug(true) << "LocationBlock::parseDirective_index: received line:" << line << std::endl;
+	#endif
 }
 
 void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
@@ -130,15 +129,14 @@ void LocationBlock::parseDirective_uploadedFilesPath(std::string line)
 
 	uploadPath = params[0];
 
-#ifdef DEBUG
-	Logger::debug(true) << "ServerBlock::parseDirective_uploadedFilesPath: received line:" << line << std::endl;
-#endif
+	#ifdef DEBUG
+	Logger::debug(true) << "LocationBlock::parseDirective_uploadedFilesPath: received line:" << line << std::endl;
+	#endif
 }
 
 void LocationBlock::parseDirective_cgi(std::string line)
 {
 	std::vector<std::string> params = _extractParams(line);
-	Cgi	cgi;
 
 	if (params.size() != 2)
 		throw std::runtime_error("directive \"cgi\" has wrong number of arguments");
@@ -146,16 +144,12 @@ void LocationBlock::parseDirective_cgi(std::string line)
 	if (!fs::exists(params[1]))
 		throw std::runtime_error("directive \"cgi\": path \"" + params[1] + "\" does not exist");
 
-	if (access(params[1].c_str(), X_OK) != 0)
+	if (!fs::hasPermission(params[1], "x"))
 		throw std::runtime_error("directive \"cgi\": path \"" + params[1] + "\" is not executable");
 
-	cgi.setExtension(params[0]);
-	cgi.setPath(params[1]);
-
-
-	this->cgis[params[0]] = cgi;
+	this->cgis[params[0]] = params[1];
 
 	#ifdef DEBUG
-		Logger::debug(true) << "ServerBlock::parseDirective_cgi: received line:" << line << std::endl;
+	Logger::debug(true) << "LocationBlock::parseDirective_cgi: received line:" << line << std::endl;
 	#endif
 }

@@ -74,6 +74,19 @@ namespace http
 		{
 			const http::Client *client = *it;
 
+			if (client->cgi != NULL)
+			{
+				cgi::t_pipe pipe = client->cgi->getPipe();
+
+				if (!client->cgi->allSent() && pipe.write != -1)
+					FD_SET(pipe.write, &_writefds);
+				else if (!client->cgi->allReceived() && pipe.read != -1)
+					FD_SET(pipe.read, &_readfds);
+
+				_maxfd = std::max(_maxfd, pipe.write);
+				_maxfd = std::max(_maxfd, pipe.read);
+			}
+
 			if (!client->requestComplete)
 				FD_SET(client->getSocketFd(), &_readfds);
 			else
@@ -104,24 +117,70 @@ namespace http
 			}
 
 			if (ret == 0)
-			{
-				for (client_list::iterator it = _clients.begin(); it != _clients.end(); it++)
-					if ((*it)->hasTimedOut())
-					{
-						#ifdef DEBUG
-						Logger::debug(true) << **it << " Timed out" << std::endl;
-						#endif
-						delete *it;
-						_clients.erase(it--);
-					}
 				continue;
-			}
 
 			// --- HANDLE CLIENTS --- //
 			for (client_list::iterator it = _clients.begin(); it != _clients.end(); it++)
 			{
 				http::Client *client = *it;
 
+				// ---------------------------------------------------------- //
+				//  CGI                                                       //
+				// ---------------------------------------------------------- //
+				if (client->cgi != NULL)
+				{
+					cgi::t_pipe pipe = client->cgi->getPipe();
+
+					// --- Write --- //
+					if (pipe.write != -1 && FD_ISSET(pipe.write, &_writefds) && !client->cgi->allSent())
+					{
+						try { client->cgi->write(); }
+						catch (const std::exception& e)
+						{
+							if (client->server != NULL)
+								client->response = client->server->getErrorResponse(INTERNAL_SERVER_ERROR);
+							else
+							{
+								client->response.setStatus(INTERNAL_SERVER_ERROR);
+								client->response.setBody(e.what());
+							}
+							delete client->cgi;
+							client->cgi = NULL;
+						}
+					}
+
+					// --- Read --- //
+					if (pipe.read != -1 && FD_ISSET(pipe.read, &_readfds) && !client->cgi->allReceived())
+					{
+						try { client->cgi->readOutput(); }
+						catch (const std::exception& e)
+						{
+							if (client->server != NULL)
+								client->response = client->server->getErrorResponse(INTERNAL_SERVER_ERROR);
+							else
+							{
+								client->response.setStatus(INTERNAL_SERVER_ERROR);
+								client->response.setBody(e.what());
+							}
+							delete client->cgi;
+							client->cgi = NULL;
+						}
+
+						if (client->cgi->allReceived())
+						{
+							#ifdef DEBUG
+							Logger::debug(true) << *client << " CGI response received" << std::endl;
+							#endif
+						client->response.fromCGI(client->cgi->getOutput());
+							delete client->cgi;
+							client->cgi = NULL;
+						}
+					}
+				}
+
+				// ---------------------------------------------------------- //
+				//  HTTP                                                      //
+				// ---------------------------------------------------------- //
 				// --- READ --- //
 				if (FD_ISSET(client->getSocketFd(), &_readfds))
 				{
@@ -142,7 +201,7 @@ namespace http
 				// --- WRITE --- //
 				if (FD_ISSET(client->getSocketFd(), &_writefds))
 				{
-					if (!client->sending)
+					if (!client->isProcessed)
 					{
 						http::Server *server = NULL;
 
@@ -155,7 +214,11 @@ namespace http
 
 						if (server != NULL)
 						{
-							try { server->processRequest(*client); }
+							try
+							{
+								server->processRequest(*client);
+								client->server = server;
+							}
 							catch (const std::exception& e)
 							{
 								client->response.setStatus(INTERNAL_SERVER_ERROR);
@@ -168,8 +231,11 @@ namespace http
 							client->response.setBody("No server found for this request");
 						}
 
-						client->sending = true;
+						client->isProcessed = true;
 					}
+
+					if (client->cgi != NULL && !client->cgi->allReceived())
+						continue;
 
 					try { client->send(); }
 					catch (const std::exception& e)
@@ -185,24 +251,10 @@ namespace http
 						Logger::debug(true) << *client << " Response sent (" << client->response.getBody().size() << " bytes)" << std::endl;
 						#endif
 
-						if (client->shouldClose())
-						{
-							delete client;
-							_clients.erase(it--);
-							continue;
-						}
-						client->reset();
+						delete client;
+						_clients.erase(it--);
+						continue;
 					}
-				}
-
-				if (client->hasTimedOut())
-				{
-					#ifdef DEBUG
-					Logger::debug(true) << *client << " Timed out" << std::endl;
-					#endif
-					delete client;
-					_clients.erase(it--);
-					continue;
 				}
 			}
 

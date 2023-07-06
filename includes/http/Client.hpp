@@ -8,9 +8,13 @@
 #include "http/Request.hpp"
 #include "http/Response.hpp"
 #include "http/Socket.hpp"
+#include "http/Server.hpp"
+#include "cgi/CGI.hpp"
 
 namespace http
 {
+
+	class Server;
 
 	class Client
 	{
@@ -26,6 +30,11 @@ namespace http
 			struct timeval _lastActivity;
 
 		public:
+			Server *server;
+
+			// --- CGI --- //
+			cgi::CGI *cgi;
+
 			// --- Request --- //
 			Request request;
 			bool headersReceived;
@@ -33,7 +42,7 @@ namespace http
 
 			// --- Response --- //
 			Response response;
-			bool sending;
+			bool isProcessed;
 			int sentBytes;
 
 		public:

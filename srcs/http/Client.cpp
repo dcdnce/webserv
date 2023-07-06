@@ -13,11 +13,13 @@ namespace http
 		_requestBuffer(),
 		_responseBuffer(),
 		_lastActivity(),
+		server(NULL),
+		cgi(NULL),
 		request(),
 		headersReceived(false),
 		requestComplete(false),
 		response(),
-		sending(false),
+		isProcessed(false),
 		sentBytes(0)
 	{
 		struct sockaddr_in clientAddr;
@@ -75,7 +77,7 @@ namespace http
 		headersReceived = false;
 		requestComplete = false;
 		response = http::Response();
-		sending = false;
+		isProcessed = false;
 		sentBytes = 0;
 	}
 

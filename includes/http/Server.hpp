@@ -4,10 +4,12 @@
 #include "http/Response.hpp"
 #include "http/Request.hpp"
 #include "http/Client.hpp"
-#include "cgi/Cgi.hpp"
+#include "cgi/CGI.hpp"
 
 namespace http
 {
+
+	class Client;
 
 	class Server
 	{
@@ -17,11 +19,6 @@ namespace http
 			//  Attributes                                                    //
 			// -------------------------------------------------------------- //
 			ServerBlock	_config;
-
-			// -------------------------------------------------------------- //
-			//  Private Methods                                               //
-			// -------------------------------------------------------------- //
-			const http::Response _getErrorResponse(const http::Status &status) const;
 
 		public:
 			// -------------------------------------------------------------- //
@@ -40,6 +37,8 @@ namespace http
 			// -------------------------------------------------------------- //
 			bool matches(const http::Client& client) const;
 			void processRequest(http::Client& client) const;
+
+			const http::Response getErrorResponse(const http::Status &status) const;
 
 	};
 

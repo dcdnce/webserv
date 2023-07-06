@@ -1,6 +1,6 @@
 #include "http/Server.hpp"
 #include "utils/FileSystem.hpp"
-#include "cgi/Cgi.hpp"
+#include "cgi/CGI.hpp"
 
 namespace http
 {
@@ -21,9 +21,9 @@ namespace http
 	const ServerBlock &Server::getConfig(void) const { return (this->_config); }
 
 	// ---------------------------------------------------------------------- //
-	//  Private Methods                                                       //
+	//  Public Methods                                                        //
 	// ---------------------------------------------------------------------- //
-	const http::Response Server::_getErrorResponse(const http::Status &status) const
+	const http::Response Server::getErrorResponse(const http::Status &status) const
 	{
 		http::Response errorResponse;
 
@@ -42,9 +42,6 @@ namespace http
 		return (errorResponse);
 	}
 
-	// ---------------------------------------------------------------------- //
-	//  Public Methods                                                        //
-	// ---------------------------------------------------------------------- //
 	bool Server::matches(const http::Client& client) const
 	{
 		const http::Host &clientServerHost = client.getServerHost();
@@ -82,19 +79,19 @@ namespace http
 
 		if (!request.isValid())
 		{
-			response = _getErrorResponse(BAD_REQUEST);
+			response = getErrorResponse(BAD_REQUEST);
 			return ;
 		}
 
 		if (!isMethodImplemented(request.getMethod()))
 		{
-			response = _getErrorResponse(NOT_IMPLEMENTED);
+			response = getErrorResponse(NOT_IMPLEMENTED);
 			return ;
 		}
 
 		if (request.getContentLength() > _config.maxBodySize)
 		{
-			response = _getErrorResponse(PAYLOAD_TOO_LARGE);
+			response = getErrorResponse(PAYLOAD_TOO_LARGE);
 			return ;
 		}
 
@@ -109,13 +106,13 @@ namespace http
 
 		if (location == NULL)
 		{
-			response = _getErrorResponse(NOT_FOUND);
+			response = getErrorResponse(NOT_FOUND);
 			return;
 		}
 
 		if (location->acceptedMethods.size() > 0 && location->acceptedMethods.find(request.getMethod()) == location->acceptedMethods.end())
 		{
-			response = _getErrorResponse(METHOD_NOT_ALLOWED);
+			response = getErrorResponse(METHOD_NOT_ALLOWED);
 			return;
 		}
 
@@ -129,13 +126,13 @@ namespace http
 
 		if (!fs::exists(filePath))
 		{
-			response = _getErrorResponse(NOT_FOUND);
+			response = getErrorResponse(NOT_FOUND);
 			return;
 		}
 
 		if (!fs::hasPermission(filePath, "r"))
 		{
-			response = _getErrorResponse(FORBIDDEN);
+			response = getErrorResponse(FORBIDDEN);
 			return;
 		}
 
@@ -150,7 +147,7 @@ namespace http
 		{
 			if (filePath == location->root || filePath == location->uploadPath || !fs::remove(filePath))
 			{
-				response = _getErrorResponse(FORBIDDEN);
+				response = getErrorResponse(FORBIDDEN);
 				return;
 			}
 
@@ -162,28 +159,67 @@ namespace http
 		{
 			if (location->cgis.size() > 0 && location->cgis.find(fileExtension) != location->cgis.end())
 			{
-				const Cgi &cgi = location->cgis.at(fileExtension);
+				#ifdef DEBUG
+				Logger::debug(true) << "Handling CGI: " << filePath << std::endl;
+				#endif
+				const std::string cgiPath = location->cgis.find(fileExtension)->second;
 
-				if (!fs::exists(cgi.getPath()) || !fs::hasPermission(cgi.getPath(), "x"))
+				if (!fs::exists(cgiPath))
 				{
-					response = _getErrorResponse(NOT_FOUND);
+					response = getErrorResponse(NOT_FOUND);
 					return;
 				}
 
-				switch (request.getMethod())
+				if (!fs::hasPermission(cgiPath, "x") || !fs::hasPermission(cgiPath, "r"))
 				{
-					case GET:
-						response.fromCGI(cgi.executeGet(filePath, request));
-						break;
-					case POST:
-						response.fromCGI(cgi.executePost(filePath, request, location->uploadPath));
-						break;
-					default:
-						response = _getErrorResponse(NOT_IMPLEMENTED);
-						break;
+					response = getErrorResponse(FORBIDDEN);
+					return;
 				}
 
-				return;
+				#ifdef DEBUG
+				Logger::debug(true) << "CGI path: " << cgiPath << std::endl;
+				#endif
+
+				client.cgi = new cgi::CGI(filePath, cgiPath, request.getBody());
+
+				client.cgi->setEnv("REQUEST_METHOD", methodToStr(request.getMethod()));
+				Logger::debug(true) << "REQUEST_METHOD" << std::endl;
+				client.cgi->setEnv("SERVER_PROTOCOL", "HTTP/1.1");
+				Logger::debug(true) << "SERVER_PROTOCOL" << std::endl;
+				client.cgi->setEnv("SERVER_SOFTWARE", "webserv");
+				Logger::debug(true) << "SERVER_SOFTWARE" << std::endl;
+				client.cgi->setEnv("SERVER_NAME", request.getHost());
+				Logger::debug(true) << "SERVER_NAME" << std::endl;
+				client.cgi->setEnv("QUERY_STRING", request.getUrl().query.substr(1));
+				Logger::debug(true) << "QUERY_STRING" << std::endl;
+				client.cgi->setEnv("UPLOAD_PATH", location->uploadPath);
+				Logger::debug(true) << "UPLOAD_PATH" << std::endl;
+				client.cgi->setEnv("CONTENT_LENGTH", std::to_string(request.getContentLength()));
+				Logger::debug(true) << "CONTENT_LENGTH" << std::endl;
+				if (request.getHeaders().find("content-type") != request.getHeaders().end())
+					client.cgi->setEnv("CONTENT_TYPE", request.getHeaders().at("content-type"));
+
+				#ifdef DEBUG
+				Logger::debug(true) << "CGI env set" << std::endl;
+				#endif
+
+				try {
+					#ifdef DEBUG
+					Logger::debug(true) << client << " CGI '" << filePath << "' executing" << std::endl;
+					#endif
+					client.cgi->execute();
+					#ifdef DEBUG
+					Logger::debug(true) << client << " CGI '" << filePath << "' executed" << std::endl;
+					#endif
+				}
+				catch (const std::exception& e)
+				{
+					response = getErrorResponse(INTERNAL_SERVER_ERROR);
+					delete client.cgi;
+					client.cgi = NULL;
+					return;
+				}
+				return ;
 			}
 
 			response.setStatus(OK);
@@ -217,7 +253,7 @@ namespace http
 			}
 		}
 
-		response = _getErrorResponse(NOT_FOUND);
+		response = getErrorResponse(NOT_FOUND);
 	}
 
 }
