@@ -16,6 +16,7 @@ ServerBlock::ServerBlock():
 	errorPages[405] = "./ressources/errors/405.html";
 	errorPages[413] = "./ressources/errors/413.html";
 	errorPages[501] = "./ressources/errors/501.html";
+	errorPages[504] = "./ressources/errors/504.html";
 }
 
 ServerBlock::~ServerBlock()

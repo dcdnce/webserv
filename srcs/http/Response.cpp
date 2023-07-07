@@ -9,6 +9,7 @@ namespace http
 		_status(OK)
 	{
 		_headers["Server"] = "webserv";
+		_headers["Connection"] = "close";
 	}
 
 	Response::Response(const Response &copy):

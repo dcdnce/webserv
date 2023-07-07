@@ -183,35 +183,16 @@ namespace http
 				client.cgi = new cgi::CGI(filePath, cgiPath, request.getBody());
 
 				client.cgi->setEnv("REQUEST_METHOD", methodToStr(request.getMethod()));
-				Logger::debug(true) << "REQUEST_METHOD" << std::endl;
 				client.cgi->setEnv("SERVER_PROTOCOL", "HTTP/1.1");
-				Logger::debug(true) << "SERVER_PROTOCOL" << std::endl;
 				client.cgi->setEnv("SERVER_SOFTWARE", "webserv");
-				Logger::debug(true) << "SERVER_SOFTWARE" << std::endl;
 				client.cgi->setEnv("SERVER_NAME", request.getHost());
-				Logger::debug(true) << "SERVER_NAME" << std::endl;
-				client.cgi->setEnv("QUERY_STRING", request.getUrl().query.substr(1));
-				Logger::debug(true) << "QUERY_STRING" << std::endl;
+				client.cgi->setEnv("QUERY_STRING", request.getUrl().query.substr(!request.getUrl().query.empty()));
 				client.cgi->setEnv("UPLOAD_PATH", location->uploadPath);
-				Logger::debug(true) << "UPLOAD_PATH" << std::endl;
 				client.cgi->setEnv("CONTENT_LENGTH", std::to_string(request.getContentLength()));
-				Logger::debug(true) << "CONTENT_LENGTH" << std::endl;
 				if (request.getHeaders().find("content-type") != request.getHeaders().end())
 					client.cgi->setEnv("CONTENT_TYPE", request.getHeaders().at("content-type"));
 
-				#ifdef DEBUG
-				Logger::debug(true) << "CGI env set" << std::endl;
-				#endif
-
-				try {
-					#ifdef DEBUG
-					Logger::debug(true) << client << " CGI '" << filePath << "' executing" << std::endl;
-					#endif
-					client.cgi->execute();
-					#ifdef DEBUG
-					Logger::debug(true) << client << " CGI '" << filePath << "' executed" << std::endl;
-					#endif
-				}
+				try { client.cgi->execute(); }
 				catch (const std::exception& e)
 				{
 					response = getErrorResponse(INTERNAL_SERVER_ERROR);

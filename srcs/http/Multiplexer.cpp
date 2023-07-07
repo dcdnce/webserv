@@ -117,7 +117,26 @@ namespace http
 			}
 
 			if (ret == 0)
+			{
+				for (client_list::iterator it = _clients.begin(); it != _clients.end(); it++)
+				{
+					http::Client *client = *it;
+
+					if (client->cgi != NULL && client->cgi->hasTimedOut())
+					{
+						if (client->server != NULL)
+							client->response = client->server->getErrorResponse(GATEWAY_TIMEOUT);
+						else
+						{
+							client->response.setStatus(GATEWAY_TIMEOUT);
+							client->response.setBody("CGI script took too long to complete");
+						}
+						delete client->cgi;
+						client->cgi = NULL;
+					}
+				}
 				continue;
+			}
 
 			// --- HANDLE CLIENTS --- //
 			for (client_list::iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -130,6 +149,19 @@ namespace http
 				if (client->cgi != NULL)
 				{
 					cgi::t_pipe pipe = client->cgi->getPipe();
+
+					if (client->cgi->hasTimedOut())
+					{
+						if (client->server != NULL)
+							client->response = client->server->getErrorResponse(GATEWAY_TIMEOUT);
+						else
+						{
+							client->response.setStatus(GATEWAY_TIMEOUT);
+							client->response.setBody("CGI script took too long to complete");
+						}
+						delete client->cgi;
+						client->cgi = NULL;
+					}
 
 					// --- Write --- //
 					if (pipe.write != -1 && FD_ISSET(pipe.write, &_writefds) && !client->cgi->allSent())
@@ -203,6 +235,9 @@ namespace http
 				{
 					if (!client->isProcessed)
 					{
+						#ifdef DEBUG
+						Logger::debug(true) << *client << " Request processing" << std::endl;
+						#endif
 						http::Server *server = NULL;
 
 						for (server_list::const_iterator it = _servers.begin(); it != _servers.end(); it++)
@@ -211,6 +246,7 @@ namespace http
 								server = *it;
 								break;
 							}
+
 
 						if (server != NULL)
 						{
@@ -221,8 +257,12 @@ namespace http
 							}
 							catch (const std::exception& e)
 							{
-								client->response.setStatus(INTERNAL_SERVER_ERROR);
-								client->response.setBody(e.what());
+								client->response = server->getErrorResponse(INTERNAL_SERVER_ERROR);
+								if (client->cgi != NULL)
+								{
+									delete client->cgi;
+									client->cgi = NULL;
+								}
 							}
 						}
 						else
@@ -249,6 +289,7 @@ namespace http
 					{
 						#ifdef DEBUG
 						Logger::debug(true) << *client << " Response sent (" << client->response.getBody().size() << " bytes)" << std::endl;
+						Logger::debug(true) << "\e[1D\e[1;42m CONNECTION CLOSED \e[0m " << *client << std::endl;
 						#endif
 
 						delete client;
@@ -270,7 +311,7 @@ namespace http
 					_clients.push_back(client);
 
 					#ifdef DEBUG
-					Logger::debug(true) << *client << " Connected" << std::endl;
+					Logger::debug(true) << "\e[1D\e[1;44m NEW CONNECTION \e[0m " << *client << std::endl;
 					#endif
 				}
 				catch (const std::exception& e) {}
